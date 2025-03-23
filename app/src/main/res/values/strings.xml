@@ -1,3 +1,21 @@
 <resources>
     <string name="app_name">Spo!ler Alert</string>
+
+    <string name="expiring">EXPIRING SOON</string>
+    <string name="ready">READY TO USE</string>
+    <string name="fresh">FRESH</string>
+
+    <string name="open_grocery_list">Open Grocery List</string>
+
+    <string name="add_an_item">ADD AN ITEM</string>
+    <string name="item_name">Name:</string>
+    <string name="item_name_hint">Enter grocery item name</string>
+    <string name="item_food_group">Food Group:</string>
+    <string name="item_quantity">Quantity:</string>
+    <string name="item_quantity_hint">Enter number of items</string>
+    <string name="item_weight">Weight:</string>
+    <string name="item_price">Price:</string>
+    <string name="item_price_hint">Enter cost of the grocery</string>
+    <string name="freezer_status">Is the item \nin the freezer?</string>
+    <string name="item_expiration">Expiration Date:</string>
 </resources>

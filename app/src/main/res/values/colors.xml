@@ -2,4 +2,7 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="expiring_red">#F04337</color>
+    <color name="ready_yellow">#E3B612</color>
+    <color name="fresh_green">#5BC232</color>
 </resources>

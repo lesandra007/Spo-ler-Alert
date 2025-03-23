@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/relativeLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".AddGroceryFragment">
+
+    <!-- Title -->
+    <TextView
+        android:id="@+id/add_item_title"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:gravity="center"
+        android:text="@string/add_an_item"
+        android:textAllCaps="true"
+        android:textSize="@dimen/title_size"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- Input Grocery Name -->
+    <TextView
+        android:id="@+id/item_name_label"
+        android:layout_width="@dimen/label_width"
+        android:layout_height="@dimen/label_height"
+        android:gravity="center"
+        android:text="@string/item_name"
+        android:textSize="@dimen/label_text_size"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/add_item_title" />
+
+    <EditText
+        android:id="@+id/item_name_input"
+        android:layout_width="@dimen/input_width"
+        android:layout_height="50dp"
+        android:hint="@string/item_name_hint"
+        app:layout_constraintStart_toEndOf="@id/item_name_label"
+        app:layout_constraintTop_toBottomOf="@id/add_item_title" />
+
+    <Space
+        android:id="@+id/item_name_spacer"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/item_name_label" />
+
+    <!-- Input Grocery Food Group -->
+    <TextView
+        android:id="@+id/item_food_group_label"
+        android:layout_width="@dimen/label_width"
+        android:layout_height="@dimen/label_height"
+        android:gravity="center"
+        android:text="@string/item_food_group"
+        android:textSize="@dimen/label_text_size"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/item_name_spacer" />
+
+    <Spinner
+        android:id="@+id/food_group_dropdown"
+        android:layout_width="@dimen/input_width"
+        android:layout_height="50dp"
+        app:layout_constraintStart_toEndOf="@id/item_food_group_label"
+        app:layout_constraintTop_toBottomOf="@id/item_name_spacer" />
+
+    <Space
+        android:id="@+id/item_food_group_spacer"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/item_food_group_label" />
+
+    <!-- Input Grocery Quantity -->
+    <TextView
+        android:id="@+id/item_quantity_label"
+        android:layout_width="@dimen/label_width"
+        android:layout_height="@dimen/label_height"
+        android:gravity="center"
+        android:text="@string/item_quantity"
+        android:textSize="@dimen/label_text_size"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/item_food_group_spacer" />
+
+    <EditText
+        android:id="@+id/item_quantity_input"
+        android:layout_width="@dimen/input_width"
+        android:layout_height="50dp"
+        android:ems="10"
+        android:hint="@string/item_quantity_hint"
+        android:inputType="numberDecimal"
+        app:layout_constraintStart_toEndOf="@+id/item_quantity_label"
+        app:layout_constraintTop_toBottomOf="@id/item_food_group_spacer" />
+
+    <Space
+        android:id="@+id/item_quantity_spacer"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/item_quantity_label" />
+
+    <!-- Input Grocery Weight -->
+    <TextView
+        android:id="@+id/item_weight_label"
+        android:layout_width="@dimen/label_width"
+        android:layout_height="@dimen/label_height"
+        android:gravity="center"
+        android:text="@string/item_weight"
+        android:textSize="@dimen/label_text_size"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/item_quantity_spacer" />
+
+    <EditText
+        android:id="@+id/item_pounds_input"
+        android:layout_width="120dp"
+        android:layout_height="50dp"
+        android:ems="10"
+        android:hint="pounds"
+        android:inputType="number"
+        app:layout_constraintStart_toEndOf="@id/item_weight_label"
+        app:layout_constraintTop_toBottomOf="@id/item_quantity_spacer" />
+
+    <EditText
+        android:id="@+id/item_ounces_input"
+        android:layout_width="120dp"
+        android:layout_height="50dp"
+        android:ems="10"
+        android:hint="ounces"
+        android:inputType="number"
+        app:layout_constraintStart_toEndOf="@id/item_pounds_input"
+        app:layout_constraintTop_toBottomOf="@id/item_quantity_spacer" />
+
+    <Space
+        android:id="@+id/item_weight_spacer"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/item_weight_label" />
+
+    <!-- Input Grocery Price -->
+    <TextView
+        android:id="@+id/item_price_label"
+        android:layout_width="@dimen/label_width"
+        android:layout_height="@dimen/label_height"
+        android:gravity="center"
+        android:text="@string/item_price"
+        android:textSize="@dimen/label_text_size"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/item_weight_spacer" />
+
+    <EditText
+        android:id="@+id/item_price_input"
+        android:layout_width="@dimen/input_width"
+        android:layout_height="50dp"
+        android:ems="10"
+        android:hint="@string/item_price_hint"
+        android:inputType="numberDecimal"
+        app:layout_constraintStart_toEndOf="@id/item_price_label"
+        app:layout_constraintTop_toBottomOf="@id/item_weight_spacer" />
+
+    <Space
+        android:id="@+id/item_price_spacer"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/item_price_label" />
+
+    <!-- Input Grocery Freezer Status -->
+    <TextView
+        android:id="@+id/item_freezer_status_label"
+        android:layout_width="@dimen/label_width"
+        android:layout_height="@dimen/label_height"
+        android:gravity="center"
+        android:text="@string/freezer_status"
+        android:textSize="@dimen/label_text_size"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/item_price_spacer" />
+
+    <CheckBox
+        android:id="@+id/checkBox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toEndOf="@id/item_freezer_status_label"
+        app:layout_constraintTop_toBottomOf="@id/item_price_spacer" />
+
+    <Space
+        android:id="@+id/item_freezer_status_spacer"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/item_freezer_status_label" />
+
+    <!-- Input Grocery Expiration Date -->
+    <TextView
+        android:id="@+id/item_expiration_date_label"
+        android:layout_width="@dimen/label_width"
+        android:layout_height="@dimen/label_height"
+        android:gravity="center"
+        android:text="@string/item_expiration"
+        android:textSize="@dimen/label_text_size"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/item_freezer_status_spacer" />
+
+    <CalendarView
+        android:id="@+id/calendarView2"
+        android:layout_width="304dp"
+        android:layout_height="307dp"
+        android:layout_marginStart="52dp"
+        android:layout_marginBottom="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
