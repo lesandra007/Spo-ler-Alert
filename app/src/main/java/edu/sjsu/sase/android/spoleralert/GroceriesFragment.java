@@ -12,10 +12,10 @@ import android.view.ViewGroup;
 
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link AddGroceryFragment#newInstance} factory method to
+ * Use the {@link GroceriesFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class AddGroceryFragment extends Fragment {
+public class GroceriesFragment extends Fragment {
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -26,7 +26,7 @@ public class AddGroceryFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
-    public AddGroceryFragment() {
+    public GroceriesFragment() {
         // Required empty public constructor
     }
 
@@ -36,11 +36,11 @@ public class AddGroceryFragment extends Fragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment AddGroceryFragment.
+     * @return A new instance of fragment GroceriesFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static AddGroceryFragment newInstance(String param1, String param2) {
-        AddGroceryFragment fragment = new AddGroceryFragment();
+    public static GroceriesFragment newInstance(String param1, String param2) {
+        GroceriesFragment fragment = new GroceriesFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -61,9 +61,9 @@ public class AddGroceryFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_add_grocery, container, false);
+        View view = inflater.inflate(R.layout.fragment_groceries, container, false);
         NavController controller = NavHostFragment.findNavController(this);
-        view.findViewById(R.id.add_item_back_button).setOnClickListener(v -> controller.navigate(R.id.action_addGroceryFragment_to_groceriesFragment));
+        view.findViewById(R.id.add_groceries_button).setOnClickListener(v -> controller.navigate(R.id.action_groceriesFragment_to_addGroceryFragment));
         return view;
     }
 }

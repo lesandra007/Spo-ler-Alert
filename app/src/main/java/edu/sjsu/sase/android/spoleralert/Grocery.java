@@ -11,5 +11,6 @@ public class Grocery {
     private double price;
     private boolean in_freezer;
     private Date expiration_date;
+    private boolean has_expired;
 
 }

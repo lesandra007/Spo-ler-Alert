@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/startFragment">
+
+    <fragment
+        android:id="@+id/startFragment"
+        android:name="edu.sjsu.sase.android.spoleralert.StartFragment"
+        android:label="fragment_start"
+        tools:layout="@layout/fragment_start" >
+        <action
+            android:id="@+id/action_startFragment_to_groceriesFragment"
+            app:destination="@id/groceriesFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/groceriesFragment"
+        android:name="edu.sjsu.sase.android.spoleralert.GroceriesFragment"
+        android:label="fragment_groceries"
+        tools:layout="@layout/fragment_groceries" >
+        <action
+            android:id="@+id/action_groceriesFragment_to_addGroceryFragment"
+            app:destination="@id/addGroceryFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/addGroceryFragment"
+        android:name="edu.sjsu.sase.android.spoleralert.AddGroceryFragment"
+        android:label="fragment_add_grocery"
+        tools:layout="@layout/fragment_add_grocery" >
+        <action
+            android:id="@+id/action_addGroceryFragment_to_groceriesFragment"
+            app:destination="@id/groceriesFragment" />
+    </fragment>
+</navigation>
