@@ -9,6 +9,8 @@ import androidx.navigation.fragment.NavHostFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -61,9 +63,27 @@ public class GroceriesFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_groceries, container, false);
+        View groceries_view = inflater.inflate(R.layout.fragment_groceries, container, false);
         NavController controller = NavHostFragment.findNavController(this);
-        view.findViewById(R.id.add_groceries_button).setOnClickListener(v -> controller.navigate(R.id.action_groceriesFragment_to_addGroceryFragment));
-        return view;
+
+//        //populate food groups spinner with choices
+//        Spinner fg_dropdown = (Spinner)groceries_view.findViewById(R.id.food_group_dropdown);
+//        ArrayAdapter<CharSequence> fg_adapter = ArrayAdapter.createFromResource(
+//                requireContext(),
+//                R.array.food_groups,
+//                android.R.layout.simple_spinner_item
+//        );
+//        fg_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+//        fg_dropdown.setAdapter(fg_adapter);
+
+        //clicking on the bottom right plus button (to add groceries)
+        groceries_view.findViewById(R.id.add_groceries_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                controller.navigate(R.id.action_groceriesFragment_to_addGroceryFragment);
+            }
+        });
+
+        return groceries_view;
     }
 }

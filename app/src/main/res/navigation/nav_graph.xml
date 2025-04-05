@@ -22,6 +22,12 @@
         <action
             android:id="@+id/action_groceriesFragment_to_addGroceryFragment"
             app:destination="@id/addGroceryFragment" />
+        <action
+            android:id="@+id/action_groceriesFragment_to_recipesFragment"
+            app:destination="@id/recipesFragment" />
+        <action
+            android:id="@+id/action_groceriesFragment_to_statisticsFragment"
+            app:destination="@id/statisticsFragment" />
     </fragment>
     <fragment
         android:id="@+id/addGroceryFragment"
@@ -30,6 +36,30 @@
         tools:layout="@layout/fragment_add_grocery" >
         <action
             android:id="@+id/action_addGroceryFragment_to_groceriesFragment"
+            app:destination="@id/groceriesFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/recipesFragment"
+        android:name="edu.sjsu.sase.android.spoleralert.RecipesFragment"
+        android:label="fragment_recipes"
+        tools:layout="@layout/fragment_recipes" >
+        <action
+            android:id="@+id/action_recipesFragment_to_groceriesFragment"
+            app:destination="@id/groceriesFragment" />
+        <action
+            android:id="@+id/action_recipesFragment_to_statisticsFragment"
+            app:destination="@id/statisticsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/statisticsFragment"
+        android:name="edu.sjsu.sase.android.spoleralert.StatisticsFragment"
+        android:label="fragment_statistics"
+        tools:layout="@layout/fragment_statistics" >
+        <action
+            android:id="@+id/action_statisticsFragment_to_recipesFragment"
+            app:destination="@id/recipesFragment" />
+        <action
+            android:id="@+id/action_statisticsFragment_to_groceriesFragment"
             app:destination="@id/groceriesFragment" />
     </fragment>
 </navigation>

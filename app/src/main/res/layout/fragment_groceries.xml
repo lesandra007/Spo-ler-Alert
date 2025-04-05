@@ -7,24 +7,47 @@
     android:layout_height="match_parent"
     tools:context=".GroceriesFragment">
 
-    <!-- TODO: Update blank fragment layout -->
+    <!-- reuse the bottom_bar for all the main sections -->
+    <include layout="@layout/bottom_bar"/>
+
+
     <TextView
-        android:id="@+id/textView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Groceries Page Fragment (In Progress)"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
+        android:id="@+id/grocery_list_title"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:gravity="center"
+        android:textAllCaps="true"
+        android:text="@string/app_name"
+        android:textSize="@dimen/title_size"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Spinner
+        android:id="@+id/grocery_list_sorting_dropdown"
+        android:layout_width="@dimen/input_width"
+        android:layout_height="50dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/grocery_list_title" />
+
+<!--    <androidx.recyclerview.widget.RecyclerView-->
+<!--        android:id="@+id/grocery_list_area"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="561dp"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toBottomOf="@id/grocery_list_sorting_dropdown" />-->
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/add_groceries_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
-        android:layout_marginBottom="16dp"
+        android:layout_marginBottom="92dp"
         android:clickable="true"
+        android:contentDescription="Grocery_Add_Button"
+        android:focusable="true"
         android:src="@android:drawable/ic_input_add"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

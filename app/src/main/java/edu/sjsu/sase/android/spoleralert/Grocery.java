@@ -4,7 +4,7 @@ import java.util.Date;
 
 public class Grocery {
     private String name;
-    private FoodGroups food_group;
+    private String food_group;
     private double quantity;
     private int pounds;
     private int ounces;

@@ -18,6 +18,21 @@
     <string name="item_price_hint">Enter cost of the grocery</string>
     <string name="freezer_status">Is the item \nin the freezer?</string>
     <string name="item_expiration">Expiration Date:</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string-array name="food_groups">
+        <item>Fruits</item>
+        <item>Vegetables</item>
+        <item>Grains</item>
+        <item>Protein</item>
+        <item>Dairy</item>
+    </string-array>
+
+    <string-array name="grocery_sorting">
+        <item>Alphabetical</item>
+        <item>Expiration Date</item>
+        <item>Food Category</item>
+        <item>Price</item>
+        <item>Storage Type</item>
+    </string-array>
+
 </resources>
