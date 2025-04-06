@@ -66,21 +66,43 @@ public class GroceriesFragment extends Fragment {
         View groceries_view = inflater.inflate(R.layout.fragment_groceries, container, false);
         NavController controller = NavHostFragment.findNavController(this);
 
-//        //populate food groups spinner with choices
-//        Spinner fg_dropdown = (Spinner)groceries_view.findViewById(R.id.food_group_dropdown);
-//        ArrayAdapter<CharSequence> fg_adapter = ArrayAdapter.createFromResource(
-//                requireContext(),
-//                R.array.food_groups,
-//                android.R.layout.simple_spinner_item
-//        );
-//        fg_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-//        fg_dropdown.setAdapter(fg_adapter);
+        //populate grocery sorting (gs) dropdown with choices
+        Spinner gs_dropdown = (Spinner)groceries_view.findViewById(R.id.grocery_list_sorting_dropdown);
+        ArrayAdapter<CharSequence> gs_adapter = ArrayAdapter.createFromResource(
+                requireContext(),
+                R.array.grocery_sorting,
+                android.R.layout.simple_spinner_item
+        );
+        gs_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        gs_dropdown.setAdapter(gs_adapter);
 
         //clicking on the bottom right plus button (to add groceries)
         groceries_view.findViewById(R.id.add_groceries_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 controller.navigate(R.id.action_groceriesFragment_to_addGroceryFragment);
+            }
+        });
+
+        //clicking on the buttons in the bottom bar to go to the different main parts of the app
+        groceries_view.findViewById(R.id.grocery_list_bottom_bar).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                controller.navigate(R.id.groceriesFragment);
+            }
+        });
+
+        groceries_view.findViewById(R.id.recipes_bottom_bar).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                controller.navigate(R.id.recipesFragment);
+            }
+        });
+
+        groceries_view.findViewById(R.id.statistics_bottom_bar).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                controller.navigate(R.id.statisticsFragment);
             }
         });
 

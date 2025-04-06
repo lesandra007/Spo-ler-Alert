@@ -13,23 +13,26 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintBottom_toBottomOf="parent">
 
-<!--        <ImageButton-->
-<!--            android:id="@+id/grocery_list_bottom_bar"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:src="@android:drawable/ic_menu_search"/>-->
+        <ImageButton
+            android:id="@+id/grocery_list_bottom_bar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="Go to grocery list button"
+            android:src="@android:drawable/ic_menu_search"/>
 
-<!--        <ImageButton-->
-<!--            android:id="@+id/recipes_bottom_bar"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:src="@android:drawable/ic_menu_agenda"/>-->
+        <ImageButton
+            android:id="@+id/recipes_bottom_bar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="Go to recipes page button"
+            android:src="@android:drawable/ic_menu_agenda"/>
 
-<!--        <ImageButton-->
-<!--            android:id="@+id/statistics_bottom_bar"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:src="@android:drawable/star_big_on"/>-->
+        <ImageButton
+            android:id="@+id/statistics_bottom_bar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="Go to statistics page button"
+            android:src="@android:drawable/star_big_on"/>
 
     </LinearLayout>
 

@@ -3,6 +3,8 @@ package edu.sjsu.sase.android.spoleralert;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.fragment.NavHostFragment;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -59,6 +61,31 @@ public class StatisticsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_statistics, container, false);
+        View statistics_view = inflater.inflate(R.layout.fragment_statistics, container, false);
+        NavController controller = NavHostFragment.findNavController(this);
+
+        //clicking on the buttons in the bottom bar to go to the different main parts of the app
+        statistics_view.findViewById(R.id.grocery_list_bottom_bar).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                controller.navigate(R.id.groceriesFragment);
+            }
+        });
+
+        statistics_view.findViewById(R.id.recipes_bottom_bar).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                controller.navigate(R.id.recipesFragment);
+            }
+        });
+
+        statistics_view.findViewById(R.id.statistics_bottom_bar).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                controller.navigate(R.id.statisticsFragment);
+            }
+        });
+
+        return statistics_view;
     }
 }
