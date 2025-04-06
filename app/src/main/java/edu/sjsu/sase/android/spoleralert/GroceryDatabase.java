@@ -26,16 +26,16 @@ public class GroceryDatabase extends SQLiteOpenHelper {
     private static final long READY_TO_USE_UPPER_BOUND_MILLI = TimeUnit.DAYS.toMillis(7);
     private static final long FRESH_LOWER_BOUND_MILLI = TimeUnit.DAYS.toMillis(8);
     static final String CREATE_GROCERIES_TABLE = "CREATE TABLE " + TABLE_NAME + "(" +
-                                                ID + "INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                                                NAME + "TEXT, " +
-                                                FOOD_GROUP + "TEXT, " +
-                                                QUANTITY + "REAL, " +
-                                                POUNDS + "INTEGER, " +
-                                                OUNCES + "INTEGER, " +
-                                                PRICE + "REAL, " +
-                                                FREEZER_STATUS + "INTEGER, " +
-                                                EXPIRATION_DATE + "DATE, " +
-                                                EXPIRATION_STATUS + "INTEGER);";
+                                                ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                                                NAME + " TEXT, " +
+                                                FOOD_GROUP + " TEXT, " +
+                                                QUANTITY + " REAL, " +
+                                                POUNDS + " INTEGER, " +
+                                                OUNCES + " INTEGER, " +
+                                                PRICE + " REAL, " +
+                                                FREEZER_STATUS + " INTEGER, " +
+                                                EXPIRATION_DATE + " DATE, " +
+                                                EXPIRATION_STATUS + " INTEGER);";
 
     public GroceryDatabase(Context context) {
         super(context, DATABASE_NAME, null, VERSION);
