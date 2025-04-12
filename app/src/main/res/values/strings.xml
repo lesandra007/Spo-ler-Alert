@@ -31,8 +31,6 @@
         <item>Alphabetical</item>
         <item>Expiration Date</item>
         <item>Food Category</item>
-        <item>Price</item>
-        <item>Storage Type</item>
     </string-array>
 
 </resources>
