@@ -29,12 +29,13 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/grocery_list_title" />
 
-<!--    <androidx.recyclerview.widget.RecyclerView-->
-<!--        android:id="@+id/grocery_list_area"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="561dp"-->
-<!--        app:layout_constraintStart_toStartOf="parent"-->
-<!--        app:layout_constraintTop_toBottomOf="@id/grocery_list_sorting_dropdown" />-->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/grocery_list_area"
+        android:layout_width="match_parent"
+        android:layout_height="561dp"
+        android:contentDescription="Grocery List View"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/grocery_list_sorting_dropdown" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/add_groceries_button"

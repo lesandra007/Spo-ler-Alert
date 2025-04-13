@@ -7,7 +7,7 @@ public final class GroceryDBSchema {
 
         public static final String TABLE_NAME = "groceries";
         public static final String ID = "id";
-        public static final String NAME = "name";
+        public static final String GROCERY_NAME = "name";
         public static final String FOOD_GROUP = "food_group";
         public static final String QUANTITY = "quantity";
         public static final String POUNDS = "pounds";
