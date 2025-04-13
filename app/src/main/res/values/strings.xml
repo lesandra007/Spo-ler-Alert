@@ -30,7 +30,7 @@
     <string-array name="grocery_sorting">
         <item>Alphabetical</item>
         <item>Expiration Date</item>
-        <item>Food Category</item>
+        <item>Food Group</item>
     </string-array>
 
 </resources>
