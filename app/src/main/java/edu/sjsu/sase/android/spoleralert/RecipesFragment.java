@@ -5,10 +5,17 @@ import android.os.Bundle;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -60,32 +67,42 @@ public class RecipesFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+
         View recipes_view = inflater.inflate(R.layout.fragment_recipes, container, false);
         NavController controller = NavHostFragment.findNavController(this);
 
-        //clicking on the buttons in the bottom bar to go to the different main parts of the app
-        recipes_view.findViewById(R.id.grocery_list_bottom_bar).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                controller.navigate(R.id.groceriesFragment);
-            }
-        });
+        // bottom bar navigation
+        recipes_view.findViewById(R.id.grocery_list_bottom_bar).setOnClickListener(v -> controller.navigate(R.id.groceriesFragment));
+        recipes_view.findViewById(R.id.recipes_bottom_bar).setOnClickListener(v -> controller.navigate(R.id.recipesFragment));
+        recipes_view.findViewById(R.id.statistics_bottom_bar).setOnClickListener(v -> controller.navigate(R.id.statisticsFragment));
 
-        recipes_view.findViewById(R.id.recipes_bottom_bar).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                controller.navigate(R.id.recipesFragment);
-            }
-        });
+        // Load grocery names from database
+        GroceryDatabase db = new GroceryDatabase(requireContext());
+        List<Grocery> groceries = db.getGroceriesAlphabetical();
+        List<String> groceryNames = new ArrayList<>();
+        for (Grocery g : groceries) {
+            groceryNames.add(g.getName().toLowerCase());
+        }
 
-        recipes_view.findViewById(R.id.statistics_bottom_bar).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                controller.navigate(R.id.statisticsFragment);
+        // Filter recipes based on available groceries
+        List<Recipe> possibleRecipes = new ArrayList<>();
+        for (Recipe r : RecipeUtils.getAllRecipes()) {
+            boolean canMake = true;
+            for (String ingredient : r.getIngredients()) {
+                if (!groceryNames.contains(ingredient.toLowerCase())) {
+                    canMake = false;
+                    break;
+                }
             }
-        });
+            if (canMake) possibleRecipes.add(r);
+        }
+
+        RecyclerView recipesRecyclerView = recipes_view.findViewById(R.id.recipes_recycler_view);
+        recipesRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
+        recipesRecyclerView.setAdapter(new RecipesAdapter(possibleRecipes));
+
 
         return recipes_view;
     }
+
 }
