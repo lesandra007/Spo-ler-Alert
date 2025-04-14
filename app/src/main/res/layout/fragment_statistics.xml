@@ -1,17 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
     tools:context=".StatisticsFragment">
 
-    <!-- reuse the bottom_bar for all the main sections -->
-    <include layout="@layout/bottom_bar"/>
+    <TextView
+        android:id="@+id/grocery_list_title"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:gravity="center"
+        android:textAllCaps="true"
+        android:text="@string/app_name"
+        android:textSize="@dimen/title_size"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/textView3"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Statistics Fragment" />
+        android:text="YOUR STATISTICS"
+        android:textAlignment="center"/>
 
-</FrameLayout>
+    <com.github.mikephil.charting.charts.BarChart
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/barchart"/>
+
+    <include layout="@layout/bottom_bar"/>
+
+</LinearLayout>
