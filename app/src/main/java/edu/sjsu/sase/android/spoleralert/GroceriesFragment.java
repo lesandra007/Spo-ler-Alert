@@ -36,8 +36,6 @@ public class GroceriesFragment extends Fragment {
     private GroceryDatabase groceries_db;
     private RecyclerView grocery_list_rv;
 
-    //private CalendarView expiration_cal;
-
     private ZoneId timezone = ZoneId.systemDefault();
 
     private static final long EXPIRING_SOON_UPPER_BOUND_MILLI = TimeUnit.DAYS.toMillis(1);
@@ -72,9 +70,6 @@ public class GroceriesFragment extends Fragment {
         GroceriesSublistAdapter empty_groceries_sublist_adapter = new GroceriesSublistAdapter(new ArrayList<Pair<String, ArrayList<Grocery>>>());
         //initially set the adapter to the adapter created with the empty list
         grocery_list_rv.setAdapter(empty_groceries_sublist_adapter);
-
-        //get calendar object
-        //expiration_cal = groceries_view.findViewById(R.id.item_expiration_calendar);
 
         //*********** Implement grocery sorting dropdown menu **************
         //populate grocery sorting (gs) dropdown with choices
@@ -145,11 +140,6 @@ public class GroceriesFragment extends Fragment {
     }
 
     //method to create ArrayList of groceries sorted by alphabetical order
-    //and then create a new GroceriesAdapter by passing in that alphabetical list
-    //and possibly other variables if i need to
-    //will the view update the moment setadapter is set?
-    //probbaly use swapAdapter to change the items in the displayed list
-    //gets called when dropdown menu is set to alphabetical
     public void showByAlphabetical(){
 //        //so there needs to be a method to get all the items in the groceries database
 //        ArrayList<Grocery> alphabetical_groceries = groceries_db.getGroceriesAlphabetical();
@@ -230,8 +220,6 @@ public class GroceriesFragment extends Fragment {
 
         //create the fresh thresholds
         long fresh_lower_threshold = today_milli + FRESH_LOWER_BOUND_MILLI;
-        //the max of Fresh would be the max possible date on the calendar
-        //long fresh_upper_threshold = expiration_cal.getMaxDate();
         long fresh_upper_threshold = Long.MAX_VALUE;
 
         //create the arraylists for each type of grocery
@@ -243,9 +231,6 @@ public class GroceriesFragment extends Fragment {
         expiration_date_sublist.add(new Pair<>("Ready", ready_groceries));
         expiration_date_sublist.add(new Pair<>("Fresh", fresh_groceries));
 
-        Log.d("SHOW_BY_EXPIRATION", "size of groceries: " + expiring_soon_groceries.size());
-
-        //not implemented yet, so keep it empty for now
         GroceriesSublistAdapter expiration_date_groceries_adapter = new GroceriesSublistAdapter(expiration_date_sublist);
         grocery_list_rv.setAdapter(expiration_date_groceries_adapter);
 

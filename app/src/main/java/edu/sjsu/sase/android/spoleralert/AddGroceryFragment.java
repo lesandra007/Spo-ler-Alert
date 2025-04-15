@@ -120,7 +120,6 @@ public class AddGroceryFragment extends Fragment {
         add_groceries_view.findViewById(R.id.add_item_add_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //Log.d("ADD_GROCERY_BUTTON", "User tapped the add button");
                 addGrocery(add_groceries_view);
                 controller.navigate(R.id.action_addGroceryFragment_to_groceriesFragment);
             }
@@ -141,7 +140,6 @@ public class AddGroceryFragment extends Fragment {
         EditText ounces_et = view.findViewById(R.id.item_ounces_input);
         EditText price_et = view.findViewById(R.id.item_price_input);
         CheckBox freezer_check = view.findViewById(R.id.item_freezer_checkbox);
-        //CalendarView expiration_cal = view.findViewById(R.id.item_expiration_calendar);
 
         //get the values from the textboxes/dropdown/checkbox/calendar
         String name = name_et.getText().toString();
@@ -154,9 +152,6 @@ public class AddGroceryFragment extends Fragment {
         long expiration_milli = expiration_date.atStartOfDay(timezone).toInstant().toEpochMilli();
         long today_milli = current_date.atStartOfDay(timezone).toInstant().toEpochMilli();
         boolean is_expired = today_milli > expiration_milli;
-        //not sure if the milliseconds would be off due to timezones
-        //i think expiration_milli is based on device's timezone
-        //and today_milli is based on UTC timezone
 
         //create and populate the ContentValues object to pass into the insertGroceries() method
         ContentValues vals = new ContentValues();
@@ -172,19 +167,5 @@ public class AddGroceryFragment extends Fragment {
 
         //insert grocery into groceries database
         groceries_db.insertGrocery(vals);
-
-        Log.d("ADD_GROCERY_BUTTON", "Groceries have been inserted");
-        //Log.d("ADD_GROCERY_BUTTON", "Calendar.GetInstance() Timezone: " + Calendar.getInstance().getTimeZone());
-
-        //check what date expiration_milli represents using Java Date
-        LocalDate expiration_date_java = Instant.ofEpochMilli(expiration_milli).atZone(timezone).toLocalDate();
-        Log.d("ADD_GROCERY_BUTTON", "Expiration Date: " + expiration_date_java.toString());
-        Log.d("ADD_GROCERY_BUTTON", "Expiration Milli: " + expiration_date_java.atStartOfDay(timezone).toInstant().toEpochMilli());
-        LocalDate today_date_java = Instant.ofEpochMilli(today_milli).atZone(timezone).toLocalDate();
-        Log.d("ADD_GROCERY_BUTTON", "Today Date: " + today_date_java.toString());
-        Log.d("ADD_GROCERY_BUTTON", "Expiration Milli: " + today_date_java.atStartOfDay(timezone).toInstant().toEpochMilli());
-
-
-
     }
 }

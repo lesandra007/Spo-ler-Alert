@@ -85,9 +85,6 @@ public class GroceryDatabase extends SQLiteOpenHelper {
         boolean is_expired = expiration_status == 1;
         LocalDate expiration_date = Instant.ofEpochMilli(expiration_milli).atZone(timezone).toLocalDate();
 
-        //check what date expiration_milli represents using Java Date
-        Log.d("CREATE_GROCERY", "Expiration Milli: " + expiration_milli + "For Grocery: " + name);
-        Log.d("CREATE_GROCERY", "Expiration Date: " + expiration_date.toString() + "For Grocery: " + name);
         //create the Grocery object
         return new Grocery(name, food_group, quantity,
                 pounds, ounces, price,
@@ -163,8 +160,7 @@ public class GroceryDatabase extends SQLiteOpenHelper {
 
 
     /**
-     * Method to retrieve groceries that expire in 1 day (TBD)
-     * lol i think it works now that im using LocalDate
+     * Method to retrieve groceries based on upper and lower time thresholds
      */
     public ArrayList<Grocery> getGroceriesExpirationDate(long lower_thresh, long upper_thresh){
         SQLiteDatabase groceries_db = getReadableDatabase();
@@ -194,20 +190,6 @@ public class GroceryDatabase extends SQLiteOpenHelper {
 
         return expiration_date_groceries;
     }
-
-//    /**
-//     * Method to retrieve groceries that expire in 2-7 days (TBD)
-//     */
-//    public Cursor getReadyToUseGroceries(){
-//
-//    }
-
-//    /**
-//     * Method to retrieve groceries that expire in over a week (TBD)
-//     */
-//    public Cursor getFreshGroceries(){
-//
-//    }
 
 
     //there will probably also be a method to remove an item from the groceries table
