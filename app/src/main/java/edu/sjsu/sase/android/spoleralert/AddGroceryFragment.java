@@ -1,11 +1,14 @@
 package edu.sjsu.sase.android.spoleralert;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkManager;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -18,6 +21,9 @@ import static edu.sjsu.sase.android.spoleralert.GroceryDBSchema.GroceryDBColumns
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
+
+import edu.sjsu.sase.android.spoleralert.notifications.NotificationWorker;
 
 ///**
 // * A simple {@link Fragment} subclass.
@@ -27,6 +33,7 @@ import java.util.Objects;
 public class AddGroceryFragment extends Fragment {
 
     private GroceryDatabase groceries_db;
+    Calendar selectedDate;
 
 //    // TODO: Rename parameter arguments, choose names that match
 //    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -94,14 +101,30 @@ public class AddGroceryFragment extends Fragment {
             }
         });
 
+        CalendarView calendarView = add_groceries_view.findViewById(R.id.item_expiration_calendar);
+        calendarView.setOnDateChangeListener((view, year, month, dayOfMonth) -> {
+            // create instance
+            selectedDate = Calendar.getInstance();
+            // set year, month, day of month for the selected date
+            selectedDate.set(year, month, dayOfMonth);
+        });
+
         //add button functionality
         //add_groceries_view.findViewById(R.id.add_item_add_button).setOnClickListener(this::addGrocery);
         add_groceries_view.findViewById(R.id.add_item_add_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //Log.d("ADD_GROCERY_BUTTON", "User tapped the add button");
-                addGrocery(add_groceries_view);
-                controller.navigate(R.id.action_addGroceryFragment_to_groceriesFragment);
+                if (selectedDate != null) {
+                    //Log.d("ADD_GROCERY_BUTTON", "User tapped the add button");
+                    addGrocery(add_groceries_view);
+                    // schedule reminder
+                    scheduleReminder(add_groceries_view, getContext());
+                    // navigate
+                    controller.navigate(R.id.action_addGroceryFragment_to_groceriesFragment);
+                }
+                else{
+                    Toast.makeText(getContext(), "Please select a date", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
@@ -155,5 +178,49 @@ public class AddGroceryFragment extends Fragment {
         Log.d("ADD_GROCERY_BUTTON", "Groceries have been inserted");
 
 
+    }
+
+    public void scheduleReminder(View view, Context context) {
+        if (selectedDate == null) {
+            Log.e("schedule reminder", "selected date is null");
+            return;
+        }
+        OneTimeWorkRequest reminderRequest = null;
+        if (isToday(selectedDate)){
+            reminderRequest = new OneTimeWorkRequest.Builder(NotificationWorker.class)
+                    .setInitialDelay(0, TimeUnit.SECONDS) // Delay for 1 second
+                    .build();
+        }
+        else {
+            Calendar today = Calendar.getInstance();
+            // Calculate the delay in milliseconds
+            long delayInMillis = selectedDate.getTimeInMillis() - today.getTimeInMillis();
+
+            if (delayInMillis > 0) {
+                // Convert the delay to minutes
+                long delayInMinutes = TimeUnit.MILLISECONDS.toMinutes(delayInMillis);
+
+                // Create a WorkManager request with the calculated delay
+                reminderRequest = new OneTimeWorkRequest.Builder(NotificationWorker.class)
+                        .setInitialDelay(delayInMinutes, TimeUnit.MINUTES) // Set the calculated delay
+                        .build();
+
+                WorkManager.getInstance(context).enqueue(reminderRequest);
+            } else {
+                // Handle past dates
+                Toast.makeText(context, "Selected date is in the past. Please choose a future date.", Toast.LENGTH_SHORT).show();
+            }
+
+        }
+        assert reminderRequest != null;
+        WorkManager.getInstance(context).enqueue(reminderRequest);
+    }
+
+    public boolean isToday(Calendar date) {
+        Calendar today = Calendar.getInstance();
+
+        return date.get(Calendar.YEAR) == today.get(Calendar.YEAR) &&
+                date.get(Calendar.MONTH) == today.get(Calendar.MONTH) &&
+                date.get(Calendar.DAY_OF_MONTH) == today.get(Calendar.DAY_OF_MONTH);
     }
 }
