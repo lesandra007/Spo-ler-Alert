@@ -84,9 +84,6 @@ public class AddGroceryFragment extends Fragment {
         NavController controller = NavHostFragment.findNavController(this);
 
         // ********** get the current date at 12:00AM ***************
-//        current_date.set(current_date.get(Calendar.YEAR), current_date.get(Calendar.MONTH), current_date.get(Calendar.DAY_OF_MONTH), 0, 0, 0);
-//        current_date.set(Calendar.MILLISECOND, 0);
-//        Log.d("SELECT_EXPIRATION_DATE", "Select Expiration Date: " + current_date.getTimeInMillis());
         LocalDate.now(timezone);
 
         //************* populate food groups spinner with choices ************
@@ -105,9 +102,6 @@ public class AddGroceryFragment extends Fragment {
             @Override
             public void onSelectedDayChange(@NonNull CalendarView view, int year, int month, int dayOfMonth) {
                 //sets the expiration date as the year/month/day at 12:00AM
-//                expiration_date.set(year, month, dayOfMonth, 0, 0, 0);
-//                expiration_date.set(Calendar.MILLISECOND, 0);
-//                Log.d("SELECT_EXPIRATION_DATE", "Select Expiration Date: " + expiration_date.getTimeInMillis());
                 //CalendarView month is 0-11, LocalDate month is 1-12
                 //so add +1 to the month param to create LocalDate
                 expiration_date = LocalDate.of(year, month+1, dayOfMonth);

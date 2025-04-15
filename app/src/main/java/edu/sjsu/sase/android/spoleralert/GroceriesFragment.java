@@ -15,9 +15,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.CalendarView;
 import android.widget.Spinner;
 
 import java.lang.reflect.Array;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -32,6 +35,15 @@ public class GroceriesFragment extends Fragment {
 
     private GroceryDatabase groceries_db;
     private RecyclerView grocery_list_rv;
+
+    //private CalendarView expiration_cal;
+
+    private ZoneId timezone = ZoneId.systemDefault();
+
+    private static final long EXPIRING_SOON_UPPER_BOUND_MILLI = TimeUnit.DAYS.toMillis(1);
+    private static final long READY_TO_USE_LOWER_BOUND_MILLI = TimeUnit.DAYS.toMillis(2);
+    private static final long READY_TO_USE_UPPER_BOUND_MILLI = TimeUnit.DAYS.toMillis(7);
+    private static final long FRESH_LOWER_BOUND_MILLI = TimeUnit.DAYS.toMillis(8);
 
 
     public GroceriesFragment() {
@@ -60,6 +72,9 @@ public class GroceriesFragment extends Fragment {
         GroceriesSublistAdapter empty_groceries_sublist_adapter = new GroceriesSublistAdapter(new ArrayList<Pair<String, ArrayList<Grocery>>>());
         //initially set the adapter to the adapter created with the empty list
         grocery_list_rv.setAdapter(empty_groceries_sublist_adapter);
+
+        //get calendar object
+        //expiration_cal = groceries_view.findViewById(R.id.item_expiration_calendar);
 
         //*********** Implement grocery sorting dropdown menu **************
         //populate grocery sorting (gs) dropdown with choices
@@ -197,41 +212,41 @@ public class GroceriesFragment extends Fragment {
     //method to create ArrayList of groceries sorted by expiration date
     public void showByExpirationDate(){
         //TODO: Should we show expired items in the grocery list? The ex. only has unexpired items...
-//        //set the current_date to the current date at 12:00AM
-//        Calendar current_date = Calendar.getInstance();
-//        current_date.set(current_date.get(Calendar.YEAR), current_date.get(Calendar.MONTH), current_date.get(Calendar.DAY_OF_MONTH), 0, 0, 0);
-//
-//        //get today's date at 12:00AM to milliseconds
-//        long today_milli = current_date.getTimeInMillis();
-//
-//        //create the thresholds
-//        Date expiring_soon_upper_thresh = new Date(today_milli + TimeUnit.DAYS.toMillis(1));
-//        Log.d("GET_EXPIRY", "Upper Thresh: " + expiring_soon_upper_thresh.getTime());
-//        Date expiring_soon_lower_thresh = new Date(today_milli);
-//        Log.d("GET_EXPIRY", "Lower Thresh: " + expiring_soon_lower_thresh.getTime());
-//        Date today_date_java = new Date(today_milli);
-//        Log.d("GET_EXPIRY", "Today Date: " + today_date_java.getTime());
-//
-//        ArrayList<Grocery> alphabetical_groceries = groceries_db.getGroceriesAlphabetical();
-//
-//        ArrayList<Grocery> expiring_soon_groceries = new ArrayList<Grocery>();
-//
-//        //loop through the arraylist and sort based on expiration date
-//        for (Grocery g : alphabetical_groceries){
-//            //get the grocery's expiration date
-//            Date expiration_date = g.getExpirationDate();
-//            Log.d("GET_EXPIRY", "Expiration Date: " + expiration_date.getTime() + "For: " + g.getName());
-//            if ((expiration_date.compareTo(expiring_soon_lower_thresh) >= 0) && (expiration_date.compareTo(expiring_soon_upper_thresh) <= 0)){
-//                expiring_soon_groceries.add(g);
-//            }
-//
-//        }
+        ArrayList<Pair<String, ArrayList<Grocery>>> expiration_date_sublist = new ArrayList<Pair<String, ArrayList<Grocery>>>();
 
-        ArrayList<Grocery> expiring_soon_groceries = groceries_db.getExpiringSoonGroceries();
+        //set the current_date to the current date at 12:00AM
+        LocalDate current_date = LocalDate.now();
+        //convert today's date at 12:00AM to milliseconds
+        long today_milli = current_date.atStartOfDay(timezone).toInstant().toEpochMilli();
+        Log.d("GET_EXPIRY", "Current Milli: " + current_date.atStartOfDay(timezone).toInstant().toEpochMilli());
+
+        //create the expiring soon thresholds
+        long expiring_soon_upper_threshold = today_milli + EXPIRING_SOON_UPPER_BOUND_MILLI;
+        long expiring_soon_lower_threshold = today_milli;
+
+        //create the ready to use thresholds
+        long ready_upper_threshold = today_milli + READY_TO_USE_UPPER_BOUND_MILLI;
+        long ready_lower_threshold = today_milli + READY_TO_USE_LOWER_BOUND_MILLI;
+
+        //create the fresh thresholds
+        long fresh_lower_threshold = today_milli + FRESH_LOWER_BOUND_MILLI;
+        //the max of Fresh would be the max possible date on the calendar
+        //long fresh_upper_threshold = expiration_cal.getMaxDate();
+        long fresh_upper_threshold = Long.MAX_VALUE;
+
+        //create the arraylists for each type of grocery
+        ArrayList<Grocery> expiring_soon_groceries = groceries_db.getGroceriesExpirationDate(expiring_soon_lower_threshold, expiring_soon_upper_threshold);
+        ArrayList<Grocery> ready_groceries = groceries_db.getGroceriesExpirationDate(ready_lower_threshold, ready_upper_threshold);
+        ArrayList<Grocery> fresh_groceries = groceries_db.getGroceriesExpirationDate(fresh_lower_threshold, fresh_upper_threshold);
+
+        expiration_date_sublist.add(new Pair<>("Expiring Soon", expiring_soon_groceries));
+        expiration_date_sublist.add(new Pair<>("Ready", ready_groceries));
+        expiration_date_sublist.add(new Pair<>("Fresh", fresh_groceries));
+
         Log.d("SHOW_BY_EXPIRATION", "size of groceries: " + expiring_soon_groceries.size());
 
         //not implemented yet, so keep it empty for now
-        GroceriesAdapter expiration_date_groceries_adapter = new GroceriesAdapter(expiring_soon_groceries);
+        GroceriesSublistAdapter expiration_date_groceries_adapter = new GroceriesSublistAdapter(expiration_date_sublist);
         grocery_list_rv.setAdapter(expiration_date_groceries_adapter);
 
     }

@@ -24,13 +24,8 @@ public class GroceryDatabase extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "groceryDatabase";
     private static final int VERSION = 1;
-
     private ZoneId timezone = ZoneId.systemDefault();
 
-    private static final long EXPIRING_SOON_UPPER_BOUND_MILLI = TimeUnit.DAYS.toMillis(1);
-    private static final long READY_TO_USE_LOWER_BOUND_MILLI = TimeUnit.DAYS.toMillis(2);
-    private static final long READY_TO_USE_UPPER_BOUND_MILLI = TimeUnit.DAYS.toMillis(7);
-    private static final long FRESH_LOWER_BOUND_MILLI = TimeUnit.DAYS.toMillis(8);
     static final String CREATE_GROCERIES_TABLE = "CREATE TABLE " + TABLE_NAME + "(" +
                                                 ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                                                 GROCERY_NAME + " TEXT, " +
@@ -169,63 +164,23 @@ public class GroceryDatabase extends SQLiteOpenHelper {
 
     /**
      * Method to retrieve groceries that expire in 1 day (TBD)
-     * NOTE: FOR SOME REASON THIS METHOD IS WEIRDLY INCONSISTENT
-     * IT WILL SOMETIMES RETURN VALUES AND SOMETIMES NOT
-     * AND EVEN WHEN IT RETURNS VALUES, IT DOESNT RETURN ALL VALUES
-     * MIGHT COME BACK TO FIX THIS BUT MIGHT JUST BE BETTER TO COMPARE DATES
-     * USING THE RETURNED ARRAYLIST LATER ON
-     * MAYBE SOMETHING IS WEIRD WITH THE DB QUERY? IDK
+     * lol i think it works now that im using LocalDate
      */
-    public ArrayList<Grocery> getExpiringSoonGroceries(){
+    public ArrayList<Grocery> getGroceriesExpirationDate(long lower_thresh, long upper_thresh){
         SQLiteDatabase groceries_db = getReadableDatabase();
-        //long today_milli = Calendar.getInstance().getTimeInMillis();
-        //set the current_date to the current date at 12:00AM
-        LocalDate current_date = LocalDate.now();
-        Log.d("GET_EXPIRY", "Current Milli: " + current_date.atStartOfDay(timezone).toInstant().toEpochMilli());
-
-        //convert today's date at 12:00AM to milliseconds
-        long today_milli = current_date.atStartOfDay(timezone).toInstant().toEpochMilli();
-
-        //create the thresholds
-        long expiring_soon_upper_threshold = today_milli + EXPIRING_SOON_UPPER_BOUND_MILLI;
-        long expiring_soon_lower_threshold = today_milli;
 
         //check what date expiration_milli represents using Java Date
-        Date upper_thresh = new Date(expiring_soon_upper_threshold);
-        Log.d("GET_EXPIRY", "Upper Thresh: " + expiring_soon_upper_threshold);
-        Date lower_thresh = new Date(expiring_soon_lower_threshold);
-        Log.d("GET_EXPIRY", "Lower Thresh: " + expiring_soon_lower_threshold);
-        Date today_date_java = new Date(today_milli);
-        Log.d("GET_EXPIRY", "Today Date: " + today_milli);
-
-//        //we only want groceries between the thresholds, inclusive on both ends
-//        String selection = EXPIRATION_DATE + " BETWEEN ? AND ?";
-//        String[] selection_args = {""+expiring_soon_lower_threshold, ""+expiring_soon_upper_threshold};
-
-        //we want to get all columns,
-        // so we pass null as the second param (projection param)
-//        Cursor expiration_date_cursor = groceries_db.query(
-//                TABLE_NAME,
-//                null, //columns to return, null means return all columns
-//                selection, //columns for the where clause, column_name is represented by EXPIRATION_DATE
-//                selection_args, //values for the where clause, strings passed in are thresholds
-//                null, //groupBy, null for no groupBy clause
-//                null, //having, null for no having clause
-//                null //orderBy, null for no orderBy clause
-//        );
-
-//        Cursor expiration_date_cursor = groceries_db.rawQuery("SELECT * " +
-//                                                              " FROM " + TABLE_NAME +
-//                                                              " WHERE " + EXPIRATION_DATE +
-//                                                              " BETWEEN " + expiring_soon_lower_threshold +
-//                                                              " AND " + expiring_soon_upper_threshold, null);
+        Date upper_date = new Date(upper_thresh);
+        Log.d("GET_EXPIRY", "Upper Thresh: " + upper_thresh);
+        Date lower_date = new Date(lower_thresh);
+        Log.d("GET_EXPIRY", "Lower Thresh: " + lower_thresh);
 
         Cursor expiration_date_cursor = groceries_db.rawQuery(
                 "SELECT * " +
                 " FROM " + TABLE_NAME +
                 " WHERE " + EXPIRATION_DATE +
-                " BETWEEN " + expiring_soon_lower_threshold +
-                " AND " + expiring_soon_upper_threshold, null);
+                " BETWEEN " + lower_thresh +
+                " AND " + upper_thresh, null);
 
         //create the ArrayList to hold the groceries to return
         ArrayList<Grocery> expiration_date_groceries = new ArrayList<Grocery>();
@@ -238,8 +193,6 @@ public class GroceryDatabase extends SQLiteOpenHelper {
         }
 
         return expiration_date_groceries;
-
-
     }
 
 //    /**
