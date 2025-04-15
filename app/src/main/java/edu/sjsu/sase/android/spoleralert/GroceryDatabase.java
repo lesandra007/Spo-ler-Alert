@@ -7,7 +7,11 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -20,11 +24,8 @@ public class GroceryDatabase extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "groceryDatabase";
     private static final int VERSION = 1;
+    private ZoneId timezone = ZoneId.systemDefault();
 
-    private static final long EXPIRING_SOON_UPPER_BOUND_MILLI = TimeUnit.DAYS.toMillis(1);
-    private static final long READY_TO_USE_LOWER_BOUND_MILLI = TimeUnit.DAYS.toMillis(2);
-    private static final long READY_TO_USE_UPPER_BOUND_MILLI = TimeUnit.DAYS.toMillis(7);
-    private static final long FRESH_LOWER_BOUND_MILLI = TimeUnit.DAYS.toMillis(8);
     static final String CREATE_GROCERIES_TABLE = "CREATE TABLE " + TABLE_NAME + "(" +
                                                 ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                                                 GROCERY_NAME + " TEXT, " +
@@ -82,7 +83,7 @@ public class GroceryDatabase extends SQLiteOpenHelper {
                 cursor.getColumnIndexOrThrow(EXPIRATION_STATUS));
         boolean in_freezer = freezer_status == 1;
         boolean is_expired = expiration_status == 1;
-        Date expiration_date = new Date(expiration_milli);
+        LocalDate expiration_date = Instant.ofEpochMilli(expiration_milli).atZone(timezone).toLocalDate();
 
         //create the Grocery object
         return new Grocery(name, food_group, quantity,
@@ -158,29 +159,37 @@ public class GroceryDatabase extends SQLiteOpenHelper {
     }
 
 
-//    /**
-//     * Method to retrieve groceries that expire in 1 day (TBD)
-//     */
-//    public Cursor getExpiringSoonGroceries(){
-//        long today_milli = Calendar.getInstance().getTimeInMillis();
-//        long expiring_soon_current_threshold = today_milli + EXPIRING_SOON_UPPER_BOUND_MILLI;
-//        //anything equal to or less then that threshold is considered expiring soon
-//
-//    }
+    /**
+     * Method to retrieve groceries based on upper and lower time thresholds
+     */
+    public ArrayList<Grocery> getGroceriesExpirationDate(long lower_thresh, long upper_thresh){
+        SQLiteDatabase groceries_db = getReadableDatabase();
 
-//    /**
-//     * Method to retrieve groceries that expire in 2-7 days (TBD)
-//     */
-//    public Cursor getReadyToUseGroceries(){
-//
-//    }
+        //check what date expiration_milli represents using Java Date
+        Date upper_date = new Date(upper_thresh);
+        Log.d("GET_EXPIRY", "Upper Thresh: " + upper_thresh);
+        Date lower_date = new Date(lower_thresh);
+        Log.d("GET_EXPIRY", "Lower Thresh: " + lower_thresh);
 
-//    /**
-//     * Method to retrieve groceries that expire in over a week (TBD)
-//     */
-//    public Cursor getFreshGroceries(){
-//
-//    }
+        Cursor expiration_date_cursor = groceries_db.rawQuery(
+                "SELECT * " +
+                " FROM " + TABLE_NAME +
+                " WHERE " + EXPIRATION_DATE +
+                " BETWEEN " + lower_thresh +
+                " AND " + upper_thresh, null);
+
+        //create the ArrayList to hold the groceries to return
+        ArrayList<Grocery> expiration_date_groceries = new ArrayList<Grocery>();
+
+        //now, iterate over all the rows in the returned Cursor
+        //to create each grocery and add it to the arraylist
+        while (expiration_date_cursor.moveToNext()){
+            Grocery new_grocery = createGroceryFromDbRow(expiration_date_cursor);
+            expiration_date_groceries.add(new_grocery);
+        }
+
+        return expiration_date_groceries;
+    }
 
 
     //there will probably also be a method to remove an item from the groceries table
