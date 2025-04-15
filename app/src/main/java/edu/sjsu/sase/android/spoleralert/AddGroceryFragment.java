@@ -16,6 +16,7 @@ import android.widget.*;
 import static edu.sjsu.sase.android.spoleralert.GroceryDBSchema.GroceryDBColumns.*;
 
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Objects;
 
 ///**
@@ -132,10 +133,13 @@ public class AddGroceryFragment extends Fragment {
         long expiration_milli = expiration_cal.getDate();
         long today_milli = Calendar.getInstance().getTimeInMillis();
         boolean is_expired = today_milli > expiration_milli;
+        //not sure if the milliseconds would be off due to timezones
+        //i think expiration_milli is based on device's timezone
+        //and today_milli is based on UTC timezone
 
         //create and populate the ContentValues object to pass into the insertGroceries() method
         ContentValues vals = new ContentValues();
-        vals.put(NAME, name);
+        vals.put(GROCERY_NAME, name);
         vals.put(FOOD_GROUP, food_group);
         vals.put(QUANTITY, quantity);
         vals.put(POUNDS, pounds);
@@ -148,7 +152,7 @@ public class AddGroceryFragment extends Fragment {
         //insert grocery into groceries database
         groceries_db.insertGrocery(vals);
 
-        //Log.d("ADD_GROCERY_BUTTON", "Groceries have been inserted");
+        Log.d("ADD_GROCERY_BUTTON", "Groceries have been inserted");
 
 
     }
