@@ -1,5 +1,7 @@
 package edu.sjsu.sase.android.spoleralert;
 
+import java.time.LocalDate;
+import java.util.Calendar;
 import java.util.Date;
 
 public class Grocery {
@@ -10,12 +12,12 @@ public class Grocery {
     private int ounces;
     private double price;
     private boolean in_freezer;
-    private Date expiration_date;
+    private LocalDate expiration_date;
     private boolean has_expired;
 
     public Grocery(String name, String food_group, double quantity,
                    int pounds, int ounces, double price,
-                   boolean in_freezer, Date expiration_date, boolean has_expired){
+                   boolean in_freezer, LocalDate expiration_date, boolean has_expired){
         this.name = name;
         this.food_group = food_group;
         this.quantity = quantity;
@@ -29,6 +31,9 @@ public class Grocery {
 
     public String getName(){
         return name;
+    }
+    public LocalDate getExpirationDate(){
+        return expiration_date;
     }
 
 }

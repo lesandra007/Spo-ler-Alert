@@ -19,6 +19,9 @@ import android.widget.Spinner;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 ///**
 // * A simple {@link Fragment} subclass.
@@ -193,8 +196,42 @@ public class GroceriesFragment extends Fragment {
 
     //method to create ArrayList of groceries sorted by expiration date
     public void showByExpirationDate(){
+        //TODO: Should we show expired items in the grocery list? The ex. only has unexpired items...
+//        //set the current_date to the current date at 12:00AM
+//        Calendar current_date = Calendar.getInstance();
+//        current_date.set(current_date.get(Calendar.YEAR), current_date.get(Calendar.MONTH), current_date.get(Calendar.DAY_OF_MONTH), 0, 0, 0);
+//
+//        //get today's date at 12:00AM to milliseconds
+//        long today_milli = current_date.getTimeInMillis();
+//
+//        //create the thresholds
+//        Date expiring_soon_upper_thresh = new Date(today_milli + TimeUnit.DAYS.toMillis(1));
+//        Log.d("GET_EXPIRY", "Upper Thresh: " + expiring_soon_upper_thresh.getTime());
+//        Date expiring_soon_lower_thresh = new Date(today_milli);
+//        Log.d("GET_EXPIRY", "Lower Thresh: " + expiring_soon_lower_thresh.getTime());
+//        Date today_date_java = new Date(today_milli);
+//        Log.d("GET_EXPIRY", "Today Date: " + today_date_java.getTime());
+//
+//        ArrayList<Grocery> alphabetical_groceries = groceries_db.getGroceriesAlphabetical();
+//
+//        ArrayList<Grocery> expiring_soon_groceries = new ArrayList<Grocery>();
+//
+//        //loop through the arraylist and sort based on expiration date
+//        for (Grocery g : alphabetical_groceries){
+//            //get the grocery's expiration date
+//            Date expiration_date = g.getExpirationDate();
+//            Log.d("GET_EXPIRY", "Expiration Date: " + expiration_date.getTime() + "For: " + g.getName());
+//            if ((expiration_date.compareTo(expiring_soon_lower_thresh) >= 0) && (expiration_date.compareTo(expiring_soon_upper_thresh) <= 0)){
+//                expiring_soon_groceries.add(g);
+//            }
+//
+//        }
+
+        ArrayList<Grocery> expiring_soon_groceries = groceries_db.getExpiringSoonGroceries();
+        Log.d("SHOW_BY_EXPIRATION", "size of groceries: " + expiring_soon_groceries.size());
+
         //not implemented yet, so keep it empty for now
-        GroceriesAdapter expiration_date_groceries_adapter = new GroceriesAdapter(new ArrayList<Grocery>());
+        GroceriesAdapter expiration_date_groceries_adapter = new GroceriesAdapter(expiring_soon_groceries);
         grocery_list_rv.setAdapter(expiration_date_groceries_adapter);
 
     }
