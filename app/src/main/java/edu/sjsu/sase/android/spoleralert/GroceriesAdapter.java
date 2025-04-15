@@ -4,7 +4,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
-import androidx.annotation.NonNull;
 import android.view.View;
 import android.widget.TextView;
 
@@ -15,16 +14,16 @@ import java.util.ArrayList;
 public class GroceriesAdapter extends RecyclerView.Adapter<GroceriesAdapter.ViewHolder>{
     private ArrayList<Grocery> groceries;
 
+    public GroceriesAdapter(ArrayList<Grocery> groceries_data){
+        groceries = groceries_data;
+    }
+
     //maybe a variable for grocery list sorting type?
 
     /**
      * ViewHolder class which holds the data for each item in the list
      */
     public static class ViewHolder extends RecyclerView.ViewHolder {
-//        public ViewHolder(View view) {
-//            super(view);
-//        }
-
         /*
         ------ Temporary viewholder code for testing -------
         Taken from the official Android Studio tutorial
@@ -41,10 +40,6 @@ public class GroceriesAdapter extends RecyclerView.Adapter<GroceriesAdapter.View
         public TextView getTextView() {
             return textView;
         }
-    }
-
-    public GroceriesAdapter(ArrayList<Grocery> groceries_data){
-        groceries = groceries_data;
     }
 
     //public GroceriesAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -83,7 +78,7 @@ public class GroceriesAdapter extends RecyclerView.Adapter<GroceriesAdapter.View
 
         holder.getTextView().setText(grocery_name);
 
-        Log.d("BIND_VIEW_HOLDER", "Entered Bind View Holder: " + grocery_name);
+        Log.d("GROCERIES_ADAPTER_BIND_VIEW_HOLDER", "Entered Bind View Holder: " + grocery_name);
 
 
     }

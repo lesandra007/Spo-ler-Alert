@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +17,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 ///**
@@ -28,45 +30,15 @@ public class GroceriesFragment extends Fragment {
     private GroceryDatabase groceries_db;
     private RecyclerView grocery_list_rv;
 
-//    // TODO: Rename parameter arguments, choose names that match
-//    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-//    private static final String ARG_PARAM1 = "param1";
-//    private static final String ARG_PARAM2 = "param2";
-//
-//    // TODO: Rename and change types of parameters
-//    private String mParam1;
-//    private String mParam2;
 
     public GroceriesFragment() {
         // Required empty public constructor
     }
 
-//    /**
-//     * Use this factory method to create a new instance of
-//     * this fragment using the provided parameters.
-//     *
-//     * @param param1 Parameter 1.
-//     * @param param2 Parameter 2.
-//     * @return A new instance of fragment GroceriesFragment.
-//     */
-//    // TODO: Rename and change types and number of parameters
-//    public static GroceriesFragment newInstance(String param1, String param2) {
-//        GroceriesFragment fragment = new GroceriesFragment();
-//        Bundle args = new Bundle();
-//        args.putString(ARG_PARAM1, param1);
-//        args.putString(ARG_PARAM2, param2);
-//        fragment.setArguments(args);
-//        return fragment;
-//    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         groceries_db = new GroceryDatabase(getContext());
-//        if (getArguments() != null) {
-//            mParam1 = getArguments().getString(ARG_PARAM1);
-//            mParam2 = getArguments().getString(ARG_PARAM2);
-//        }
     }
 
     @Override
@@ -81,9 +53,10 @@ public class GroceriesFragment extends Fragment {
         grocery_list_rv = groceries_view.findViewById(R.id.grocery_list_area);
         grocery_list_rv.setLayoutManager(new LinearLayoutManager(requireContext()));
         //create an empty adapter
-        GroceriesAdapter empty_groceries_adapter = new GroceriesAdapter(new ArrayList<Grocery>());
+        //GroceriesAdapter empty_groceries_adapter = new GroceriesAdapter(new ArrayList<Grocery>());
+        GroceriesSublistAdapter empty_groceries_sublist_adapter = new GroceriesSublistAdapter(new ArrayList<Pair<String, ArrayList<Grocery>>>());
         //initially set the adapter to the adapter created with the empty list
-        grocery_list_rv.setAdapter(empty_groceries_adapter);
+        grocery_list_rv.setAdapter(empty_groceries_sublist_adapter);
 
         //*********** Implement grocery sorting dropdown menu **************
         //populate grocery sorting (gs) dropdown with choices
@@ -100,7 +73,6 @@ public class GroceriesFragment extends Fragment {
         gs_dropdown.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                //String sorting_type = gs_dropdown.getSelectedItem().toString();
                 String sorting_type = parent.getItemAtPosition(position).toString();
                 //call a different method to swap the adapter based on sorting_type
                 if (sorting_type.equals("Alphabetical")){
@@ -119,18 +91,7 @@ public class GroceriesFragment extends Fragment {
             }
         });
 
-        //populate the view based on what sorting type the dropdown menu is currently on
-        //String sorting_type = gs_dropdown.getSelectedItem().toString();
-
-
-
-        //grocery_list_rv.setAdapter();
-
-        //and then everytime you change the list, you have to set the adapter with
-        //the new type of sorting?
-
-        //so there should be methods here that get called when you switch the dropdown
-
+        //*********** ADD GROCERIES BUTTON NAVIGATION **************
         //clicking on the bottom right plus button (to add groceries)
         groceries_view.findViewById(R.id.add_groceries_button).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -139,6 +100,7 @@ public class GroceriesFragment extends Fragment {
             }
         });
 
+        //*************** BOTTOM BAR BUTTON NAVIGATION ***************
         //clicking on the buttons in the bottom bar to go to the different main parts of the app
         groceries_view.findViewById(R.id.grocery_list_bottom_bar).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -171,24 +133,61 @@ public class GroceriesFragment extends Fragment {
     //probbaly use swapAdapter to change the items in the displayed list
     //gets called when dropdown menu is set to alphabetical
     public void showByAlphabetical(){
+//        //so there needs to be a method to get all the items in the groceries database
+//        ArrayList<Grocery> alphabetical_groceries = groceries_db.getGroceriesAlphabetical();
+//        Log.d("SHOW_BY_ALPHABETICAL", "size of groceries: " + alphabetical_groceries.size());
+//
+//        //create the sublist for alphabetical, where the label is an empty string
+//        Pair<String, ArrayList<Grocery>> alphabetical_pair = new Pair<>("", alphabetical_groceries);
+//        ArrayList<Pair<String, ArrayList<Grocery>>> alphabetical_sublist = new ArrayList<Pair<String, ArrayList<Grocery>>>();
+//        alphabetical_sublist.add(alphabetical_pair);
+//
+//        //create the new adapter based on this alphabetical_sublist
+//        GroceriesSublistAdapter alphabetical_groceries_adapter = new GroceriesSublistAdapter(alphabetical_sublist);
+//        grocery_list_rv.swapAdapter(alphabetical_groceries_adapter, false);
+//        //might change to true for second param if false doesn't work?
+
+        // ^ if i want to include labels for each letter, i can do it using the sublist and copy food_groups
+        //and then just use swapadapter later
+
+        // v But if we dont want to include labels for each letter, then we have to use setadapter instead of swapadapter
+        //since using a sublist with an empty string as the label adds an extra space for the empty label
+
         //so there needs to be a method to get all the items in the groceries database
         ArrayList<Grocery> alphabetical_groceries = groceries_db.getGroceriesAlphabetical();
         Log.d("SHOW_BY_ALPHABETICAL", "size of groceries: " + alphabetical_groceries.size());
         //create the new adapter based on this alphabetical_groceries
         GroceriesAdapter alphabetical_groceries_adapter = new GroceriesAdapter(alphabetical_groceries);
-        grocery_list_rv.swapAdapter(alphabetical_groceries_adapter, false);
+        //grocery_list_rv.swapAdapter(alphabetical_groceries_adapter, false);
         //might change to true for second param if false doesn't work?
+        grocery_list_rv.setAdapter(alphabetical_groceries_adapter);
 
     }
 
     //method to create ArrayList of groceries sorted by food group
     public void showByFoodGroup(){
-        //not implemented yet, so keep it empty for now
-        //so there needs to be a method to get all the items in the groceries database
-        //ArrayList<Grocery> alphabetical_groceries = groceries_db.getGroceriesAlphabetical();
-        //create the new adapter based on this alphabetical_groceries
-        GroceriesAdapter food_group_groceries_adapter = new GroceriesAdapter(new ArrayList<Grocery>());
-        grocery_list_rv.swapAdapter(food_group_groceries_adapter, false);
+        //ArrayList to hold the Pairs for each food group
+        ArrayList<Pair<String, ArrayList<Grocery>>> food_group_sublist = new ArrayList<Pair<String, ArrayList<Grocery>>>();
+
+        //list of strings for us to loop through
+        String[] food_group_names = {"Fruits", "Vegetables", "Grains", "Protein", "Dairy"};
+
+        //loop over all food groups to call the database method
+        //that returns the arraylist of groceries for each sublist
+        for (String fg_name : food_group_names){
+            //get the groceries from the database based on the food group name
+            ArrayList<Grocery> fg_groceries = groceries_db.getGroceriesFoodGroup(fg_name);
+            Pair<String, ArrayList<Grocery>> fg_pair = new Pair<>(fg_name, fg_groceries);
+            food_group_sublist.add(fg_pair);
+            Log.d("SHOW_BY_FOOD_GROUP", "size of fg groceries: " + fg_groceries.size());
+        }
+
+        Log.d("SHOW_BY_FOOD_GROUP", "size of sublist: " + food_group_sublist.size());
+
+        //create the new adapter based on food_group_sublist
+        GroceriesSublistAdapter food_group_groceries_adapter = new GroceriesSublistAdapter(food_group_sublist);
+//        grocery_list_rv.swapAdapter(food_group_groceries_adapter, false);
+        grocery_list_rv.setAdapter(food_group_groceries_adapter);
 
     }
 
@@ -196,12 +195,8 @@ public class GroceriesFragment extends Fragment {
     public void showByExpirationDate(){
         //not implemented yet, so keep it empty for now
         GroceriesAdapter expiration_date_groceries_adapter = new GroceriesAdapter(new ArrayList<Grocery>());
-        grocery_list_rv.swapAdapter(expiration_date_groceries_adapter, false);
-
+        grocery_list_rv.setAdapter(expiration_date_groceries_adapter);
 
     }
-
-    //method to switch between sorting types
-
 
 }
