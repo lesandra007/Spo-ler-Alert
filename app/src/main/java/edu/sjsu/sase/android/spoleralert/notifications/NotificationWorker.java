@@ -19,6 +19,9 @@ public class NotificationWorker extends Worker {
     @NonNull
     @Override
     public Result doWork() {
+        // Retrieve the custom string from input data
+        String customMessage = getInputData().getString("custom_message");
+
         // Logic to show the notification
         NotificationManager manager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
 
@@ -30,7 +33,7 @@ public class NotificationWorker extends Worker {
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), "reminder_channel")
                 .setContentTitle("Reminder!")
-                .setContentText("This is your scheduled reminder.")
+                .setContentText(customMessage != null ? customMessage : "This is your scheduled reminder.")
                 .setSmallIcon(R.drawable.spoiler_alert_logo)
                 .setPriority(NotificationCompat.PRIORITY_HIGH);
 

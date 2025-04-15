@@ -7,6 +7,7 @@ import android.os.Bundle;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
+import androidx.work.Data;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
 
@@ -186,9 +187,15 @@ public class AddGroceryFragment extends Fragment {
             return;
         }
         OneTimeWorkRequest reminderRequest = null;
+        // Create the input data to pass to the worker
+        Data inputData = new Data.Builder()
+                .putString("custom_message", "custom message to pass here")
+                .build();
+
         if (isToday(selectedDate)){
             reminderRequest = new OneTimeWorkRequest.Builder(NotificationWorker.class)
                     .setInitialDelay(0, TimeUnit.SECONDS) // Delay for 1 second
+                    .setInputData(inputData) // Pass the data to the worker
                     .build();
         }
         else {
