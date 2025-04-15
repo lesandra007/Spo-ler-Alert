@@ -15,10 +15,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.CalendarView;
 import android.widget.Spinner;
 
 import java.lang.reflect.Array;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 ///**
 // * A simple {@link Fragment} subclass.
@@ -29,6 +35,13 @@ public class GroceriesFragment extends Fragment {
 
     private GroceryDatabase groceries_db;
     private RecyclerView grocery_list_rv;
+
+    private ZoneId timezone = ZoneId.systemDefault();
+
+    private static final long EXPIRING_SOON_UPPER_BOUND_MILLI = TimeUnit.DAYS.toMillis(1);
+    private static final long READY_TO_USE_LOWER_BOUND_MILLI = TimeUnit.DAYS.toMillis(2);
+    private static final long READY_TO_USE_UPPER_BOUND_MILLI = TimeUnit.DAYS.toMillis(7);
+    private static final long FRESH_LOWER_BOUND_MILLI = TimeUnit.DAYS.toMillis(8);
 
 
     public GroceriesFragment() {
@@ -127,11 +140,6 @@ public class GroceriesFragment extends Fragment {
     }
 
     //method to create ArrayList of groceries sorted by alphabetical order
-    //and then create a new GroceriesAdapter by passing in that alphabetical list
-    //and possibly other variables if i need to
-    //will the view update the moment setadapter is set?
-    //probbaly use swapAdapter to change the items in the displayed list
-    //gets called when dropdown menu is set to alphabetical
     public void showByAlphabetical(){
 //        //so there needs to be a method to get all the items in the groceries database
 //        ArrayList<Grocery> alphabetical_groceries = groceries_db.getGroceriesAlphabetical();
@@ -193,8 +201,37 @@ public class GroceriesFragment extends Fragment {
 
     //method to create ArrayList of groceries sorted by expiration date
     public void showByExpirationDate(){
-        //not implemented yet, so keep it empty for now
-        GroceriesAdapter expiration_date_groceries_adapter = new GroceriesAdapter(new ArrayList<Grocery>());
+        //TODO: Should we show expired items in the grocery list? The ex. only has unexpired items...
+        ArrayList<Pair<String, ArrayList<Grocery>>> expiration_date_sublist = new ArrayList<Pair<String, ArrayList<Grocery>>>();
+
+        //set the current_date to the current date at 12:00AM
+        LocalDate current_date = LocalDate.now();
+        //convert today's date at 12:00AM to milliseconds
+        long today_milli = current_date.atStartOfDay(timezone).toInstant().toEpochMilli();
+        Log.d("GET_EXPIRY", "Current Milli: " + current_date.atStartOfDay(timezone).toInstant().toEpochMilli());
+
+        //create the expiring soon thresholds
+        long expiring_soon_upper_threshold = today_milli + EXPIRING_SOON_UPPER_BOUND_MILLI;
+        long expiring_soon_lower_threshold = today_milli;
+
+        //create the ready to use thresholds
+        long ready_upper_threshold = today_milli + READY_TO_USE_UPPER_BOUND_MILLI;
+        long ready_lower_threshold = today_milli + READY_TO_USE_LOWER_BOUND_MILLI;
+
+        //create the fresh thresholds
+        long fresh_lower_threshold = today_milli + FRESH_LOWER_BOUND_MILLI;
+        long fresh_upper_threshold = Long.MAX_VALUE;
+
+        //create the arraylists for each type of grocery
+        ArrayList<Grocery> expiring_soon_groceries = groceries_db.getGroceriesExpirationDate(expiring_soon_lower_threshold, expiring_soon_upper_threshold);
+        ArrayList<Grocery> ready_groceries = groceries_db.getGroceriesExpirationDate(ready_lower_threshold, ready_upper_threshold);
+        ArrayList<Grocery> fresh_groceries = groceries_db.getGroceriesExpirationDate(fresh_lower_threshold, fresh_upper_threshold);
+
+        expiration_date_sublist.add(new Pair<>("Expiring Soon", expiring_soon_groceries));
+        expiration_date_sublist.add(new Pair<>("Ready", ready_groceries));
+        expiration_date_sublist.add(new Pair<>("Fresh", fresh_groceries));
+
+        GroceriesSublistAdapter expiration_date_groceries_adapter = new GroceriesSublistAdapter(expiration_date_sublist);
         grocery_list_rv.setAdapter(expiration_date_groceries_adapter);
 
     }

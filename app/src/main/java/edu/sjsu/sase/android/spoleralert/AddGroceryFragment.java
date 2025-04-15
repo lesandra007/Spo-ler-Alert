@@ -3,6 +3,7 @@ package edu.sjsu.sase.android.spoleralert;
 import android.content.ContentValues;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
@@ -15,6 +16,9 @@ import android.widget.*;
 
 import static edu.sjsu.sase.android.spoleralert.GroceryDBSchema.GroceryDBColumns.*;
 
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Objects;
@@ -27,6 +31,9 @@ import java.util.Objects;
 public class AddGroceryFragment extends Fragment {
 
     private GroceryDatabase groceries_db;
+    private ZoneId timezone = ZoneId.systemDefault();
+    private LocalDate expiration_date = LocalDate.now(timezone);
+    private LocalDate current_date = LocalDate.now(timezone);
 
 //    // TODO: Rename parameter arguments, choose names that match
 //    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -72,11 +79,14 @@ public class AddGroceryFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+        // *********** Inflate the layout for this fragment ***************
         View add_groceries_view = inflater.inflate(R.layout.fragment_add_grocery, container, false);
         NavController controller = NavHostFragment.findNavController(this);
 
-        //populate food groups spinner with choices
+        // ********** get the current date at 12:00AM ***************
+        LocalDate.now(timezone);
+
+        //************* populate food groups spinner with choices ************
         Spinner fg_dropdown = (Spinner)add_groceries_view.findViewById(R.id.food_group_dropdown);
         ArrayAdapter<CharSequence> fg_adapter = ArrayAdapter.createFromResource(
                 requireContext(),
@@ -85,6 +95,18 @@ public class AddGroceryFragment extends Fragment {
         );
         fg_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         fg_dropdown.setAdapter(fg_adapter);
+
+        // ************ Implement CalendarView event listener ****************
+        CalendarView expiration_cal = add_groceries_view.findViewById(R.id.item_expiration_calendar);
+        expiration_cal.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
+            @Override
+            public void onSelectedDayChange(@NonNull CalendarView view, int year, int month, int dayOfMonth) {
+                //sets the expiration date as the year/month/day at 12:00AM
+                //CalendarView month is 0-11, LocalDate month is 1-12
+                //so add +1 to the month param to create LocalDate
+                expiration_date = LocalDate.of(year, month+1, dayOfMonth);
+            }
+        });
 
         //back button functionality
         add_groceries_view.findViewById(R.id.add_item_back_button).setOnClickListener(new View.OnClickListener() {
@@ -95,11 +117,9 @@ public class AddGroceryFragment extends Fragment {
         });
 
         //add button functionality
-        //add_groceries_view.findViewById(R.id.add_item_add_button).setOnClickListener(this::addGrocery);
         add_groceries_view.findViewById(R.id.add_item_add_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //Log.d("ADD_GROCERY_BUTTON", "User tapped the add button");
                 addGrocery(add_groceries_view);
                 controller.navigate(R.id.action_addGroceryFragment_to_groceriesFragment);
             }
@@ -120,7 +140,6 @@ public class AddGroceryFragment extends Fragment {
         EditText ounces_et = view.findViewById(R.id.item_ounces_input);
         EditText price_et = view.findViewById(R.id.item_price_input);
         CheckBox freezer_check = view.findViewById(R.id.item_freezer_checkbox);
-        CalendarView expiration_cal = view.findViewById(R.id.item_expiration_calendar);
 
         //get the values from the textboxes/dropdown/checkbox/calendar
         String name = name_et.getText().toString();
@@ -130,12 +149,9 @@ public class AddGroceryFragment extends Fragment {
         int ounces = Integer.parseInt(ounces_et.getText().toString());
         double price = Double.parseDouble(price_et.getText().toString());
         boolean in_freezer = freezer_check.isChecked();
-        long expiration_milli = expiration_cal.getDate();
-        long today_milli = Calendar.getInstance().getTimeInMillis();
+        long expiration_milli = expiration_date.atStartOfDay(timezone).toInstant().toEpochMilli();
+        long today_milli = current_date.atStartOfDay(timezone).toInstant().toEpochMilli();
         boolean is_expired = today_milli > expiration_milli;
-        //not sure if the milliseconds would be off due to timezones
-        //i think expiration_milli is based on device's timezone
-        //and today_milli is based on UTC timezone
 
         //create and populate the ContentValues object to pass into the insertGroceries() method
         ContentValues vals = new ContentValues();
@@ -151,9 +167,5 @@ public class AddGroceryFragment extends Fragment {
 
         //insert grocery into groceries database
         groceries_db.insertGrocery(vals);
-
-        Log.d("ADD_GROCERY_BUTTON", "Groceries have been inserted");
-
-
     }
 }
