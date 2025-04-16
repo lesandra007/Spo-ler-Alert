@@ -26,14 +26,12 @@ public class NotificationWorker extends Worker {
         NotificationManager manager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
 
         // Create a notification channel for Android 8.0+
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            NotificationChannel channel = new NotificationChannel("reminder_channel", "Reminders", NotificationManager.IMPORTANCE_HIGH);
-            manager.createNotificationChannel(channel);
-        }
+        NotificationChannel channel = new NotificationChannel("reminder_channel", "Reminders", NotificationManager.IMPORTANCE_HIGH);
+        manager.createNotificationChannel(channel);
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), "reminder_channel")
-                .setContentTitle("Reminder!")
-                .setContentText(customMessage != null ? customMessage : "This is your scheduled reminder.")
+                .setContentTitle("SPO!LER ALERT")
+                .setContentText(customMessage != null ? customMessage : "Use your food before they expire!")
                 .setSmallIcon(R.drawable.spoiler_alert_logo)
                 .setPriority(NotificationCompat.PRIORITY_HIGH);
 

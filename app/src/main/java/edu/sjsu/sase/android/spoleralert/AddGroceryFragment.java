@@ -199,16 +199,21 @@ public class AddGroceryFragment extends Fragment {
             return;
         }
         OneTimeWorkRequest reminderRequest = null;
-        // Create the input data to pass to the worker
-        Data inputData = new Data.Builder()
-                .putString("custom_message", "custom message to pass here")
-                .build();
+        EditText name_et = view.findViewById(R.id.item_name_input);
+        String name = name_et.getText().toString();
 
+        Data inputData = null;
         if (isToday(selectedDate)){
+            // Create the input data to pass to the worker
+            inputData = new Data.Builder()
+                    .putString("custom_message", "Your " + name + " is expiring today!")
+                    .build();
+
             reminderRequest = new OneTimeWorkRequest.Builder(NotificationWorker.class)
                     .setInitialDelay(0, TimeUnit.SECONDS) // Delay for 1 second
                     .setInputData(inputData) // Pass the data to the worker
                     .build();
+            WorkManager.getInstance(context).enqueue(reminderRequest);
         }
         else {
             Calendar today = Calendar.getInstance();
@@ -225,14 +230,14 @@ public class AddGroceryFragment extends Fragment {
                         .build();
 
                 WorkManager.getInstance(context).enqueue(reminderRequest);
+                Log.d("scheduleReminder", "Notification scheduled for: " + delayInMinutes + " minutes");
             } else {
                 // Handle past dates
                 Toast.makeText(context, "Selected date is in the past. Please choose a future date.", Toast.LENGTH_SHORT).show();
             }
 
         }
-        assert reminderRequest != null;
-        WorkManager.getInstance(context).enqueue(reminderRequest);
+
     }
 
     public boolean isToday(Calendar date) {
