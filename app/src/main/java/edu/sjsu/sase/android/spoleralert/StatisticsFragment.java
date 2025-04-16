@@ -19,13 +19,18 @@ import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
+import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
 import com.github.mikephil.charting.utils.ColorTemplate;
 
+import java.time.YearMonth;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class StatisticsFragment extends Fragment {
 
-    ArrayList barArraylist;
+    private ArrayList<BarEntry> barArraylist;
+    private ArrayList<String> monthLabels;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -57,6 +62,13 @@ public class StatisticsFragment extends Fragment {
         l.setFormSize(14f);
         l.setTextSize(16f);
 
+        XAxis xAxis = barChart.getXAxis();
+        xAxis.setValueFormatter(new IndexAxisValueFormatter(monthLabels));
+        xAxis.setGranularity(1f);
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxis.setDrawGridLines(false);
+        xAxis.setTextSize(12f);
+
         NavController controller = NavHostFragment.findNavController(this);
 
         //clicking on the buttons in the bottom bar to go to the different main parts of the app
@@ -86,11 +98,32 @@ public class StatisticsFragment extends Fragment {
     }
 
     private void getData() {
-        barArraylist = new ArrayList();
-        barArraylist.add(new BarEntry(2f, 60));
-        barArraylist.add(new BarEntry(3f, 50));
-        barArraylist.add(new BarEntry(4f, 40));
-        barArraylist.add(new BarEntry(5f, 30));
-        barArraylist.add(new BarEntry(6f, 20));
+        // Simulated full dataset
+        ArrayList<MonthlyStat> allStats = new ArrayList<>();
+        allStats.add(new MonthlyStat(YearMonth.of(2023, 12), 30));
+        allStats.add(new MonthlyStat(YearMonth.of(2024, 1), 40));
+        allStats.add(new MonthlyStat(YearMonth.of(2024, 2), 50));
+        allStats.add(new MonthlyStat(YearMonth.of(2024, 3), 70));
+        allStats.add(new MonthlyStat(YearMonth.of(2024, 4), 80));
+        allStats.add(new MonthlyStat(YearMonth.of(2024, 5), 60)); // Extra month
+
+        // Sort descending by month
+        allStats.sort((a, b) -> b.month.compareTo(a.month));
+
+        // Take only the 5 most recent
+        List<MonthlyStat> recentFive = allStats.subList(0, Math.min(5, allStats.size()));
+
+        // Reverse to display oldest to newest
+        Collections.reverse(recentFive);
+
+        // Prepare data for chart
+        barArraylist = new ArrayList<>();
+        monthLabels = new ArrayList<>();
+
+        for (int i = 0; i < recentFive.size(); i++) {
+            MonthlyStat stat = recentFive.get(i);
+            barArraylist.add(new BarEntry(i, stat.value));
+            monthLabels.add(stat.month.getMonth().name().substring(0, 3)); // e.g. "JAN"
+        }
     }
 }
