@@ -18,17 +18,36 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <ImageView
+        android:id="@+id/profilePicture"
+        android:layout_width="400dp"
+        android:layout_height="200dp"
+        android:layout_gravity="center"
+        android:layout_alignParentEnd="true"
+        android:src="@drawable/pfp1"/>
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="20dp"/>
+
     <TextView
         android:id="@+id/textView3"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="YOUR STATISTICS"
+        android:textSize="@dimen/label_text_size"
         android:textAlignment="center"/>
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="20dp"/>
 
     <com.github.mikephil.charting.charts.BarChart
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/barchart"/>
+        android:layout_height="300dp"
+        android:id="@+id/barchart"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"/>
 
     <include layout="@layout/bottom_bar"/>
 
