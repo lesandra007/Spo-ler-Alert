@@ -51,4 +51,5 @@ dependencies {
 
     // WorkManager: local scheduling
     implementation(libs.work.runtime)
+    implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
 }
