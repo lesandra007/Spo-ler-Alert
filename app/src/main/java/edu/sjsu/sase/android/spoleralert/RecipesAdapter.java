@@ -1,5 +1,6 @@
 package edu.sjsu.sase.android.spoleralert;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,6 +41,7 @@ public class RecipesAdapter extends RecyclerView.Adapter<RecipesAdapter.ViewHold
         Recipe recipe = recipes.get(position);
         holder.titleTextView.setText(recipe.getTitle());
         holder.ingredientsTextView.setText("Ingredients: " + String.join(", ", recipe.getIngredients()));
+        Log.d("recipessssss", "recipes -> " + recipes + ". Positions -> " + position);
     }
 
     @Override

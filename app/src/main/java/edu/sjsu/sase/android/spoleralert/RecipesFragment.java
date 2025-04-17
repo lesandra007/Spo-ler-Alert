@@ -8,6 +8,7 @@ import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -82,6 +83,7 @@ public class RecipesFragment extends Fragment {
         List<String> groceryNames = new ArrayList<>();
         for (Grocery g : groceries) {
             groceryNames.add(g.getName().toLowerCase());
+            Log.d(";0;", "sleepy" + g.getName());
         }
 
         // Filter recipes based on available groceries
@@ -91,11 +93,18 @@ public class RecipesFragment extends Fragment {
             for (String ingredient : r.getIngredients()) {
                 if (!groceryNames.contains(ingredient.toLowerCase())) {
                     canMake = false;
+                    Log.d("we're in", groceryNames + " doesn't contain " + ingredient);
+//                  YOU SHALL NOT PASS!!!... if you don't have all the ingredients
                     break;
+                }
+                else {
+                    Log.d("we're in", "contains " + ingredient);
                 }
             }
             if (canMake) possibleRecipes.add(r);
         }
+
+        Log.d("final cans", "Good Recipes: " + possibleRecipes);
 
         RecyclerView recipesRecyclerView = recipes_view.findViewById(R.id.recipes_recycler_view);
         recipesRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));

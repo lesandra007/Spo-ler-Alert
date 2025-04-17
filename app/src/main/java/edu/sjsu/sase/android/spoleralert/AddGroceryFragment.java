@@ -113,6 +113,10 @@ public class AddGroceryFragment extends Fragment {
                 //CalendarView month is 0-11, LocalDate month is 1-12
                 //so add +1 to the month param to create LocalDate
                 expiration_date = LocalDate.of(year, month+1, dayOfMonth);
+                // create instance
+                selectedDate = Calendar.getInstance();
+                // set year, month, day of month for the selected date
+                selectedDate.set(year, month, dayOfMonth);
             }
         });
 
@@ -122,14 +126,6 @@ public class AddGroceryFragment extends Fragment {
             public void onClick(View view) {
                 controller.navigate(R.id.action_addGroceryFragment_to_groceriesFragment);
             }
-        });
-
-        CalendarView calendarView = add_groceries_view.findViewById(R.id.item_expiration_calendar);
-        calendarView.setOnDateChangeListener((view, year, month, dayOfMonth) -> {
-            // create instance
-            selectedDate = Calendar.getInstance();
-            // set year, month, day of month for the selected date
-            selectedDate.set(year, month, dayOfMonth);
         });
 
         //add button functionality
