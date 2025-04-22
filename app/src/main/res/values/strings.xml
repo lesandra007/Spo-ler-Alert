@@ -33,4 +33,13 @@
         <item>Food Group</item>
     </string-array>
 
+    <string-array name="bar_graph_sorting">
+        <item >Total Money Spent</item>
+        <item >Total Money Waste</item>
+        <item >Total Money Used</item>
+        <item >Total Food Bought</item>
+        <item >Total Food Wasted</item>
+        <item >Total Food Used</item>
+    </string-array>
+
 </resources>

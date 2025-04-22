@@ -3,6 +3,7 @@ package edu.sjsu.sase.android.spoleralert;
 import android.graphics.Color;
 import android.os.Bundle;
 
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
@@ -10,6 +11,9 @@ import androidx.navigation.fragment.NavHostFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.components.Legend;
@@ -69,8 +73,60 @@ public class StatisticsFragment extends Fragment {
         xAxis.setDrawGridLines(false);
         xAxis.setTextSize(12f);
 
-        NavController controller = NavHostFragment.findNavController(this);
+        Spinner gs_dropdown = statistics_view.findViewById(R.id.bar_graph_dropdown);
+        ArrayAdapter<CharSequence> gs_adapter = ArrayAdapter.createFromResource(
+                requireContext(),
+                R.array.bar_graph_sorting,
+                android.R.layout.simple_spinner_item
+        );
+        gs_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        gs_dropdown.setAdapter(gs_adapter);
 
+        gs_dropdown.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String sorting_type = parent.getItemAtPosition(position).toString();
+
+                float maxMoneyY = getMaxValue(List.of(
+                        getMoneySpentData(),
+                        getMoneyWasteData(),
+                        getMoneyUsedData()
+                )) * 1.1f;
+
+                float maxFoodY = getMaxValue(List.of(
+                        getFoodBoughtData(),
+                        getFoodWasteData(),
+                        getFoodUsedData()
+                )) * 1.1f;
+
+                // Update bar chart based on selection
+                switch (sorting_type) {
+                    case "Total Money Spent":
+                        updateChart(getMoneySpentData(), barChart, "Total Money Spent in Dollars", R.color.fresh_green, maxMoneyY);
+                        break;
+                    case "Total Money Waste":
+                        updateChart(getMoneyWasteData(), barChart, "Total Money Waste in Dollars", R.color.expiring_red, maxMoneyY);
+                        break;
+                    case "Total Money Used":
+                        updateChart(getMoneyUsedData(), barChart, "Total Money Used in Dollars", R.color.fresh_green, maxMoneyY);
+                        break;
+                    case "Total Food Bought":
+                        updateChart(getFoodBoughtData(), barChart, "Total Food Bought in lbs", R.color.fresh_green, maxFoodY);
+                        break;
+                    case "Total Food Wasted":
+                        updateChart(getFoodWasteData(), barChart, "Total Food Wasted in lbs", R.color.expiring_red, maxFoodY);
+                        break;
+                    case "Total Food Used":
+                        updateChart(getFoodUsedData(), barChart, "Total Food Used in lbs", R.color.fresh_green, maxFoodY);
+                        break;
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) { }
+        });
+
+        NavController controller = NavHostFragment.findNavController(this);
         //clicking on the buttons in the bottom bar to go to the different main parts of the app
         statistics_view.findViewById(R.id.grocery_list_bottom_bar).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -111,7 +167,7 @@ public class StatisticsFragment extends Fragment {
         allStats.sort((a, b) -> b.month.compareTo(a.month));
 
         // Take only the 5 most recent
-        List<MonthlyStat> recentFive = allStats.subList(0, Math.min(5, allStats.size()));
+        List<MonthlyStat> recentFive = allStats.subList(0, Math.min(6, allStats.size()));
 
         // Reverse to display oldest to newest
         Collections.reverse(recentFive);
@@ -126,4 +182,105 @@ public class StatisticsFragment extends Fragment {
             monthLabels.add(stat.month.getMonth().name().substring(0, 3)); // e.g. "JAN"
         }
     }
+
+    private float getMaxValue(List<List<MonthlyStat>> groups) {
+        float max = Float.MIN_VALUE;
+        for (List<MonthlyStat> group : groups) {
+            for (MonthlyStat stat : group) {
+                if (stat.value > max) {
+                    max = stat.value;
+                }
+            }
+        }
+        return max;
+    }
+
+    private List<MonthlyStat> getMoneySpentData() {
+        return List.of(
+                new MonthlyStat(YearMonth.of(2023, 12), 100),
+                new MonthlyStat(YearMonth.of(2024, 1), 120),
+                new MonthlyStat(YearMonth.of(2024, 2), 90),
+                new MonthlyStat(YearMonth.of(2024, 3), 130),
+                new MonthlyStat(YearMonth.of(2024, 4), 110)
+        );
+    }
+
+    private List<MonthlyStat> getMoneyWasteData() {
+        return List.of(
+                new MonthlyStat(YearMonth.of(2023, 12), 30),
+                new MonthlyStat(YearMonth.of(2024, 1), 50),
+                new MonthlyStat(YearMonth.of(2024, 2), 20),
+                new MonthlyStat(YearMonth.of(2024, 3), 60),
+                new MonthlyStat(YearMonth.of(2024, 4), 40)
+        );
+    }
+
+    private List<MonthlyStat> getMoneyUsedData() {
+        return List.of(
+                new MonthlyStat(YearMonth.of(2023, 12), 70),
+                new MonthlyStat(YearMonth.of(2024, 1), 80),
+                new MonthlyStat(YearMonth.of(2024, 2), 70),
+                new MonthlyStat(YearMonth.of(2024, 3), 90),
+                new MonthlyStat(YearMonth.of(2024, 4), 70)
+        );
+    }
+
+    private List<MonthlyStat> getFoodBoughtData() {
+        return List.of(
+                new MonthlyStat(YearMonth.of(2023, 12), 100),
+                new MonthlyStat(YearMonth.of(2024, 1), 120),
+                new MonthlyStat(YearMonth.of(2024, 2), 90),
+                new MonthlyStat(YearMonth.of(2024, 3), 130),
+                new MonthlyStat(YearMonth.of(2024, 4), 110)
+        );
+    }
+
+    private List<MonthlyStat> getFoodWasteData() {
+        return List.of(
+                new MonthlyStat(YearMonth.of(2023, 12), 30),
+                new MonthlyStat(YearMonth.of(2024, 1), 50),
+                new MonthlyStat(YearMonth.of(2024, 2), 20),
+                new MonthlyStat(YearMonth.of(2024, 3), 60),
+                new MonthlyStat(YearMonth.of(2024, 4), 40)
+        );
+    }
+
+    private List<MonthlyStat> getFoodUsedData() {
+        return List.of(
+                new MonthlyStat(YearMonth.of(2023, 12), 70),
+                new MonthlyStat(YearMonth.of(2024, 1), 80),
+                new MonthlyStat(YearMonth.of(2024, 2), 70),
+                new MonthlyStat(YearMonth.of(2024, 3), 90),
+                new MonthlyStat(YearMonth.of(2024, 4), 70)
+        );
+    }
+
+    private void updateChart(List<MonthlyStat> data, BarChart chart, String label, int colorResId, float maxY) {
+        ArrayList<BarEntry> entries = new ArrayList<>();
+        ArrayList<String> labels = new ArrayList<>();
+
+        for (int i = 0; i < data.size(); i++) {
+            entries.add(new BarEntry(i, data.get(i).value));
+            labels.add(data.get(i).month.getMonth().name().substring(0, 3));
+        }
+
+        BarDataSet dataSet = new BarDataSet(entries, label);
+        dataSet.setColor(ContextCompat.getColor(requireContext(), colorResId));
+        dataSet.setValueTextColor(Color.BLACK);
+        dataSet.setValueTextSize(16f);
+
+        BarData barData = new BarData(dataSet);
+        chart.setData(barData);
+
+        XAxis xAxis = chart.getXAxis();
+        xAxis.setValueFormatter(new IndexAxisValueFormatter(labels));
+
+        YAxis yAxis = chart.getAxisLeft();
+        yAxis.setAxisMinimum(0f);
+        yAxis.setAxisMaximum(maxY); // lock the upper bound
+
+        chart.getAxisRight().setEnabled(false); // optional: hide right axis
+        chart.invalidate(); // refresh
+    }
+
 }
