@@ -284,7 +284,12 @@ public class AddGroceryFragment extends Fragment {
                 notifDay.add(Calendar.DATE, -num);
                 if (num == 1) {
                     inputData = new Data.Builder()
-                            .putString("custom_message", "Your " + name + " is expiring in 1 day!")
+                            .putString("custom_message", "Your " + name + " is expiring tomorrow!")
+                            .build();
+                }
+                else if (num == 0) {
+                    inputData = new Data.Builder()
+                            .putString("custom_message", "Your " + name + " is expiring today!")
                             .build();
                 }
                 else{
