@@ -1,5 +1,6 @@
 package edu.sjsu.sase.android.spoleralert;
 
+import android.app.Dialog;
 import android.content.ContentValues;
 import android.content.Context;
 import android.os.Bundle;
@@ -20,15 +21,14 @@ import android.widget.*;
 
 import static edu.sjsu.sase.android.spoleralert.GroceryDBSchema.GroceryDBColumns.*;
 
-import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Calendar;
-import java.util.Date;
-import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
+import edu.sjsu.sase.android.spoleralert.notifications.NotifEnum;
 import edu.sjsu.sase.android.spoleralert.notifications.NotificationWorker;
+import edu.sjsu.sase.android.spoleralert.notifications.NotificationFragment;
 
 ///**
 // * A simple {@link Fragment} subclass.
@@ -42,6 +42,8 @@ public class AddGroceryFragment extends Fragment {
     private LocalDate expiration_date = LocalDate.now(timezone);
     private LocalDate current_date = LocalDate.now(timezone);
     Calendar selectedDate;
+    NotificationFragment notifFragment;
+    View add_groceries_view;
 
 //    // TODO: Rename parameter arguments, choose names that match
 //    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -88,7 +90,7 @@ public class AddGroceryFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // *********** Inflate the layout for this fragment ***************
-        View add_groceries_view = inflater.inflate(R.layout.fragment_add_grocery, container, false);
+        add_groceries_view = inflater.inflate(R.layout.fragment_add_grocery, container, false);
         NavController controller = NavHostFragment.findNavController(this);
 
         // ********** get the current date at 12:00AM ***************
@@ -144,8 +146,51 @@ public class AddGroceryFragment extends Fragment {
                 }
             }
         });
+        notifFragment = (NotificationFragment) getChildFragmentManager().findFragmentById(R.id.notifList);
+
+        Button addNotif = add_groceries_view.findViewById(R.id.addNotifBtn);
+        addNotif.setOnClickListener(this::showNotifDialog);
 
         return add_groceries_view;
+    }
+
+    private void showNotifDialog(View view) {
+        Dialog notifDialog = new Dialog(view.getContext());
+        notifDialog.setContentView(R.layout.notification_dialog);
+        notifDialog.show();
+
+        Spinner notif_spin = (Spinner) notifDialog.findViewById(R.id.notif_spinner);
+        ArrayAdapter<NotifEnum> fg_adapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_item, NotifEnum.values());
+//        ArrayAdapter<CharSequence> fg_adapter = ArrayAdapter.createFromResource(
+//                requireContext(),
+//                R.array.notif_times,
+//                android.R.layout.simple_spinner_item
+//        );
+        fg_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        notif_spin.setAdapter(fg_adapter);
+
+        Button saveBtn = notifDialog.findViewById(R.id.save_btn);
+        saveBtn.setOnClickListener(v -> onClickNotifDialogSave(notifDialog, notif_spin));
+        Button cancelBtn = notifDialog.findViewById(R.id.cancel_btn);
+        cancelBtn.setOnClickListener(v -> notifDialog.dismiss());
+    }
+
+    public void onClickNotifDialogSave(Dialog dialog, Spinner spinner) {
+        //TODO: schedule notif & save into database
+        EditText numText = dialog.findViewById(R.id.editTextNumber);
+        String numStr = numText.getText().toString();
+        String notifTime = spinner.getSelectedItem().toString();
+        Log.d("notification", "numStr: " + numStr + ", notifTime: " + notifTime);
+        if (!numStr.matches("") && !notifTime.matches("")){
+            int num = Integer.parseInt(numText.getText().toString());
+            addNotification(num, notifTime);
+            dialog.dismiss();
+        }
+    }
+
+    public void addNotification(int num, String notifTime) {
+        Log.d("notification", "save clicked");
+        notifFragment.addNotification(num, notifTime);
     }
 
     /*
