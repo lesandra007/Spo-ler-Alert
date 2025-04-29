@@ -18,7 +18,7 @@ import edu.sjsu.sase.android.spoleralert.R;
  */
 public class NotificationFragment extends Fragment {
 
-    ArrayList<Notification> data = new ArrayList<>();
+    ArrayList<Notification> notifications = new ArrayList<>();
     NotificationAdapter adapter;
     RecyclerView recyclerView;
     /**
@@ -42,12 +42,7 @@ public class NotificationFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_notification_list, container, false);
 
-        // hardcoded data for testing
-        for (int i = 1; i <= 2; i++) {
-            data.add(new Notification(i, "days before"));
-        }
-
-        adapter = new NotificationAdapter(data);
+        adapter = new NotificationAdapter(notifications);
         recyclerView = (RecyclerView) view;
         recyclerView.setAdapter(adapter);
 
@@ -55,7 +50,11 @@ public class NotificationFragment extends Fragment {
     }
 
     public void addNotification(int num, String notifTime) {
-        data.add(new Notification(num, notifTime));
-        adapter.notifyItemInserted(data.size()-1);
+        notifications.add(new Notification(num, notifTime));
+        adapter.notifyItemInserted(notifications.size()-1);
+    }
+
+    public ArrayList<Notification> getNotifications() {
+        return notifications;
     }
 }

@@ -23,10 +23,12 @@ import static edu.sjsu.sase.android.spoleralert.GroceryDBSchema.GroceryDBColumns
 
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.concurrent.TimeUnit;
 
 import edu.sjsu.sase.android.spoleralert.notifications.NotifEnum;
+import edu.sjsu.sase.android.spoleralert.notifications.Notification;
 import edu.sjsu.sase.android.spoleralert.notifications.NotificationWorker;
 import edu.sjsu.sase.android.spoleralert.notifications.NotificationFragment;
 
@@ -146,51 +148,14 @@ public class AddGroceryFragment extends Fragment {
                 }
             }
         });
-        notifFragment = (NotificationFragment) getChildFragmentManager().findFragmentById(R.id.notifList);
 
+        // ************ Implement Notifications ****************
+        notifFragment = (NotificationFragment) getChildFragmentManager().findFragmentById(R.id.notifList);
+        // add notification button
         Button addNotif = add_groceries_view.findViewById(R.id.addNotifBtn);
         addNotif.setOnClickListener(this::showNotifDialog);
 
         return add_groceries_view;
-    }
-
-    private void showNotifDialog(View view) {
-        Dialog notifDialog = new Dialog(view.getContext());
-        notifDialog.setContentView(R.layout.notification_dialog);
-        notifDialog.show();
-
-        Spinner notif_spin = (Spinner) notifDialog.findViewById(R.id.notif_spinner);
-        ArrayAdapter<NotifEnum> fg_adapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_item, NotifEnum.values());
-//        ArrayAdapter<CharSequence> fg_adapter = ArrayAdapter.createFromResource(
-//                requireContext(),
-//                R.array.notif_times,
-//                android.R.layout.simple_spinner_item
-//        );
-        fg_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        notif_spin.setAdapter(fg_adapter);
-
-        Button saveBtn = notifDialog.findViewById(R.id.save_btn);
-        saveBtn.setOnClickListener(v -> onClickNotifDialogSave(notifDialog, notif_spin));
-        Button cancelBtn = notifDialog.findViewById(R.id.cancel_btn);
-        cancelBtn.setOnClickListener(v -> notifDialog.dismiss());
-    }
-
-    public void onClickNotifDialogSave(Dialog dialog, Spinner spinner) {
-        //TODO: schedule notif & save into database
-        EditText numText = dialog.findViewById(R.id.editTextNumber);
-        String numStr = numText.getText().toString();
-        String notifTime = spinner.getSelectedItem().toString();
-        Log.d("notification", "numStr: " + numStr + ", notifTime: " + notifTime);
-        if (!numStr.matches("") && !notifTime.matches("")){
-            int num = Integer.parseInt(numText.getText().toString());
-            addNotification(num, notifTime);
-            dialog.dismiss();
-        }
-    }
-
-    public void addNotification(int num, String notifTime) {
-        Log.d("notification", "save clicked");
-        notifFragment.addNotification(num, notifTime);
     }
 
     /*
@@ -234,58 +199,154 @@ public class AddGroceryFragment extends Fragment {
         groceries_db.insertGrocery(vals);
     }
 
+    /**
+     * Shows Dialog where user can select when they want notifications relative to the expiration date
+     * @param view the view
+     */
+    private void showNotifDialog(View view) {
+        // show dialog view
+        Dialog notifDialog = new Dialog(view.getContext());
+        notifDialog.setContentView(R.layout.notification_dialog);
+        notifDialog.show();
+
+        // set spinner options
+        Spinner notif_spin = (Spinner) notifDialog.findViewById(R.id.notif_spinner);
+        ArrayAdapter<NotifEnum> fg_adapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_item, NotifEnum.values());
+        fg_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        notif_spin.setAdapter(fg_adapter);
+
+        // save button
+        Button saveBtn = notifDialog.findViewById(R.id.save_btn);
+        saveBtn.setOnClickListener(v -> onClickNotifDialogSave(notifDialog, notif_spin));
+
+        // cancel button
+        Button cancelBtn = notifDialog.findViewById(R.id.cancel_btn);
+        cancelBtn.setOnClickListener(v -> notifDialog.dismiss());
+    }
+
+    /**
+     *
+     * @param dialog the notification dialog
+     * @param spinner the spinner for notification times
+     */
+    public void onClickNotifDialogSave(Dialog dialog, Spinner spinner) {
+        // retrieve input values
+        EditText numText = dialog.findViewById(R.id.editTextNumber);
+        String numStr = numText.getText().toString();
+        String notifTime = spinner.getSelectedItem().toString();
+
+        // add notification to add groceries screen and close dialog
+        if (!numStr.matches("") && !notifTime.matches("")){
+            int num = Integer.parseInt(numText.getText().toString());
+            addNotification(num, notifTime);
+            dialog.dismiss();
+        }
+    }
+
+    /**
+     * Adds notification to notification fragment in add groceries screen
+     * @param num the number of days/weeks/months to schedule the notification before expiration date
+     * @param notifTime days/weeks/months
+     */
+    public void addNotification(int num, String notifTime) {
+        notifFragment.addNotification(num, notifTime);
+    }
+
+    /**
+     * Schedules a notification that reminds the user of the expiration date of an item
+     * @param view the view
+     * @param context the context
+     */
     public void scheduleReminder(View view, Context context) {
+        ArrayList<Notification> notifications = notifFragment.getNotifications();
+        // check if date is selected
         if (selectedDate == null) {
             Log.e("schedule reminder", "selected date is null");
             return;
         }
+        // return if no notifications are scheduled
+        if (notifications.isEmpty()) {
+            return;
+        }
+
         OneTimeWorkRequest reminderRequest = null;
+        // get name of grocery item
         EditText name_et = view.findViewById(R.id.item_name_input);
         String name = name_et.getText().toString();
 
-        Data inputData = null;
-        if (isToday(selectedDate)){
-            // Create the input data to pass to the worker
-            inputData = new Data.Builder()
-                    .putString("custom_message", "Your " + name + " is expiring today!")
-                    .build();
-
-            reminderRequest = new OneTimeWorkRequest.Builder(NotificationWorker.class)
-                    .setInitialDelay(0, TimeUnit.SECONDS) // Delay for 1 second
-                    .setInputData(inputData) // Pass the data to the worker
-                    .build();
-            WorkManager.getInstance(context).enqueue(reminderRequest);
-        }
-        else {
+        // for each notification
+        for (Notification notif: notifications) {
+            // set notification day and message
+            Data inputData = null;
+            Calendar notifDay = (Calendar) selectedDate.clone(); // Clone to avoid modifying original
+            int num = notif.getNumber();
+            if (notif.getNotifEnum() == NotifEnum.DAYS) {
+                notifDay.add(Calendar.DATE, -num);
+                if (num == 1) {
+                    inputData = new Data.Builder()
+                            .putString("custom_message", "Your " + name + " is expiring in 1 day!")
+                            .build();
+                }
+                else{
+                    inputData = new Data.Builder()
+                            .putString("custom_message", "Your " + name + " is expiring in " + num + " days!")
+                            .build();
+                }
+            }
+            else if (notif.getNotifEnum() == NotifEnum.WEEKS) {
+                notifDay.add(Calendar.WEEK_OF_YEAR, -num);
+                if (num == 1) {
+                    inputData = new Data.Builder()
+                            .putString("custom_message", "Your " + name + " is expiring in 1 week!")
+                            .build();
+                }
+                else {
+                    inputData = new Data.Builder()
+                            .putString("custom_message", "Your " + name + " is expiring in " + num + " weeks!")
+                            .build();
+                }
+            }
+            else if (notif.getNotifEnum() == NotifEnum.MONTHS) {
+                notifDay.add(Calendar.MONTH, -num);
+                if (num == 1) {
+                    inputData = new Data.Builder()
+                            .putString("custom_message", "Your " + name + " is expiring in 1 month!")
+                            .build();
+                }
+                else {
+                    inputData = new Data.Builder()
+                            .putString("custom_message", "Your " + name + " is expiring in " + num + " months!")
+                            .build();
+                }
+            }
+            Log.d("notification", "notification date: " + notifDay);
+            // calculate the delay from today in milliseconds
             Calendar today = Calendar.getInstance();
-            // Calculate the delay in milliseconds
-            long delayInMillis = selectedDate.getTimeInMillis() - today.getTimeInMillis();
+            long delayInMillis = notifDay.getTimeInMillis() - today.getTimeInMillis();
+            long delayInMinutes = TimeUnit.MILLISECONDS.toMinutes(delayInMillis);
 
-            if (delayInMillis > 0) {
-                // Convert the delay to minutes
-                long delayInMinutes = TimeUnit.MILLISECONDS.toMinutes(delayInMillis);
-
-                // Create a WorkManager request with the calculated delay
-                reminderRequest = new OneTimeWorkRequest.Builder(NotificationWorker.class)
-                        .setInitialDelay(delayInMinutes, TimeUnit.MINUTES) // Set the calculated delay
-                        .build();
-
-                WorkManager.getInstance(context).enqueue(reminderRequest);
-                Log.d("scheduleReminder", "Notification scheduled for: " + delayInMinutes + " minutes");
-            } else {
-                // Handle past dates
-                Toast.makeText(context, "Selected date is in the past. Please choose a future date.", Toast.LENGTH_SHORT).show();
+            int notifDayOfWeek = notifDay.get(Calendar.DAY_OF_WEEK);
+            int todayDayOfWeek = today.get(Calendar.DAY_OF_WEEK);
+            // notify immediately if notification date is today
+            if (notifDayOfWeek == todayDayOfWeek && delayInMinutes < 10 && delayInMinutes > -10){
+                delayInMinutes = 0;
+                Log.d("notification", "notify today");
+            }
+            // don't schedule if notification date has already passed
+            else if (notifDay.compareTo(today) < 0) {
+                Log.d("notification", "notify in past");
+                return;
             }
 
+
+            // Create a WorkManager request with the calculated delay
+            reminderRequest = new OneTimeWorkRequest.Builder(NotificationWorker.class)
+                    .setInitialDelay(delayInMinutes, TimeUnit.MINUTES) // Set the calculated delay
+                    .setInputData(inputData) // Pass the data to the worker
+                    .build();
+
+            // enqueue the request
+            WorkManager.getInstance(context).enqueue(reminderRequest);
         }
-
-    }
-
-    public boolean isToday(Calendar date) {
-        Calendar today = Calendar.getInstance();
-
-        return date.get(Calendar.YEAR) == today.get(Calendar.YEAR) &&
-                date.get(Calendar.MONTH) == today.get(Calendar.MONTH) &&
-                date.get(Calendar.DAY_OF_MONTH) == today.get(Calendar.DAY_OF_MONTH);
     }
 }
