@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.android.application)
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -47,5 +48,8 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
+
+    // WorkManager: local scheduling
+    implementation(libs.work.runtime)
     implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
 }

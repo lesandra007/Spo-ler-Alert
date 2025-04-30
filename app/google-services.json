@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "107167239523",
+    "project_id": "spo-ler-alert",
+    "storage_bucket": "spo-ler-alert.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:107167239523:android:be6fd4c7347eaad0291756",
+        "android_client_info": {
+          "package_name": "edu.sjsu.sase.android.spoleralert"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDmDFryLTlL8mkQohdU4KraO_EfEplRAts"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
