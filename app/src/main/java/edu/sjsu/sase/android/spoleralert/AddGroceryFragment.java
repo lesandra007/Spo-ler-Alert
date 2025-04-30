@@ -21,6 +21,8 @@ import android.widget.*;
 
 import static edu.sjsu.sase.android.spoleralert.GroceryDBSchema.GroceryDBColumns.*;
 
+import com.google.gson.Gson;
+
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
@@ -195,6 +197,14 @@ public class AddGroceryFragment extends Fragment {
         vals.put(EXPIRATION_DATE, expiration_milli);
         vals.put(EXPIRATION_STATUS, is_expired);
 
+        // convert arraylist of notifications to json
+        Gson gson = new Gson();
+        String jsonNotifications = gson.toJson(notifFragment.getNotifications());
+        if (jsonNotifications == null || jsonNotifications.isEmpty()) {
+            jsonNotifications = "[]";
+        }
+        vals.put(NOTIFICATIONS_JSON, jsonNotifications);
+
         //insert grocery into groceries database
         groceries_db.insertGrocery(vals);
     }
@@ -276,6 +286,7 @@ public class AddGroceryFragment extends Fragment {
 
         // for each notification
         for (Notification notif: notifications) {
+            // TODO: check if notification is already in the database
             // set notification day and message
             Data inputData = null;
             Calendar notifDay = (Calendar) selectedDate.clone(); // Clone to avoid modifying original
