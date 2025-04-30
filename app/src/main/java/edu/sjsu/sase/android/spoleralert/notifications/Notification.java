@@ -8,6 +8,9 @@ public class Notification {
     private NotifEnum notifEnum;
     private String time;
 
+    // used to populate attributes when convert from notifications json in db
+    public Notification(){}
+
     public Notification(int number, String time){
         this.number = number;
         this.notifEnum = NotifEnum.fromString(time);
