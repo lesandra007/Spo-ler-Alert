@@ -38,6 +38,7 @@ public class GroceriesFragment extends Fragment {
 
     private ZoneId timezone = ZoneId.systemDefault();
 
+    private static final long EXPIRED_UPPER_BOUND_MILLI = TimeUnit.DAYS.toMillis(1);
     private static final long EXPIRING_SOON_UPPER_BOUND_MILLI = TimeUnit.DAYS.toMillis(1);
     private static final long READY_TO_USE_LOWER_BOUND_MILLI = TimeUnit.DAYS.toMillis(2);
     private static final long READY_TO_USE_UPPER_BOUND_MILLI = TimeUnit.DAYS.toMillis(7);
@@ -210,6 +211,11 @@ public class GroceriesFragment extends Fragment {
         long today_milli = current_date.atStartOfDay(timezone).toInstant().toEpochMilli();
         Log.d("GET_EXPIRY", "Current Milli: " + current_date.atStartOfDay(timezone).toInstant().toEpochMilli());
 
+
+        //create the expired threshold
+        long expired_upper_threshold = today_milli - EXPIRED_UPPER_BOUND_MILLI;
+        long expired_lower_threshold = 0;
+
         //create the expiring soon thresholds
         long expiring_soon_upper_threshold = today_milli + EXPIRING_SOON_UPPER_BOUND_MILLI;
         long expiring_soon_lower_threshold = today_milli;
@@ -223,10 +229,12 @@ public class GroceriesFragment extends Fragment {
         long fresh_upper_threshold = Long.MAX_VALUE;
 
         //create the arraylists for each type of grocery
+        ArrayList<Grocery> expired_groceries = groceries_db.getGroceriesExpirationDate(expired_lower_threshold, expired_upper_threshold);
         ArrayList<Grocery> expiring_soon_groceries = groceries_db.getGroceriesExpirationDate(expiring_soon_lower_threshold, expiring_soon_upper_threshold);
         ArrayList<Grocery> ready_groceries = groceries_db.getGroceriesExpirationDate(ready_lower_threshold, ready_upper_threshold);
         ArrayList<Grocery> fresh_groceries = groceries_db.getGroceriesExpirationDate(fresh_lower_threshold, fresh_upper_threshold);
 
+        expiration_date_sublist.add(new Pair<>("EXPIRED", expired_groceries));
         expiration_date_sublist.add(new Pair<>("Expiring Soon", expiring_soon_groceries));
         expiration_date_sublist.add(new Pair<>("Ready", ready_groceries));
         expiration_date_sublist.add(new Pair<>("Fresh", fresh_groceries));
