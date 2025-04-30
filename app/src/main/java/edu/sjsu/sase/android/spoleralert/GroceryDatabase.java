@@ -9,6 +9,10 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import java.lang.reflect.Type;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -16,6 +20,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
+
+import edu.sjsu.sase.android.spoleralert.notifications.Notification;
 
 /**
  *
@@ -36,7 +42,8 @@ public class GroceryDatabase extends SQLiteOpenHelper {
                                                 PRICE + " REAL, " +
                                                 FREEZER_STATUS + " INTEGER, " +
                                                 EXPIRATION_DATE + " DATE, " +
-                                                EXPIRATION_STATUS + " INTEGER);";
+                                                EXPIRATION_STATUS + " INTEGER, " +
+                                                NOTIFICATIONS_JSON + " TEXT);";
 
     public GroceryDatabase(Context context) {
         super(context, DATABASE_NAME, null, VERSION);
@@ -84,11 +91,16 @@ public class GroceryDatabase extends SQLiteOpenHelper {
         boolean in_freezer = freezer_status == 1;
         boolean is_expired = expiration_status == 1;
         LocalDate expiration_date = Instant.ofEpochMilli(expiration_milli).atZone(timezone).toLocalDate();
+        String jsonString = cursor.getString(
+                cursor.getColumnIndexOrThrow(NOTIFICATIONS_JSON));
+        // convert jsonString to arraylist of notifications
+        Type listType = new TypeToken<ArrayList<Notification>>(){}.getType();
+        ArrayList<Notification> notifications = new Gson().fromJson(jsonString, listType);
 
         //create the Grocery object
         return new Grocery(name, food_group, quantity,
                 pounds, ounces, price,
-                in_freezer, expiration_date, is_expired);
+                in_freezer, expiration_date, is_expired, notifications);
     }
 
     //method to retrieve all groceries in alphabetical order as an ArrayList of Groceries
