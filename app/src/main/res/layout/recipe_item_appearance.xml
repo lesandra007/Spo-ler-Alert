@@ -3,21 +3,25 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="12dp">
+    android:padding="12dp"
+    android:background="#FFF"
+    android:elevation="2dp">
 
     <TextView
         android:id="@+id/recipe_title"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Recipe Title"
+        android:text="Sample Recipe Title"
         android:textSize="18sp"
-        android:textStyle="bold"/>
+        android:textStyle="bold"
+        android:textColor="#000000" />
 
     <TextView
         android:id="@+id/recipe_ingredients"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Ingredients: ..."
         android:textSize="14sp"
-        android:layout_marginTop="4dp"/>
+        android:textColor="#555555"
+        android:layout_marginTop="4dp" />
 </LinearLayout>
