@@ -12,7 +12,6 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class RecipeUtils {
@@ -44,7 +43,11 @@ public class RecipeUtils {
                 if (mealsArray != null) {
                     for (int i = 0; i < mealsArray.length(); i++) {
                         JSONObject meal = mealsArray.getJSONObject(i);
-                        String name = meal.getString("strMeal");
+                        String name = meal.optString("strMeal", "Unnamed");
+                        String imageUrl = meal.optString("strMealThumb", "");
+                        String category = meal.optString("strCategory", "");
+                        String area = meal.optString("strArea", "");
+                        String instructions = meal.optString("strInstructions", "");
 
                         List<String> ingredients = new ArrayList<>();
                         for (int j = 1; j <= 20; j++) {
@@ -54,7 +57,7 @@ public class RecipeUtils {
                             }
                         }
 
-                        recipes.add(new Recipe(name, ingredients));
+                        recipes.add(new Recipe(name, imageUrl, category, area, instructions, ingredients));
                     }
                 }
 
@@ -65,14 +68,4 @@ public class RecipeUtils {
             }
         }).start();
     }
-
-    public static List<Recipe> getAllRecipes() {
-        List<Recipe> recipes = new ArrayList<>();
-        recipes.add(new Recipe("Avocado Toast", Arrays.asList("Bread", "Avocado")));
-        recipes.add(new Recipe("PB&J Sandwich", Arrays.asList("Peanut Butter", "Jelly", "Bread")));
-        recipes.add(new Recipe("Fruit Salad", Arrays.asList("Apple", "Banana", "Orange")));
-        recipes.add(new Recipe("Omelette", Arrays.asList("Egg", "Milk", "Cheese")));
-        return recipes;
-    }
-
 }

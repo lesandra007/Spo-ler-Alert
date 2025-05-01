@@ -52,4 +52,8 @@ dependencies {
     // WorkManager: local scheduling
     implementation(libs.work.runtime)
     implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
+
+    // Glide for image loading
+    implementation(libs.glide)
+    annotationProcessor(libs.glideCompiler)
 }
