@@ -5,6 +5,7 @@ import android.os.Bundle;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -67,8 +68,7 @@ public class GroceriesFragment extends Fragment {
         grocery_list_rv = groceries_view.findViewById(R.id.grocery_list_area);
         grocery_list_rv.setLayoutManager(new LinearLayoutManager(requireContext()));
         //create an empty adapter
-        //GroceriesAdapter empty_groceries_adapter = new GroceriesAdapter(new ArrayList<Grocery>());
-        GroceriesSublistAdapter empty_groceries_sublist_adapter = new GroceriesSublistAdapter(new ArrayList<Pair<String, ArrayList<Grocery>>>());
+        GroceriesSublistAdapter empty_groceries_sublist_adapter = new GroceriesSublistAdapter(new ArrayList<Pair<String, ArrayList<Grocery>>>(), groceries_db);
         //initially set the adapter to the adapter created with the empty list
         grocery_list_rv.setAdapter(empty_groceries_sublist_adapter);
 
@@ -142,34 +142,40 @@ public class GroceriesFragment extends Fragment {
 
     //method to create ArrayList of groceries sorted by alphabetical order
     public void showByAlphabetical(){
-//        //so there needs to be a method to get all the items in the groceries database
-//        ArrayList<Grocery> alphabetical_groceries = groceries_db.getGroceriesAlphabetical();
-//        Log.d("SHOW_BY_ALPHABETICAL", "size of groceries: " + alphabetical_groceries.size());
-//
-//        //create the sublist for alphabetical, where the label is an empty string
-//        Pair<String, ArrayList<Grocery>> alphabetical_pair = new Pair<>("", alphabetical_groceries);
-//        ArrayList<Pair<String, ArrayList<Grocery>>> alphabetical_sublist = new ArrayList<Pair<String, ArrayList<Grocery>>>();
-//        alphabetical_sublist.add(alphabetical_pair);
-//
-//        //create the new adapter based on this alphabetical_sublist
-//        GroceriesSublistAdapter alphabetical_groceries_adapter = new GroceriesSublistAdapter(alphabetical_sublist);
-//        grocery_list_rv.swapAdapter(alphabetical_groceries_adapter, false);
-//        //might change to true for second param if false doesn't work?
+        //so there needs to be a method to get all the items in the groceries database
+        ArrayList<Grocery> alphabetical_groceries = groceries_db.getGroceriesAlphabetical();
+        Log.d("SHOW_BY_ALPHABETICAL", "size of groceries: " + alphabetical_groceries.size());
+
+        //create the sublist for alphabetical, where the label is an empty string
+        Pair<String, ArrayList<Grocery>> alphabetical_pair = new Pair<>("ALPHABETICAL", alphabetical_groceries);
+        ArrayList<Pair<String, ArrayList<Grocery>>> alphabetical_sublist = new ArrayList<Pair<String, ArrayList<Grocery>>>();
+        alphabetical_sublist.add(alphabetical_pair);
+
+        //create the new adapter based on this alphabetical_sublist
+        GroceriesSublistAdapter alphabetical_groceries_adapter = new GroceriesSublistAdapter(alphabetical_sublist, groceries_db);
+        grocery_list_rv.swapAdapter(alphabetical_groceries_adapter, false);
+        //might change to true for second param if false doesn't work?
 
         // ^ if i want to include labels for each letter, i can do it using the sublist and copy food_groups
         //and then just use swapadapter later
 
-        // v But if we dont want to include labels for each letter, then we have to use setadapter instead of swapadapter
-        //since using a sublist with an empty string as the label adds an extra space for the empty label
-
-        //so there needs to be a method to get all the items in the groceries database
-        ArrayList<Grocery> alphabetical_groceries = groceries_db.getGroceriesAlphabetical();
-        Log.d("SHOW_BY_ALPHABETICAL", "size of groceries: " + alphabetical_groceries.size());
-        //create the new adapter based on this alphabetical_groceries
-        GroceriesAdapter alphabetical_groceries_adapter = new GroceriesAdapter(alphabetical_groceries);
-        //grocery_list_rv.swapAdapter(alphabetical_groceries_adapter, false);
-        //might change to true for second param if false doesn't work?
-        grocery_list_rv.setAdapter(alphabetical_groceries_adapter);
+//        // v But if we dont want to include labels for each letter, then we have to use setadapter instead of swapadapter
+//        //since using a sublist with an empty string as the label adds an extra space for the empty label
+//
+//        //so there needs to be a method to get all the items in the groceries database
+//        ArrayList<Grocery> alphabetical_groceries = groceries_db.getGroceriesAlphabetical();
+//        Log.d("SHOW_BY_ALPHABETICAL", "size of groceries: " + alphabetical_groceries.size());
+//
+//        //create the new adapter based on this alphabetical_groceries
+//        GroceriesAdapter alphabetical_groceries_adapter = new GroceriesAdapter(alphabetical_groceries, groceries_db);
+//        //grocery_list_rv.swapAdapter(alphabetical_groceries_adapter, false);
+//
+//        //attach the item touch helper (ith)
+//        ItemTouchHelper alphabetical_ith = new ItemTouchHelper(new GroceriesItemTouchHelper(alphabetical_groceries_adapter));
+//        //alphabetical_ith.attachToRecyclerView(grocery_list_rv);
+//
+//        //might change to true for second param if false doesn't work?
+//        grocery_list_rv.setAdapter(alphabetical_groceries_adapter);
 
     }
 
@@ -194,9 +200,9 @@ public class GroceriesFragment extends Fragment {
         Log.d("SHOW_BY_FOOD_GROUP", "size of sublist: " + food_group_sublist.size());
 
         //create the new adapter based on food_group_sublist
-        GroceriesSublistAdapter food_group_groceries_adapter = new GroceriesSublistAdapter(food_group_sublist);
-//        grocery_list_rv.swapAdapter(food_group_groceries_adapter, false);
-        grocery_list_rv.setAdapter(food_group_groceries_adapter);
+        GroceriesSublistAdapter food_group_groceries_adapter = new GroceriesSublistAdapter(food_group_sublist, groceries_db);
+        grocery_list_rv.swapAdapter(food_group_groceries_adapter, false);
+        //grocery_list_rv.setAdapter(food_group_groceries_adapter);
 
     }
 
@@ -239,8 +245,9 @@ public class GroceriesFragment extends Fragment {
         expiration_date_sublist.add(new Pair<>("Ready", ready_groceries));
         expiration_date_sublist.add(new Pair<>("Fresh", fresh_groceries));
 
-        GroceriesSublistAdapter expiration_date_groceries_adapter = new GroceriesSublistAdapter(expiration_date_sublist);
-        grocery_list_rv.setAdapter(expiration_date_groceries_adapter);
+        GroceriesSublistAdapter expiration_date_groceries_adapter = new GroceriesSublistAdapter(expiration_date_sublist, groceries_db);
+        grocery_list_rv.swapAdapter(expiration_date_groceries_adapter, false);
+        //grocery_list_rv.setAdapter(expiration_date_groceries_adapter);
 
     }
 
