@@ -1,6 +1,12 @@
 package edu.sjsu.sase.android.spoleralert;
 
+import static edu.sjsu.sase.android.spoleralert.GroceryDBSchema.GroceryDBColumns.GROCERY_NAME;
+import static edu.sjsu.sase.android.spoleralert.GroceryDBSchema.GroceryDBColumns.USED_STATUS;
+import static edu.sjsu.sase.android.spoleralert.GroceryDBSchema.GroceryDBColumns.WASTED_STATUS;
+
+import android.content.ContentValues;
 import android.util.Log;
+import android.view.DragEvent;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -13,9 +19,11 @@ import java.util.ArrayList;
 
 public class GroceriesAdapter extends RecyclerView.Adapter<GroceriesAdapter.ViewHolder>{
     private ArrayList<Grocery> groceries;
+    private GroceryDatabase groceries_db;
 
-    public GroceriesAdapter(ArrayList<Grocery> groceries_data){
+    public GroceriesAdapter(ArrayList<Grocery> groceries_data, GroceryDatabase groceries_db){
         groceries = groceries_data;
+        this.groceries_db = groceries_db;
     }
 
     //maybe a variable for grocery list sorting type?
@@ -35,6 +43,19 @@ public class GroceriesAdapter extends RecyclerView.Adapter<GroceriesAdapter.View
             super(view);
             // Define click listener for the ViewHolder's View
             textView = (TextView) view.findViewById(R.id.myTextView);
+            view.setOnClickListener(new View.OnClickListener(){
+
+                @Override
+                public void onClick(View v) {
+                    Log.d("ON CLICK", "Clicked Item!");
+                }
+            });
+//            view.setOnDragListener(new View.OnDragListener() {
+//                @Override
+//                public boolean onDrag(View v, DragEvent event) {
+//                    return false;
+//                }
+//            });
         }
 
         public TextView getTextView() {
@@ -87,4 +108,25 @@ public class GroceriesAdapter extends RecyclerView.Adapter<GroceriesAdapter.View
     public int getItemCount() {
         return groceries.size();
     }
+
+    public void useItem(int position){
+        //remove the item from the list
+        Grocery used_grocery = groceries.remove(position);
+        ContentValues vals = new ContentValues();
+        vals.put(USED_STATUS, 1);
+        groceries_db.editGroceries(used_grocery.getId(), vals);
+        notifyItemRemoved(position);
+    }
+
+    public void wasteItem(int position){
+        Grocery used_grocery = groceries.remove(position);
+        ContentValues vals = new ContentValues();
+        vals.put(WASTED_STATUS, 1);
+        groceries_db.editGroceries(used_grocery.getId(), vals);
+        notifyItemRemoved(position);
+    }
+
+//    public void deleteItem(){
+//
+//    }
 }
