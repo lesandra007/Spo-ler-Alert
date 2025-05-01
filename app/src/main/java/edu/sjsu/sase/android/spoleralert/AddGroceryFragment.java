@@ -196,6 +196,9 @@ public class AddGroceryFragment extends Fragment {
         vals.put(FREEZER_STATUS, in_freezer);
         vals.put(EXPIRATION_DATE, expiration_milli);
         vals.put(EXPIRATION_STATUS, is_expired);
+        //by default, items added to the list haven't been used/wasted yet, so set both to false
+        vals.put(USED_STATUS, false);
+        vals.put(WASTED_STATUS, false);
 
         // convert arraylist of notifications to json
         Gson gson = new Gson();
