@@ -1,4 +1,4 @@
-package edu.sjsu.sase.android.spoleralert;
+package edu.sjsu.sase.android.spoleralert.recipe;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +15,8 @@ import com.bumptech.glide.Glide;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import edu.sjsu.sase.android.spoleralert.R;
 
 public class RecipesAdapter extends RecyclerView.Adapter<RecipesAdapter.ViewHolder> {
 
