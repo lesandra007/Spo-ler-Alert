@@ -40,8 +40,6 @@ public class Grocery {
         this.is_wasted = is_wasted;
         this.notifications = notifications;
 
-        //set id to -1 by default since we don't know what id it will have when its created
-//        this.id = -1;
     }
 
     public String getName(){
@@ -52,7 +50,5 @@ public class Grocery {
     }
 
     public int getId() { return id; }
-//
-//    public void setId(int id_input) { id = id_input; }
 
 }
