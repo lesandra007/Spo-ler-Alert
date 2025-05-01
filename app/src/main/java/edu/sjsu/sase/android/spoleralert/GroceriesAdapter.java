@@ -4,6 +4,7 @@ import static edu.sjsu.sase.android.spoleralert.GroceryDBSchema.GroceryDBColumns
 import static edu.sjsu.sase.android.spoleralert.GroceryDBSchema.GroceryDBColumns.USED_STATUS;
 import static edu.sjsu.sase.android.spoleralert.GroceryDBSchema.GroceryDBColumns.WASTED_STATUS;
 
+import android.app.Dialog;
 import android.content.ContentValues;
 import android.util.Log;
 import android.view.DragEvent;
@@ -11,6 +12,8 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import android.view.View;
+import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
@@ -41,11 +44,14 @@ public class GroceriesAdapter extends RecyclerView.Adapter<GroceriesAdapter.View
         private final TextView grocery_name;
         private final TextView days_left;
 
+        private final ImageButton item_options_btn;
+
         public ViewHolder(View view) {
             super(view);
             // Define click listener for the ViewHolder's View
             grocery_name = view.findViewById(R.id.grocery_list_item);
             days_left = view.findViewById(R.id.grocery_days_left);
+            item_options_btn = view.findViewById(R.id.grocery_options);
 
             view.setOnClickListener(new View.OnClickListener(){
 
@@ -62,6 +68,10 @@ public class GroceriesAdapter extends RecyclerView.Adapter<GroceriesAdapter.View
 
         public TextView getDaysLeftTextView(){
             return days_left;
+        }
+
+        public ImageButton getItemOptionsImageBtn(){
+            return item_options_btn;
         }
     }
 
@@ -131,6 +141,15 @@ public class GroceriesAdapter extends RecyclerView.Adapter<GroceriesAdapter.View
         holder.getGroceryNameTextView().setText(grocery_name);
         holder.getDaysLeftTextView().setText(days_left);
 
+        //set the onclick event for item options button
+        holder.getItemOptionsImageBtn().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showItemOptions(v, holder.getBindingAdapterPosition());
+            }
+        });
+
+
         Log.d("GROCERIES_ADAPTER_BIND_VIEW_HOLDER", "Entered Bind View Holder: " + grocery_name);
 
 
@@ -158,7 +177,27 @@ public class GroceriesAdapter extends RecyclerView.Adapter<GroceriesAdapter.View
         notifyItemRemoved(position);
     }
 
-//    public void deleteItem(){
-//
-//    }
+    public void deleteItem(int position){
+        Grocery deleted_grocery = groceries.remove(position);
+        groceries_db.deleteGroceries(deleted_grocery.getId());
+        notifyItemRemoved(position);
+    }
+
+    public void showItemOptions(View view, int position){
+        //show pop up for item options
+        Dialog item_options = new Dialog(view.getContext());
+        item_options.setContentView(R.layout.grocery_item_options);
+        item_options.show();
+
+        //delete button functionality
+        Button delete_button = item_options.findViewById(R.id.grocery_options_delete);
+        delete_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                deleteItem(position);
+                item_options.dismiss();
+            }
+        });
+    }
+
 }
