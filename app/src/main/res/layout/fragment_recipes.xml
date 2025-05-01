@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <!-- Scrollable content -->
     <androidx.core.widget.NestedScrollView
         android:id="@+id/scroll_area"
         android:layout_width="match_parent"
@@ -17,22 +18,6 @@
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
-
-            <EditText
-                android:id="@+id/search_bar"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Search recipes..."
-                android:layout_margin="16dp"
-                android:inputType="text" />
-
-            <Spinner
-                android:id="@+id/sort_spinner"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginBottom="8dp"
-                android:spinnerMode="dropdown" />
 
             <TextView
                 android:id="@+id/recommended_label"
@@ -62,6 +47,25 @@
                 android:textStyle="bold"
                 android:padding="16dp" />
 
+            <EditText
+                android:id="@+id/search_bar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Search recipes..."
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="8dp"
+                android:inputType="text" />
+
+
+            <Spinner
+                android:id="@+id/sort_spinner"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                android:spinnerMode="dropdown"
+                />
+
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/all_recipes_grid"
                 android:layout_width="match_parent"
@@ -71,6 +75,7 @@
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
+    <!-- Fixed Bottom Bar -->
     <include
         android:id="@+id/bottom_bar"
         layout="@layout/bottom_bar"

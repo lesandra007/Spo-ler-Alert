@@ -43,7 +43,11 @@ public class RecipeUtils {
                 if (mealsArray != null) {
                     for (int i = 0; i < mealsArray.length(); i++) {
                         JSONObject meal = mealsArray.getJSONObject(i);
-                        String name = meal.getString("strMeal");
+                        String name = meal.optString("strMeal", "Unnamed");
+                        String imageUrl = meal.optString("strMealThumb", "");
+                        String category = meal.optString("strCategory", "");
+                        String area = meal.optString("strArea", "");
+                        String instructions = meal.optString("strInstructions", "");
 
                         List<String> ingredients = new ArrayList<>();
                         for (int j = 1; j <= 20; j++) {
@@ -53,7 +57,7 @@ public class RecipeUtils {
                             }
                         }
 
-                        recipes.add(new Recipe(name, ingredients));
+                        recipes.add(new Recipe(name, imageUrl, category, area, instructions, ingredients));
                     }
                 }
 
