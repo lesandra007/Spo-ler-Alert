@@ -15,11 +15,16 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
 public class GroceriesAdapter extends RecyclerView.Adapter<GroceriesAdapter.ViewHolder>{
     private ArrayList<Grocery> groceries;
     private GroceryDatabase groceries_db;
+
+    private ZoneId timezone = ZoneId.systemDefault();
 
     public GroceriesAdapter(ArrayList<Grocery> groceries_data, GroceryDatabase groceries_db){
         groceries = groceries_data;
@@ -32,17 +37,16 @@ public class GroceriesAdapter extends RecyclerView.Adapter<GroceriesAdapter.View
      * ViewHolder class which holds the data for each item in the list
      */
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        /*
-        ------ Temporary viewholder code for testing -------
-        Taken from the official Android Studio tutorial
-         */
 
-        private final TextView textView;
+        private final TextView grocery_name;
+        private final TextView days_left;
 
         public ViewHolder(View view) {
             super(view);
             // Define click listener for the ViewHolder's View
-            textView = (TextView) view.findViewById(R.id.myTextView);
+            grocery_name = view.findViewById(R.id.grocery_list_item);
+            days_left = view.findViewById(R.id.grocery_days_left);
+
             view.setOnClickListener(new View.OnClickListener(){
 
                 @Override
@@ -50,16 +54,14 @@ public class GroceriesAdapter extends RecyclerView.Adapter<GroceriesAdapter.View
                     Log.d("ON CLICK", "Clicked Item!");
                 }
             });
-//            view.setOnDragListener(new View.OnDragListener() {
-//                @Override
-//                public boolean onDrag(View v, DragEvent event) {
-//                    return false;
-//                }
-//            });
         }
 
-        public TextView getTextView() {
-            return textView;
+        public TextView getGroceryNameTextView() {
+            return grocery_name;
+        }
+
+        public TextView getDaysLeftTextView(){
+            return days_left;
         }
     }
 
@@ -95,9 +97,39 @@ public class GroceriesAdapter extends RecyclerView.Adapter<GroceriesAdapter.View
         //this populates each view in the list with the actual data
         //get Grocery Item
         Grocery grocery_item = groceries.get(position);
+
+        //get the name of the grocery
         String grocery_name = grocery_item.getName();
 
-        holder.getTextView().setText(grocery_name);
+        //string for days left
+        String days_left = "";
+
+        //get the expiration date
+        LocalDate expiration_date = grocery_item.getExpirationDate();
+
+        //convert the date to long milliseconds
+        long expiration_date_milli = expiration_date.atStartOfDay(timezone).toInstant().toEpochMilli();
+
+        //get the current date at 12:00AM in milli
+        LocalDate current_date = LocalDate.now();
+        long today_milli = current_date.atStartOfDay(timezone).toInstant().toEpochMilli();
+
+        //subtract the expiration date from current date
+        long difference_milli = expiration_date_milli - today_milli;
+
+        //convert the difference in milli to days
+        if (difference_milli >= 0){
+            long days_left_num = TimeUnit.MILLISECONDS.toDays(difference_milli);
+            days_left = days_left_num + " days left";
+
+        }
+        else{
+            long days_over_num = TimeUnit.MILLISECONDS.toDays(Math.abs(difference_milli));
+            days_left = days_over_num + " days overdue";
+        }
+
+        holder.getGroceryNameTextView().setText(grocery_name);
+        holder.getDaysLeftTextView().setText(days_left);
 
         Log.d("GROCERIES_ADAPTER_BIND_VIEW_HOLDER", "Entered Bind View Holder: " + grocery_name);
 
