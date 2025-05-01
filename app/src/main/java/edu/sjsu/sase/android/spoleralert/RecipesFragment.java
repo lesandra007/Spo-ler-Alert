@@ -28,6 +28,10 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import edu.sjsu.sase.android.spoleralert.recipe.Recipe;
+import edu.sjsu.sase.android.spoleralert.recipe.RecipeUtils;
+import edu.sjsu.sase.android.spoleralert.recipe.RecipesAdapter;
+
 public class RecipesFragment extends Fragment implements RecipesAdapter.OnRecipeClickListener {
 
     private List<Recipe> allRecipes;
