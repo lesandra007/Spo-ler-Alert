@@ -42,13 +42,98 @@ public class Grocery {
 
     }
 
+    public int getId() { return id; }
+
     public String getName(){
         return name;
     }
+
+    public void setName(String new_name){
+        name = new_name;
+    }
+
+    public String getFoodGroup() {
+        return food_group;
+    }
+
+    public void setFoodGroup(String new_fg){
+        food_group = new_fg;
+    }
+
+    public double getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(double new_quantity){
+        quantity = new_quantity;
+    }
+
+    public int getPounds() {
+        return pounds;
+    }
+
+    public void setPounds(int new_pounds){
+        pounds = new_pounds;
+    }
+
+    public int getOunces() {
+        return ounces;
+    }
+
+    public void setOunces(int new_ounces){
+        ounces = new_ounces;
+    }
+
+    public double getPrice() {
+        return price;
+    }
+
+    public void setPrice(double new_price){
+        price = new_price;
+    }
+
+    public boolean getFreezerStatus(){
+        return in_freezer;
+    }
+
+    public void setFreezerStatus(boolean new_f_stat){
+        in_freezer = new_f_stat;
+    }
+
     public LocalDate getExpirationDate(){
         return expiration_date;
     }
 
-    public int getId() { return id; }
+    public void setExpirationDate(LocalDate new_date){
+        expiration_date = new_date;
+    }
+
+    public boolean getHasExpired(){
+        return has_expired;
+    }
+
+    public void setHasExpired(boolean new_e_status){
+        has_expired = new_e_status;
+    }
+
+    public boolean getUsedStatus() {
+        return is_used;
+    }
+
+    public void setUsedStatus(boolean new_u_stat){
+        is_used = new_u_stat;
+    }
+
+    public boolean getWastedStatus(){
+        return is_wasted;
+    }
+
+    public void setWastedStatus(boolean new_w_stat){
+        is_wasted = new_w_stat;
+    }
+
+    public ArrayList<Notification> getNotifications(){
+        return notifications;
+    }
 
 }

@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <!--  display the grocery's name  -->
+    <TextView
+        android:id="@+id/item_name_info_label"
+        android:layout_width="@dimen/label_width"
+        android:layout_height="@dimen/label_height"
+        android:gravity="center"
+        android:text="@string/item_name"
+        android:textSize="@dimen/label_text_size"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/item_name_info"
+        android:layout_width="@dimen/label_width"
+        android:layout_height="@dimen/label_height"
+        android:gravity="center"
+        android:text="default_name"
+        android:textSize="@dimen/label_text_size"
+        app:layout_constraintStart_toEndOf="@id/item_name_info_label"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!--  display the grocery's food group  -->
+    <TextView
+        android:id="@+id/item_food_group_info_label"
+        android:layout_width="@dimen/label_width"
+        android:layout_height="@dimen/label_height"
+        android:gravity="center"
+        android:text="@string/item_food_group"
+        android:textSize="@dimen/label_text_size"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/item_name_info_label" />
+
+    <TextView
+        android:id="@+id/item_food_group_info"
+        android:layout_width="@dimen/label_width"
+        android:layout_height="@dimen/label_height"
+        android:gravity="center"
+        android:text="default_food_group"
+        android:textSize="@dimen/label_text_size"
+        app:layout_constraintStart_toEndOf="@id/item_food_group_info_label"
+        app:layout_constraintTop_toBottomOf="@id/item_name_info" />
+
+    <!--  display the grocery's info label  -->
+    <TextView
+        android:id="@+id/item_quantity_info_label"
+        android:layout_width="@dimen/label_width"
+        android:layout_height="@dimen/label_height"
+        android:gravity="center"
+        android:text="@string/item_quantity"
+        android:textSize="@dimen/label_text_size"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/item_food_group_info_label" />
+
+    <TextView
+        android:id="@+id/item_quantity_info"
+        android:layout_width="@dimen/label_width"
+        android:layout_height="@dimen/label_height"
+        android:gravity="center"
+        android:text="default_item_quantity"
+        android:textSize="@dimen/label_text_size"
+        app:layout_constraintStart_toEndOf="@id/item_quantity_info_label"
+        app:layout_constraintTop_toBottomOf="@id/item_food_group_info" />
+
+    <!--  display the grocery's weight  -->
+    <TextView
+        android:id="@+id/item_weight_info_label"
+        android:layout_width="@dimen/label_width"
+        android:layout_height="@dimen/label_height"
+        android:gravity="center"
+        android:text="@string/item_weight"
+        android:textSize="@dimen/label_text_size"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/item_quantity_info_label" />
+
+    <TextView
+        android:id="@+id/item_weight_info"
+        android:layout_width="@dimen/label_width"
+        android:layout_height="@dimen/label_height"
+        android:gravity="center"
+        android:text="default_item_weight"
+        android:textSize="@dimen/label_text_size"
+        app:layout_constraintStart_toEndOf="@id/item_weight_info_label"
+        app:layout_constraintTop_toBottomOf="@id/item_quantity_info" />
+
+    <!--  display the grocery's price  -->
+    <TextView
+        android:id="@+id/item_price_info_label"
+        android:layout_width="@dimen/label_width"
+        android:layout_height="@dimen/label_height"
+        android:gravity="center"
+        android:text="@string/item_price"
+        android:textSize="@dimen/label_text_size"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/item_weight_info_label" />
+
+    <TextView
+        android:id="@+id/item_price_info"
+        android:layout_width="@dimen/label_width"
+        android:layout_height="@dimen/label_height"
+        android:gravity="center"
+        android:text="default_item_price"
+        android:textSize="@dimen/label_text_size"
+        app:layout_constraintStart_toEndOf="@id/item_price_info_label"
+        app:layout_constraintTop_toBottomOf="@id/item_weight_info" />
+
+    <!-- display the freezer status -->
+    <TextView
+        android:id="@+id/item_freezer_status_info_label"
+        android:layout_width="@dimen/label_width"
+        android:layout_height="@dimen/label_height"
+        android:gravity="center"
+        android:text="@string/freezer_status"
+        android:textSize="@dimen/label_text_size"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/item_price_info_label" />
+
+    <TextView
+        android:id="@+id/item_freezer_status_info"
+        android:layout_width="@dimen/label_width"
+        android:layout_height="@dimen/label_height"
+        android:gravity="center"
+        android:text="default_item_freezer_status"
+        android:textSize="@dimen/label_text_size"
+        app:layout_constraintStart_toEndOf="@id/item_freezer_status_info_label"
+        app:layout_constraintTop_toBottomOf="@id/item_price_info" />
+
+    <!-- display the expiration date -->
+    <TextView
+        android:id="@+id/item_expiration_date_info_label"
+        android:layout_width="@dimen/label_width"
+        android:layout_height="@dimen/label_height"
+        android:gravity="center"
+        android:text="@string/item_expiration"
+        android:textSize="@dimen/label_text_size"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/item_freezer_status_info_label" />
+
+    <TextView
+        android:id="@+id/item_expiration_date_info"
+        android:layout_width="@dimen/label_width"
+        android:layout_height="@dimen/label_height"
+        android:gravity="center"
+        android:text="default_item_expiration_date"
+        android:textSize="@dimen/label_text_size"
+        app:layout_constraintStart_toEndOf="@id/item_expiration_date_info_label"
+        app:layout_constraintTop_toBottomOf="@id/item_freezer_status_info" />
+
+    <!-- display the notifications -->
+    <TextView
+        android:id="@+id/item_notification_info_label"
+        android:layout_width="@dimen/label_width"
+        android:layout_height="@dimen/label_height"
+        android:gravity="center"
+        android:text="Notifications:"
+        android:textSize="@dimen/label_text_size"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/item_expiration_date_info_label" />
+
+    <TextView
+        android:id="@+id/item_notification_info"
+        android:layout_width="@dimen/label_width"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="default_item_notifications"
+        android:textSize="@dimen/label_text_size"
+        app:layout_constraintStart_toEndOf="@id/item_notification_info_label"
+        app:layout_constraintTop_toBottomOf="@id/item_expiration_date_info" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

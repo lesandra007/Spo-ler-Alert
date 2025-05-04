@@ -1,5 +1,6 @@
 package edu.sjsu.sase.android.spoleralert;
 
+import android.util.Log;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -42,7 +43,7 @@ public class GroceriesSublistAdapter extends RecyclerView.Adapter<GroceriesSubli
             sublist_rv = sublist_view.findViewById(R.id.sublist_rv);
 
             //set the sublist_rv's adapter to an empty one
-            GroceriesAdapter empty_groceries_adapter = new GroceriesAdapter(new ArrayList<Grocery>(), groceries_db);
+            GroceriesAdapter empty_groceries_adapter = new GroceriesAdapter(new ArrayList<Grocery>(), groceries_db, "empty");
             //initially set the adapter to the adapter created with the empty list
             sublist_rv.setAdapter(empty_groceries_adapter);
         }
@@ -72,10 +73,11 @@ public class GroceriesSublistAdapter extends RecyclerView.Adapter<GroceriesSubli
         holder.getSublistLabel().setText(label);
 
         //set up the inner recyclerview
-        GroceriesAdapter groceries_adapter = new GroceriesAdapter(groceries, groceries_db);
+        GroceriesAdapter groceries_adapter = new GroceriesAdapter(groceries, groceries_db, label);
         //attach the item touch helper
         ItemTouchHelper groceries_ith = new ItemTouchHelper(new GroceriesItemTouchHelper(groceries_adapter));
         groceries_ith.attachToRecyclerView(holder.getSublist());
+        Log.d("SUBLIST_BINDING", "Adapter Name during sublist binding: " + label);
         holder.getSublist().swapAdapter(groceries_adapter, false);
     }
 
