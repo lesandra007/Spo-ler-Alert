@@ -108,11 +108,17 @@ public class AddGroceryFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 if (selectedDate != null) {
-                    addGrocery(add_groceries_view);
-                    // schedule reminder
-                    scheduleReminder(add_groceries_view, getContext());
-                    // navigate
-                    controller.navigate(R.id.action_addGroceryFragment_to_groceriesFragment);
+                    boolean is_valid_grocery = groceryValidation(add_groceries_view);
+                    if (is_valid_grocery) {
+                        addGrocery(add_groceries_view);
+                        // schedule reminder
+                        scheduleReminder(add_groceries_view, getContext());
+                        // navigate
+                        controller.navigate(R.id.action_addGroceryFragment_to_groceriesFragment);
+                    }
+                    else {
+                        Toast.makeText(getContext(), "Please fill out all fields", Toast.LENGTH_SHORT).show();
+                    }
                 }
                 else{
                     Toast.makeText(getContext(), "Please select a date", Toast.LENGTH_SHORT).show();
@@ -127,6 +133,27 @@ public class AddGroceryFragment extends Fragment {
         addNotif.setOnClickListener(this::showNotifDialog);
 
         return add_groceries_view;
+    }
+
+    public boolean groceryValidation(View view) {
+
+        //get textboxes/dropdown/checkbox/calendar objects
+        EditText name_et = view.findViewById(R.id.item_name_input);
+        EditText quantity_et = view.findViewById(R.id.item_quantity_input);
+        EditText pounds_et = view.findViewById(R.id.item_pounds_input);
+        EditText ounces_et = view.findViewById(R.id.item_ounces_input);
+        EditText price_et = view.findViewById(R.id.item_price_input);
+
+        //check if any of the required values are null
+        //if something is null, create a dialog letting user know
+        if (name_et.getText().toString().isEmpty() || quantity_et.getText().toString().isEmpty() ||
+                pounds_et.getText().toString().isEmpty() || ounces_et.getText().toString().isEmpty() ||
+                price_et.getText().toString().isEmpty() || expiration_date == null) {
+            Log.d("IS_EMPTY", "Entered is empty");
+            return false;
+        }
+        return true;
+
     }
 
     /*
