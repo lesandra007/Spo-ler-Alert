@@ -519,6 +519,14 @@ public class GroceriesAdapter extends RecyclerView.Adapter<GroceriesAdapter.View
         freezer_check.setChecked(freezer_status);
         expiration_cal.setDate(expiration_date.atStartOfDay(timezone).toInstant().toEpochMilli());
 
+        //if the item has been used, lock the quantity/price/weight from being changed
+        if (!grocery_to_edit.getUpdates().isEmpty()){
+            quantity_et.setEnabled(false);
+            pounds_et.setEnabled(false);
+            ounces_et.setEnabled(false);
+            price_et.setEnabled(false);
+        }
+
         //set functionality for save edit
         Button edit_save_button = edit_grocery.findViewById(R.id.item_edit_button);
         edit_save_button.setOnClickListener(new View.OnClickListener() {
@@ -538,7 +546,6 @@ public class GroceriesAdapter extends RecyclerView.Adapter<GroceriesAdapter.View
                 if (new_expiration_date == null){
                     new_expiration_date = expiration_date;
                 }
-                //TODO: if the item has already been used/wasted, make sure they don't change the weight, price, or quantity
 
                 long expiration_milli = new_expiration_date.atStartOfDay(timezone).toInstant().toEpochMilli();
                 long today_milli = LocalDate.now(timezone).atStartOfDay(timezone).toInstant().toEpochMilli();
