@@ -229,10 +229,20 @@ public class GroceriesAdapter extends RecyclerView.Adapter<GroceriesAdapter.View
         TextView fill_in_expiration_date = item_info.findViewById(R.id.item_expiration_date_info);
         TextView fill_in_notifications = item_info.findViewById(R.id.item_notification_info);
 
+        //for every update, collect the quantity consumed
+        //and display what is left in the info section
+        double quantity_difference = 0;
+        for (GroceryUsageUpdate update : grocery_to_view.getUpdates()) {
+            quantity_difference += update.getQuantitySubtracted();
+        }
+        double current_quantity = quantity - quantity_difference;
+
+
         //populate info in dialog with grocery info
         fill_in_name.setText(name);
         fill_in_food_group.setText(food_group);
-        fill_in_quantity.setText(String.valueOf(quantity));
+        String quantity_str = current_quantity + " / " + quantity;
+        fill_in_quantity.setText(quantity_str);
         String weight_str = pounds + " pounds and " + ounces + " ounces";
         fill_in_weight.setText(weight_str);
         String price_str = "$" + price;
