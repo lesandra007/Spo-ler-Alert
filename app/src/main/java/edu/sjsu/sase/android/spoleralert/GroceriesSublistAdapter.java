@@ -75,8 +75,6 @@ public class GroceriesSublistAdapter extends RecyclerView.Adapter<GroceriesSubli
         //set up the inner recyclerview
         GroceriesAdapter groceries_adapter = new GroceriesAdapter(groceries, groceries_db, label);
         //attach the item touch helper
-        ItemTouchHelper groceries_ith = new ItemTouchHelper(new GroceriesItemTouchHelper(groceries_adapter));
-        groceries_ith.attachToRecyclerView(holder.getSublist());
         Log.d("SUBLIST_BINDING", "Adapter Name during sublist binding: " + label);
         holder.getSublist().swapAdapter(groceries_adapter, false);
     }
