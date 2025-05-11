@@ -14,25 +14,25 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <Button
-        android:id="@+id/grocery_options_use"
-        android:layout_width="wrap_content"
-        android:layout_height="50dp"
-        android:layout_marginStart="140dp"
-        android:layout_marginEnd="@dimen/text_margin"
-        android:text="Use"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/grocery_options_show_info" />
+<!--    <Button-->
+<!--        android:id="@+id/grocery_options_use"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="50dp"-->
+<!--        android:layout_marginStart="140dp"-->
+<!--        android:layout_marginEnd="@dimen/text_margin"-->
+<!--        android:text="Use"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toBottomOf="@id/grocery_options_show_info" />-->
 
-    <Button
-        android:id="@+id/grocery_options_waste"
-        android:layout_width="wrap_content"
-        android:layout_height="50dp"
-        android:layout_marginStart="140dp"
-        android:layout_marginEnd="@dimen/text_margin"
-        android:text="Waste"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/grocery_options_use" />
+<!--    <Button-->
+<!--        android:id="@+id/grocery_options_waste"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="50dp"-->
+<!--        android:layout_marginStart="140dp"-->
+<!--        android:layout_marginEnd="@dimen/text_margin"-->
+<!--        android:text="Waste"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toBottomOf="@id/grocery_options_use" />-->
 
     <Button
         android:id="@+id/grocery_options_delete"
@@ -42,7 +42,8 @@
         android:layout_marginEnd="@dimen/text_margin"
         android:text="Delete"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/grocery_options_waste" />
+        app:layout_constraintTop_toBottomOf="@id/grocery_options_show_info" />
+<!--        app:layout_constraintTop_toBottomOf="@id/grocery_options_waste" />-->
 
     <Button
         android:id="@+id/grocery_options_edit"
