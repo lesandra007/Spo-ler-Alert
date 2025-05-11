@@ -5,29 +5,156 @@
     android:id="@+id/frameLayout2"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/fresh_green"
+    android:background="@color/white"
     tools:context=".StartFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:id="@+id/textView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Hello World!"
+    <!-- Green circles -->
+    <View
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:background="@drawable/green_faded_circle"
+        android:alpha="0.25"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:translationX="-50dp"
+        android:translationY="-60dp" />
+    <View
+        android:layout_width="400dp"
+        android:layout_height="400dp"
+        android:alpha="0.25"
+        android:background="@drawable/green_faded_circle"
+        android:translationX="230dp"
+        android:translationY="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+    <View
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:alpha="0.25"
+        android:background="@drawable/green_faded_circle"
+        android:translationX="-30dp"
+        android:translationY="30dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <!-- Yellow circles -->
+    <View
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:alpha="0.3"
+        android:background="@drawable/yellow_faded_circle"
+        android:translationX="70dp"
+        android:translationY="-70dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+    <View
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:alpha="0.3"
+        android:background="@drawable/yellow_faded_circle"
+        android:translationX="100dp"
+        android:translationY="-320dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+    <View
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:alpha="0.3"
+        android:background="@drawable/yellow_faded_circle"
+        android:translationX="120dp"
+        android:translationY="-20dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <!-- Logo -->
+    <ImageView
+        android:id="@+id/logoImageView"
+        android:layout_width="300dp"
+        android:layout_height="300dp"
+        android:layout_gravity="center"
+        android:scaleType="fitCenter"
+        android:layout_marginTop="100dp"
+        android:src="@drawable/logo"
+        app:layout_constraintBottom_toTopOf="@+id/space1"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.365" />
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <Button
+    <Space
+        android:id="@+id/space1"
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        app:layout_constraintBottom_toTopOf="@+id/titleText" />
+
+    <!-- Title Text -->
+    <TextView
+        android:id="@+id/titleText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/spo"
+        android:textSize="28sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toStartOf="@+id/exclamation"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/space1" />
+    <TextView
+        android:id="@+id/exclamation"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/exclamation"
+        android:textColor="#00b215"
+        android:textSize="28sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@id/titleText"
+        app:layout_constraintEnd_toStartOf="@+id/alert"
+        app:layout_constraintStart_toEndOf="@id/titleText"
+        app:layout_constraintTop_toTopOf="@id/titleText" />
+    <TextView
+        android:id="@+id/alert"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/ler_alert"
+        android:textSize="28sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@id/titleText"
+        app:layout_constraintStart_toEndOf="@id/exclamation"
+        app:layout_constraintTop_toTopOf="@id/titleText"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <Space
+        android:id="@+id/space2"
+        android:layout_width="match_parent"
+        android:layout_height="10dp"
+        app:layout_constraintTop_toBottomOf="@+id/exclamation"/>
+
+    <!-- Catchphrase -->
+    <TextView
+        android:id="@+id/catchPhrase"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/save_the_world_by_saving_your_wallet"
+        android:textSize="18sp"
+        app:layout_constraintTop_toBottomOf="@id/space2"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <Space
+        android:id="@+id/space3"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        app:layout_constraintTop_toBottomOf="@+id/catchPhrase"/>
+
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/open_grocery_list"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="124dp"
-        android:layout_marginTop="428dp"
         android:text="@string/open_grocery_list"
+        android:background="@drawable/test_button"
+        android:backgroundTint="@null"
+        android:textColor="@android:color/white"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/space3"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,8 +1,12 @@
 package edu.sjsu.sase.android.spoleralert;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
@@ -13,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.Spinner;
 
 import com.github.mikephil.charting.charts.BarChart;
@@ -22,7 +27,6 @@ import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
-import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
 import com.github.mikephil.charting.utils.ColorTemplate;
 
@@ -31,20 +35,48 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import edu.sjsu.sase.android.spoleralert.profile.ProfilePickerActivity;
+
 public class StatisticsFragment extends Fragment {
 
     private ArrayList<BarEntry> barArraylist;
     private ArrayList<String> monthLabels;
+    private GroceryDatabase groceryDb;
+    ImageView profilePic;
+    private ActivityResultLauncher<Intent> profilePickerLauncher;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Register the result callback
+        profilePickerLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == Activity.RESULT_OK) {
+                        Intent data = result.getData();
+                        if (data != null) {
+                            int selectedImageRes = data.getIntExtra("selectedImageRes", R.drawable.pfp1);
+                            profilePic.setImageResource(selectedImageRes);
+                        }
+                    }
+                });
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View statistics_view = inflater.inflate(R.layout.fragment_statistics, container, false);
+
+        profilePic = statistics_view.findViewById(R.id.profilePicture);
+
+        profilePic.setOnClickListener(v -> {
+            Intent intent = new Intent(requireContext(), ProfilePickerActivity.class);
+            profilePickerLauncher.launch(intent);
+        });
+
+        groceryDb = new GroceryDatabase(requireContext());
         BarChart barChart = statistics_view.findViewById(R.id.barchart);
         getData();
         BarDataSet barDataSet = new BarDataSet(barArraylist, "Spo!ler Alert Statistics");
@@ -101,20 +133,20 @@ public class StatisticsFragment extends Fragment {
 
                 // Update bar chart based on selection
                 switch (sorting_type) {
-                    case "Total Money Spent":
-                        updateChart(getMoneySpentData(), barChart, "Total Money Spent in Dollars", R.color.fresh_green, maxMoneyY);
+                    case "Money Spent":
+                        updateChart(getMoneySpentData(), barChart, "Money Spent in Dollars", R.color.fresh_green, maxMoneyY);
                         break;
-                    case "Total Money Waste":
-                        updateChart(getMoneyWasteData(), barChart, "Total Money Waste in Dollars", R.color.expiring_red, maxMoneyY);
+                    case "Money Waste":
+                        updateChart(getMoneyWasteData(), barChart, "Money Waste in Dollars", R.color.expiring_red, maxMoneyY);
                         break;
                     case "Total Money Used":
                         updateChart(getMoneyUsedData(), barChart, "Total Money Used in Dollars", R.color.fresh_green, maxMoneyY);
                         break;
-                    case "Total Food Bought":
-                        updateChart(getFoodBoughtData(), barChart, "Total Food Bought in lbs", R.color.fresh_green, maxFoodY);
+                    case "Food Bought":
+                        updateChart(getFoodBoughtData(), barChart, "Food Bought in lbs", R.color.fresh_green, maxFoodY);
                         break;
-                    case "Total Food Wasted":
-                        updateChart(getFoodWasteData(), barChart, "Total Food Wasted in lbs", R.color.expiring_red, maxFoodY);
+                    case "Food Wasted":
+                        updateChart(getFoodWasteData(), barChart, "Food Wasted in lbs", R.color.expiring_red, maxFoodY);
                         break;
                     case "Total Food Used":
                         updateChart(getFoodUsedData(), barChart, "Total Food Used in lbs", R.color.fresh_green, maxFoodY);
@@ -196,63 +228,27 @@ public class StatisticsFragment extends Fragment {
     }
 
     private List<MonthlyStat> getMoneySpentData() {
-        return List.of(
-                new MonthlyStat(YearMonth.of(2023, 12), 100),
-                new MonthlyStat(YearMonth.of(2024, 1), 120),
-                new MonthlyStat(YearMonth.of(2024, 2), 90),
-                new MonthlyStat(YearMonth.of(2024, 3), 130),
-                new MonthlyStat(YearMonth.of(2024, 4), 110)
-        );
+        return groceryDb.getMonthlyMoneySpentStats();
     }
 
     private List<MonthlyStat> getMoneyWasteData() {
-        return List.of(
-                new MonthlyStat(YearMonth.of(2023, 12), 30),
-                new MonthlyStat(YearMonth.of(2024, 1), 50),
-                new MonthlyStat(YearMonth.of(2024, 2), 20),
-                new MonthlyStat(YearMonth.of(2024, 3), 60),
-                new MonthlyStat(YearMonth.of(2024, 4), 40)
-        );
+        return groceryDb.getMonthlyMoneySpentStats();
     }
 
     private List<MonthlyStat> getMoneyUsedData() {
-        return List.of(
-                new MonthlyStat(YearMonth.of(2023, 12), 70),
-                new MonthlyStat(YearMonth.of(2024, 1), 80),
-                new MonthlyStat(YearMonth.of(2024, 2), 70),
-                new MonthlyStat(YearMonth.of(2024, 3), 90),
-                new MonthlyStat(YearMonth.of(2024, 4), 70)
-        );
+        return groceryDb.getMonthlyMoneySpentStats();
     }
 
     private List<MonthlyStat> getFoodBoughtData() {
-        return List.of(
-                new MonthlyStat(YearMonth.of(2023, 12), 100),
-                new MonthlyStat(YearMonth.of(2024, 1), 120),
-                new MonthlyStat(YearMonth.of(2024, 2), 90),
-                new MonthlyStat(YearMonth.of(2024, 3), 130),
-                new MonthlyStat(YearMonth.of(2024, 4), 110)
-        );
+        return groceryDb.getMonthlyMoneySpentStats();
     }
 
     private List<MonthlyStat> getFoodWasteData() {
-        return List.of(
-                new MonthlyStat(YearMonth.of(2023, 12), 30),
-                new MonthlyStat(YearMonth.of(2024, 1), 50),
-                new MonthlyStat(YearMonth.of(2024, 2), 20),
-                new MonthlyStat(YearMonth.of(2024, 3), 60),
-                new MonthlyStat(YearMonth.of(2024, 4), 40)
-        );
+        return groceryDb.getMonthlyMoneySpentStats();
     }
 
     private List<MonthlyStat> getFoodUsedData() {
-        return List.of(
-                new MonthlyStat(YearMonth.of(2023, 12), 70),
-                new MonthlyStat(YearMonth.of(2024, 1), 80),
-                new MonthlyStat(YearMonth.of(2024, 2), 70),
-                new MonthlyStat(YearMonth.of(2024, 3), 90),
-                new MonthlyStat(YearMonth.of(2024, 4), 70)
-        );
+        return groceryDb.getMonthlyMoneySpentStats();
     }
 
     private void updateChart(List<MonthlyStat> data, BarChart chart, String label, int colorResId, float maxY) {
@@ -282,5 +278,4 @@ public class StatisticsFragment extends Fragment {
         chart.getAxisRight().setEnabled(false); // optional: hide right axis
         chart.invalidate(); // refresh
     }
-
 }
