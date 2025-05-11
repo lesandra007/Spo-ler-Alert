@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <EditText
+        android:id="@+id/val_to_subtract"
+        android:layout_width="@dimen/input_width"
+        android:layout_height="50dp"
+        android:hint="Value to Subtract"
+        android:inputType="numberDecimal"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/or_label"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:gravity="center"
+        android:text="or"
+        android:textSize="@dimen/label_text_size"
+        app:layout_constraintStart_toEndOf="@id/val_to_subtract"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/percent_to_consume"
+        android:layout_width="@dimen/input_width"
+        android:layout_height="50dp"
+        android:hint="Percent to Consume"
+        android:inputType="numberDecimal"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/val_to_subtract" />
+
+    <TextView
+        android:id="@+id/percent_sign"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:gravity="center"
+        android:text="%"
+        android:textSize="@dimen/label_text_size"
+        app:layout_constraintStart_toEndOf="@id/percent_to_consume"
+        app:layout_constraintTop_toBottomOf="@id/val_to_subtract" />
+
+    <RadioGroup
+        android:id="@+id/use_waste_radio_group"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/percent_to_consume" >
+
+        <RadioButton
+            android:id="@+id/use_radio_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Use" />
+
+        <RadioButton
+            android:id="@+id/waste_radio_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Waste" />
+
+    </RadioGroup>
+
+    <TextView
+        android:id="@+id/date_consumed_label"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:gravity="center"
+        android:text="Date item was used or wasted:"
+        android:textSize="@dimen/label_text_size"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/use_waste_radio_group" />
+
+    <CalendarView
+        android:id="@+id/item_partial_consume_calendar"
+        android:layout_width="304dp"
+        android:layout_height="307dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/date_consumed_label" />
+
+    <Button
+        android:id="@+id/used_wasted_save"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:layout_marginStart="140dp"
+        android:layout_marginEnd="@dimen/text_margin"
+        android:text="Save"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/item_partial_consume_calendar" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
