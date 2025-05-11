@@ -20,12 +20,14 @@ public class Grocery {
     private boolean has_expired;
     private boolean is_used;
     private boolean is_wasted;
+    private ArrayList<GroceryUsageUpdate> updates;
     private ArrayList<Notification> notifications;
 
     public Grocery(int id, String name, String food_group, double quantity,
                    int pounds, int ounces, double price,
                    boolean in_freezer, LocalDate expiration_date, boolean has_expired,
-                   boolean is_used, boolean is_wasted, ArrayList<Notification> notifications){
+                   boolean is_used, boolean is_wasted, ArrayList<GroceryUsageUpdate> updates,
+                   ArrayList<Notification> notifications){
         this.id = id;
         this.name = name;
         this.food_group = food_group;
@@ -38,6 +40,7 @@ public class Grocery {
         this.has_expired = has_expired;
         this.is_used = is_used;
         this.is_wasted = is_wasted;
+        this.updates = updates;
         this.notifications = notifications;
 
     }
@@ -130,6 +133,10 @@ public class Grocery {
 
     public void setWastedStatus(boolean new_w_stat){
         is_wasted = new_w_stat;
+    }
+
+    public ArrayList<GroceryUsageUpdate> getUpdates() {
+        return updates;
     }
 
     public ArrayList<Notification> getNotifications(){

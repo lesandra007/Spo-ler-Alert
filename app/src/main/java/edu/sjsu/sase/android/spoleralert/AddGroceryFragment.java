@@ -195,6 +195,8 @@ public class AddGroceryFragment extends Fragment {
         //by default, items added to the list haven't been used/wasted yet, so set both to false
         vals.put(USED_STATUS, false);
         vals.put(WASTED_STATUS, false);
+        //Updates_json will only ever be updated to a non-empty list in other places
+        vals.put(UPDATES_JSON, "[]");
 
         // convert arraylist of notifications to json
         Gson gson = new Gson();
