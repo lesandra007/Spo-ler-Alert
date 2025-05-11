@@ -1,7 +1,9 @@
 package edu.sjsu.sase.android.spoleralert;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 
@@ -19,6 +21,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.components.Legend;
@@ -56,9 +59,21 @@ public class StatisticsFragment extends Fragment {
                 result -> {
                     if (result.getResultCode() == Activity.RESULT_OK) {
                         Intent data = result.getData();
-                        if (data != null) {
-                            int selectedImageRes = data.getIntExtra("selectedImageRes", R.drawable.pfp1);
+                        if (data != null && getView() != null) {
+                            int selectedImageRes = data.getIntExtra("selectedImageRes", R.drawable.bird1_green);
+                            String selectedBirdName = data.getStringExtra("selectedBirdName");
+
+                            ImageView profilePic = getView().findViewById(R.id.profilePicture);
+                            TextView birdNameView = getView().findViewById(R.id.birdNameText);
+
                             profilePic.setImageResource(selectedImageRes);
+                            birdNameView.setText(selectedBirdName);
+
+                            SharedPreferences prefs = requireContext().getSharedPreferences("AvatarPrefs", Context.MODE_PRIVATE);
+                            prefs.edit()
+                                    .putInt("avatarImage", selectedImageRes)
+                                    .putString("avatarName", selectedBirdName)
+                                    .apply();
                         }
                     }
                 });
@@ -70,12 +85,24 @@ public class StatisticsFragment extends Fragment {
         View statistics_view = inflater.inflate(R.layout.fragment_statistics, container, false);
 
         profilePic = statistics_view.findViewById(R.id.profilePicture);
+        TextView birdNameView = statistics_view.findViewById(R.id.birdNameText);
 
+        // Load saved avatar data if it exists
+        SharedPreferences prefs = requireContext().getSharedPreferences("AvatarPrefs", Context.MODE_PRIVATE);
+        int savedAvatar = prefs.getInt("avatarImage", R.drawable.bird1_green);
+        String savedName = prefs.getString("avatarName", "Rosette");
+
+        // Set the profile picture and name from saved preferences
+        profilePic.setImageResource(savedAvatar);
+        birdNameView.setText(savedName);
+
+        // Set a click listener for the profile picture to launch the ProfilePickerActivity
         profilePic.setOnClickListener(v -> {
             Intent intent = new Intent(requireContext(), ProfilePickerActivity.class);
             profilePickerLauncher.launch(intent);
         });
 
+        // Set up Bar Chart and other UI elements as usual
         groceryDb = new GroceryDatabase(requireContext());
         BarChart barChart = statistics_view.findViewById(R.id.barchart);
         getData();
@@ -88,7 +115,7 @@ public class StatisticsFragment extends Fragment {
         barDataSet.setLabel("Your Statistics");
         barChart.getDescription().setEnabled(true);
 
-//      Editing the legend to be on the bottom left
+        // Bar chart legend and axis setup
         Legend l = barChart.getLegend();
         l.setVerticalAlignment(Legend.LegendVerticalAlignment.BOTTOM);
         l.setHorizontalAlignment(Legend.LegendHorizontalAlignment.LEFT);
@@ -158,31 +185,19 @@ public class StatisticsFragment extends Fragment {
             public void onNothingSelected(AdapterView<?> parent) { }
         });
 
+        // Set up navigation buttons
         NavController controller = NavHostFragment.findNavController(this);
-        //clicking on the buttons in the bottom bar to go to the different main parts of the app
-        statistics_view.findViewById(R.id.grocery_list_bottom_bar).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                controller.navigate(R.id.groceriesFragment);
-            }
+        statistics_view.findViewById(R.id.grocery_list_bottom_bar).setOnClickListener(view -> {
+            controller.navigate(R.id.groceriesFragment);
         });
-
-        statistics_view.findViewById(R.id.recipes_bottom_bar).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                controller.navigate(R.id.recipesFragment);
-            }
+        statistics_view.findViewById(R.id.recipes_bottom_bar).setOnClickListener(view -> {
+            controller.navigate(R.id.recipesFragment);
         });
-
-        statistics_view.findViewById(R.id.statistics_bottom_bar).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                controller.navigate(R.id.statisticsFragment);
-            }
+        statistics_view.findViewById(R.id.statistics_bottom_bar).setOnClickListener(view -> {
+            controller.navigate(R.id.statisticsFragment);
         });
 
         return statistics_view;
-
     }
 
     private void getData() {

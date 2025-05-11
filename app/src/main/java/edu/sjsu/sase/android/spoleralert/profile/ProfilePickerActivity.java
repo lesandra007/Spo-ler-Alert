@@ -36,27 +36,41 @@ public class ProfilePickerActivity extends AppCompatActivity {
 
     };
 
+    String[] avatarNames = {
+        "Peckson", "Ruby", "Chirpella",
+        "McFly", "Amber", "Tangerweet",
+        "Sunny", "Beakyoncé", "Yolka",
+        "Chirplin", "Kiwi", "Quillson",
+        "Beaky", "Bluebell", "Peakley",
+        "Feathersby", "Indiara", "Wingrove",
+        "Finchley", "Plummie", "Wattle",
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile_picker);
 
         GridView gridView = findViewById(R.id.profileGrid);
-        gridView.setAdapter(new ImageAdapter(this, profileImages));
+        ImageAdapter adapter = new ImageAdapter(this, profileImages, avatarNames);
+        gridView.setAdapter(adapter);
 
         gridView.setOnItemClickListener((parent, view, position, id) -> {
             int selectedImage = profileImages[position];
+            String selectedName = avatarNames[position];
             new AlertDialog.Builder(ProfilePickerActivity.this)
                     .setTitle("Set Profile Picture")
-                    .setMessage("Use this image as your profile picture?")
+                    .setMessage("Use \"" + selectedName + "\" as your profile picture?")
                     .setPositiveButton("Yes", (dialog, which) -> {
                         Intent resultIntent = new Intent();
                         resultIntent.putExtra("selectedImageRes", selectedImage);
+                        resultIntent.putExtra("selectedBirdName", selectedName);
                         setResult(RESULT_OK, resultIntent);
                         finish();
                     })
                     .setNegativeButton("Cancel", null)
                     .show();
         });
+
     }
 }
