@@ -5,4 +5,6 @@
     <color name="expiring_red">#F04337</color>
     <color name="ready_yellow">#E3B612</color>
     <color name="fresh_green">#5BC232</color>
+    <color name="spoiler_green">#00b215</color>
+    <color name="spoiler_yellow">#ffb82d</color>
 </resources>

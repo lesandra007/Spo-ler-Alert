@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="#00b215"
+    android:padding="8dp">
+
+    <!-- Logo wrapped in a FrameLayout for circle background -->
+    <FrameLayout
+        android:id="@+id/logoWrapper"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_centerVertical="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="4dp"
+        android:background="@drawable/white_circle">
+
+        <ImageView
+            android:id="@+id/logoImage"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:layout_gravity="center"
+            android:src="@drawable/logo"/>
+    </FrameLayout>
+
+    <!-- Container for the title pieces -->
+    <LinearLayout
+        android:id="@+id/titleContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/logoWrapper"
+        android:layout_marginStart="12dp"
+        android:orientation="horizontal"
+        android:layout_centerVertical="true">
+
+        <TextView
+            android:id="@+id/titleText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/spo"
+            android:textSize="28sp"
+            android:textStyle="bold"
+            android:textColor="@android:color/white"/>
+
+        <TextView
+            android:id="@+id/exclamation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/exclamation"
+            android:textSize="28sp"
+            android:textStyle="bold"
+            android:textColor="#ffb82d"/>
+
+        <TextView
+            android:id="@+id/alert"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/ler_alert"
+            android:textSize="28sp"
+            android:textStyle="bold"
+            android:textColor="@android:color/white"/>
+    </LinearLayout>
+
+</RelativeLayout>

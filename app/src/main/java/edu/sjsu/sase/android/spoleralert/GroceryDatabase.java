@@ -15,10 +15,15 @@ import com.google.gson.reflect.TypeToken;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import edu.sjsu.sase.android.spoleralert.notifications.Notification;
@@ -225,7 +230,6 @@ public class GroceryDatabase extends SQLiteOpenHelper {
         return expiration_date_groceries;
     }
 
-
     //there will probably also be a method to remove an item from the groceries table
     public long deleteGroceries(int grocery_id){
         SQLiteDatabase groceries_db = getWritableDatabase();
@@ -239,6 +243,40 @@ public class GroceryDatabase extends SQLiteOpenHelper {
 
     }
 
+    public List<MonthlyStat> getMonthlyMoneySpentStats() {
+        SQLiteDatabase db = getReadableDatabase();
+        Map<YearMonth, Float> monthTotals = new HashMap<>();
+
+        Cursor cursor = db.rawQuery(
+                "SELECT strftime('%Y-%m', EXPIRATION_DATE / 1000, 'unixepoch') AS month, " +
+                        "SUM(PRICE) AS total_spent " +
+                        "FROM " + TABLE_NAME + " " +
+                        "GROUP BY month", null);
+
+        while (cursor.moveToNext()) {
+            String monthStr = cursor.getString(cursor.getColumnIndexOrThrow("month"));
+            double total = cursor.getDouble(cursor.getColumnIndexOrThrow("total_spent"));
+            YearMonth month = YearMonth.parse(monthStr);
+            monthTotals.put(month, (float) total);
+        }
+        cursor.close();
+
+        // Get the most recent month with data, or fallback to current month
+        YearMonth now = YearMonth.now();
+        YearMonth latestMonth = monthTotals.keySet().stream()
+                .max(Comparator.naturalOrder())
+                .orElse(now);
+
+        // Generate last 6 months ending with latestMonth (including future ones if needed)
+        List<MonthlyStat> result = new ArrayList<>();
+        for (int i = 5; i >= 0; i--) {
+            YearMonth targetMonth = latestMonth.minusMonths(i);
+            float value = monthTotals.getOrDefault(targetMonth, 0f);
+            result.add(new MonthlyStat(targetMonth, value));
+        }
+
+        return result;
+    }
 
 
 

@@ -3,9 +3,9 @@ import java.time.YearMonth;
 
 public class MonthlyStat {
     public YearMonth month;
-    public int value;
+    public float value;
 
-    public MonthlyStat(YearMonth month, int value) {
+    public MonthlyStat(YearMonth month, float value) {
         this.month = month;
         this.value = value;
     }
