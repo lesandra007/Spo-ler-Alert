@@ -164,27 +164,6 @@ public class GroceriesFragment extends Fragment {
         grocery_list_rv.swapAdapter(alphabetical_groceries_adapter, false);
         //might change to true for second param if false doesn't work?
 
-        // ^ if i want to include labels for each letter, i can do it using the sublist and copy food_groups
-        //and then just use swapadapter later
-
-//        // v But if we dont want to include labels for each letter, then we have to use setadapter instead of swapadapter
-//        //since using a sublist with an empty string as the label adds an extra space for the empty label
-//
-//        //so there needs to be a method to get all the items in the groceries database
-//        ArrayList<Grocery> alphabetical_groceries = groceries_db.getGroceriesAlphabetical();
-//        Log.d("SHOW_BY_ALPHABETICAL", "size of groceries: " + alphabetical_groceries.size());
-//
-//        //create the new adapter based on this alphabetical_groceries
-//        GroceriesAdapter alphabetical_groceries_adapter = new GroceriesAdapter(alphabetical_groceries, groceries_db);
-//        //grocery_list_rv.swapAdapter(alphabetical_groceries_adapter, false);
-//
-//        //attach the item touch helper (ith)
-//        ItemTouchHelper alphabetical_ith = new ItemTouchHelper(new GroceriesItemTouchHelper(alphabetical_groceries_adapter));
-//        //alphabetical_ith.attachToRecyclerView(grocery_list_rv);
-//
-//        //might change to true for second param if false doesn't work?
-//        grocery_list_rv.setAdapter(alphabetical_groceries_adapter);
-
     }
 
     //method to create ArrayList of groceries sorted by food group

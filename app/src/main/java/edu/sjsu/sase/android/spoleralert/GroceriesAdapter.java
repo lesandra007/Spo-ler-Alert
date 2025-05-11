@@ -264,22 +264,22 @@ public class GroceriesAdapter extends RecyclerView.Adapter<GroceriesAdapter.View
 
     }
 
-    public void useItem(int position){
-        for (Grocery g : groceries){
-            Log.d("USE_ITEM_BEFORE_USING",g.getName());
-        }
-
-        //remove the item from the list
-        Grocery used_grocery = groceries.remove(position);
-        ContentValues vals = new ContentValues();
-        vals.put(USED_STATUS, 1);
-        groceries_db.editGroceries(used_grocery.getId(), vals);
-        notifyItemRemoved(position);
-
-        for (Grocery g : groceries){
-            Log.d("USE_ITEM_AFTER_USING",g.getName());
-        }
-    }
+//    public void useItem(int position){
+//        for (Grocery g : groceries){
+//            Log.d("USE_ITEM_BEFORE_USING",g.getName());
+//        }
+//
+//        //remove the item from the list
+//        Grocery used_grocery = groceries.remove(position);
+//        ContentValues vals = new ContentValues();
+//        vals.put(USED_STATUS, 1);
+//        groceries_db.editGroceries(used_grocery.getId(), vals);
+//        notifyItemRemoved(position);
+//
+//        for (Grocery g : groceries){
+//            Log.d("USE_ITEM_AFTER_USING",g.getName());
+//        }
+//    }
 
     public void partialUseItem(View view, int position) {
 
@@ -421,21 +421,21 @@ public class GroceriesAdapter extends RecyclerView.Adapter<GroceriesAdapter.View
         });
     }
 
-    public void wasteItem(int position){
-        for (Grocery g : groceries){
-            Log.d("WASTE_ITEM_BEFORE_WASTING",g.getName());
-        }
-
-        Grocery used_grocery = groceries.remove(position);
-        ContentValues vals = new ContentValues();
-        vals.put(WASTED_STATUS, 1);
-        groceries_db.editGroceries(used_grocery.getId(), vals);
-        notifyItemRemoved(position);
-
-        for (Grocery g : groceries){
-            Log.d("WASTE_ITEM_AFTER_WASTING",g.getName());
-        }
-    }
+//    public void wasteItem(int position){
+//        for (Grocery g : groceries){
+//            Log.d("WASTE_ITEM_BEFORE_WASTING",g.getName());
+//        }
+//
+//        Grocery used_grocery = groceries.remove(position);
+//        ContentValues vals = new ContentValues();
+//        vals.put(WASTED_STATUS, 1);
+//        groceries_db.editGroceries(used_grocery.getId(), vals);
+//        notifyItemRemoved(position);
+//
+//        for (Grocery g : groceries){
+//            Log.d("WASTE_ITEM_AFTER_WASTING",g.getName());
+//        }
+//    }
 
     public void deleteItem(int position){
         for (Grocery g : groceries){
@@ -519,6 +519,14 @@ public class GroceriesAdapter extends RecyclerView.Adapter<GroceriesAdapter.View
         freezer_check.setChecked(freezer_status);
         expiration_cal.setDate(expiration_date.atStartOfDay(timezone).toInstant().toEpochMilli());
 
+        //if the item has been used, lock the quantity/price/weight from being changed
+        if (!grocery_to_edit.getUpdates().isEmpty()){
+            quantity_et.setEnabled(false);
+            pounds_et.setEnabled(false);
+            ounces_et.setEnabled(false);
+            price_et.setEnabled(false);
+        }
+
         //set functionality for save edit
         Button edit_save_button = edit_grocery.findViewById(R.id.item_edit_button);
         edit_save_button.setOnClickListener(new View.OnClickListener() {
@@ -538,7 +546,6 @@ public class GroceriesAdapter extends RecyclerView.Adapter<GroceriesAdapter.View
                 if (new_expiration_date == null){
                     new_expiration_date = expiration_date;
                 }
-                //TODO: if the item has already been used/wasted, make sure they don't change the weight, price, or quantity
 
                 long expiration_milli = new_expiration_date.atStartOfDay(timezone).toInstant().toEpochMilli();
                 long today_milli = LocalDate.now(timezone).atStartOfDay(timezone).toInstant().toEpochMilli();
@@ -608,24 +615,24 @@ public class GroceriesAdapter extends RecyclerView.Adapter<GroceriesAdapter.View
         });
 
         //use button functionality
-        Button use_button = item_options.findViewById(R.id.grocery_options_use);
-        use_button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                useItem(position);
-                item_options.dismiss();
-            }
-        });
+//        Button use_button = item_options.findViewById(R.id.grocery_options_use);
+//        use_button.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                useItem(position);
+//                item_options.dismiss();
+//            }
+//        });
 
         //use button functionality
-        Button waste_button = item_options.findViewById(R.id.grocery_options_waste);
-        waste_button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                wasteItem(position);
-                item_options.dismiss();
-            }
-        });
+//        Button waste_button = item_options.findViewById(R.id.grocery_options_waste);
+//        waste_button.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                wasteItem(position);
+//                item_options.dismiss();
+//            }
+//        });
 
         //delete button functionality
         Button delete_button = item_options.findViewById(R.id.grocery_options_delete);
