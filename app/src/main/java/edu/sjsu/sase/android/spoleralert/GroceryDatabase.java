@@ -45,6 +45,7 @@ public class GroceryDatabase extends SQLiteOpenHelper {
                                                 EXPIRATION_STATUS + " INTEGER, " +
                                                 USED_STATUS + " INTEGER, " +
                                                 WASTED_STATUS + " INTEGER, " +
+                                                UPDATES_JSON + " TEXT, " +
                                                 NOTIFICATIONS_JSON + " TEXT);";
 
     public GroceryDatabase(Context context) {
@@ -100,6 +101,11 @@ public class GroceryDatabase extends SQLiteOpenHelper {
         boolean is_expired = expiration_status == 1;
         boolean is_used = used_status == 1;
         boolean is_wasted = wasted_status == 1;
+        String updates_json = cursor.getString(
+                cursor.getColumnIndexOrThrow(UPDATES_JSON));
+        Type updates_list_type = new TypeToken<ArrayList<GroceryUsageUpdate>>(){}.getType();
+        ArrayList<GroceryUsageUpdate> updates = new Gson().fromJson(updates_json, updates_list_type);
+        //convert expiration date in milliseconds to LocalDate
         LocalDate expiration_date = Instant.ofEpochMilli(expiration_milli).atZone(timezone).toLocalDate();
         String jsonString = cursor.getString(
                 cursor.getColumnIndexOrThrow(NOTIFICATIONS_JSON));
@@ -111,7 +117,7 @@ public class GroceryDatabase extends SQLiteOpenHelper {
         return new Grocery(id, name, food_group, quantity,
                 pounds, ounces, price,
                 in_freezer, expiration_date, is_expired,
-                is_used, is_wasted, notifications);
+                is_used, is_wasted, updates, notifications);
     }
 
     //method to retrieve all groceries in alphabetical order as an ArrayList of Groceries
