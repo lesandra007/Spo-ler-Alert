@@ -49,7 +49,15 @@ dependencies {
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
 
+    // notifications
+    implementation("com.google.code.gson:gson:2.8.9")
+
+
     // WorkManager: local scheduling
     implementation(libs.work.runtime)
     implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
+
+    // Glide for image loading
+    implementation(libs.glide)
+    annotationProcessor(libs.glideCompiler)
 }

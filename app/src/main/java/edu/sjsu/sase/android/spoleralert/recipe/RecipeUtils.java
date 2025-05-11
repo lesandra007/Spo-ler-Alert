@@ -1,8 +1,7 @@
-package edu.sjsu.sase.android.spoleralert;
+package edu.sjsu.sase.android.spoleralert.recipe;
 
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONObject;

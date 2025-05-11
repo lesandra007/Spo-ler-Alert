@@ -26,6 +26,8 @@ recyclerview = { group = "androidx.recyclerview", name = "recyclerview", version
 navigation-fragment = { group = "androidx.navigation", name = "navigation-fragment", version.ref = "navigationFragment" }
 navigation-ui = { group = "androidx.navigation", name = "navigation-ui", version.ref = "navigationUi" }
 work-runtime = { module = "androidx.work:work-runtime", version.ref = "workRuntime" }
+glide = { group = "com.github.bumptech.glide", name = "glide", version = "4.16.0" }
+glideCompiler = { group = "com.github.bumptech.glide", name = "compiler", version = "4.16.0" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

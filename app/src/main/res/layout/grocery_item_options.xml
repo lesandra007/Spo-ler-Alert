@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <Button
+        android:id="@+id/grocery_options_show_info"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:layout_marginStart="140dp"
+        android:layout_marginEnd="@dimen/text_margin"
+        android:text="Show Info"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/grocery_options_use"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:layout_marginStart="140dp"
+        android:layout_marginEnd="@dimen/text_margin"
+        android:text="Use"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/grocery_options_show_info" />
+
+    <Button
+        android:id="@+id/grocery_options_waste"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:layout_marginStart="140dp"
+        android:layout_marginEnd="@dimen/text_margin"
+        android:text="Waste"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/grocery_options_use" />
+
+    <Button
+        android:id="@+id/grocery_options_delete"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:layout_marginStart="140dp"
+        android:layout_marginEnd="@dimen/text_margin"
+        android:text="Delete"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/grocery_options_waste" />
+
+    <Button
+        android:id="@+id/grocery_options_edit"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:layout_marginStart="140dp"
+        android:layout_marginEnd="@dimen/text_margin"
+        android:text="Edit"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/grocery_options_delete"/>
+
+    <Button
+        android:id="@+id/grocery_options_subtract"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:layout_marginStart="140dp"
+        android:layout_marginEnd="@dimen/text_margin"
+        android:text="Subtract"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/grocery_options_edit"/>
+
+    <Button
+        android:id="@+id/grocery_options_cancel"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:layout_marginStart="140dp"
+        android:layout_marginEnd="@dimen/text_margin"
+        android:text="Cancel"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/grocery_options_subtract"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

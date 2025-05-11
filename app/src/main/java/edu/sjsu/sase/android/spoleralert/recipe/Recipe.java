@@ -1,4 +1,4 @@
-package edu.sjsu.sase.android.spoleralert;
+package edu.sjsu.sase.android.spoleralert.recipe;
 
 import java.util.List;
 

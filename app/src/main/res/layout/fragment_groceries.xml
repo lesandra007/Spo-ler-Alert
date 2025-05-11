@@ -50,5 +50,31 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
+    <ImageButton
+        android:id="@+id/startDiscardGrocery"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:contentDescription="Start Discard Grocery Button"
+        android:src="@android:drawable/ic_menu_delete"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/grocery_list_title" />
+
+    <ImageButton
+        android:id="@+id/startEditGrocery"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:contentDescription="Start Edit Grocery Button"
+        android:src="@android:drawable/ic_menu_edit"
+        app:layout_constraintEnd_toStartOf="@id/startDiscardGrocery"
+        app:layout_constraintTop_toBottomOf="@id/grocery_list_title" />
+
+    <ImageButton
+        android:id="@+id/removePartialGrocery"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:src="@android:drawable/ic_menu_manage"
+        app:layout_constraintEnd_toStartOf="@id/startEditGrocery"
+        app:layout_constraintTop_toBottomOf="@id/grocery_list_title" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

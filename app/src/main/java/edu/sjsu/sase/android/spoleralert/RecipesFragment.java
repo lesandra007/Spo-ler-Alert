@@ -1,117 +1,177 @@
 package edu.sjsu.sase.android.spoleralert;
 
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-import androidx.navigation.NavController;
-import androidx.navigation.fragment.NavHostFragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
-import android.widget.TextView;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.EditText;
+import android.widget.Spinner;
 
+import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.fragment.NavHostFragment;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link RecipesFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
-public class RecipesFragment extends Fragment {
+import edu.sjsu.sase.android.spoleralert.recipe.Recipe;
+import edu.sjsu.sase.android.spoleralert.recipe.RecipeUtils;
+import edu.sjsu.sase.android.spoleralert.recipe.RecipesAdapter;
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+public class RecipesFragment extends Fragment implements RecipesAdapter.OnRecipeClickListener {
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private List<Recipe> allRecipes;
+    private List<Recipe> filteredRecipes;
+    private List<Recipe> recommendedRecipes;
+    private Set<String> expiringIngredients;
+    private RecipesAdapter allRecipesAdapter;
+    private RecipesAdapter recommendedAdapter;
+    private RecyclerView allRecipesGrid;
+    private RecyclerView recommendedRecycler;
+    private Spinner sortSpinner;
+    private EditText searchBar;
 
-    public RecipesFragment() {
-        // Required empty public constructor
-    }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment RecipesFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static RecipesFragment newInstance(String param1, String param2) {
-        RecipesFragment fragment = new RecipesFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
+    public RecipesFragment() {}
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-
-        View recipes_view = inflater.inflate(R.layout.fragment_recipes, container, false);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_recipes, container, false);
         NavController controller = NavHostFragment.findNavController(this);
 
-        // bottom bar navigation
-        recipes_view.findViewById(R.id.grocery_list_bottom_bar).setOnClickListener(v -> controller.navigate(R.id.groceriesFragment));
-        recipes_view.findViewById(R.id.recipes_bottom_bar).setOnClickListener(v -> controller.navigate(R.id.recipesFragment));
-        recipes_view.findViewById(R.id.statistics_bottom_bar).setOnClickListener(v -> controller.navigate(R.id.statisticsFragment));
+        view.findViewById(R.id.grocery_list_bottom_bar).setOnClickListener(v -> controller.navigate(R.id.groceriesFragment));
+        view.findViewById(R.id.recipes_bottom_bar).setOnClickListener(v -> controller.navigate(R.id.recipesFragment));
+        view.findViewById(R.id.statistics_bottom_bar).setOnClickListener(v -> controller.navigate(R.id.statisticsFragment));
 
-        // Load grocery names from database
+        allRecipesGrid = view.findViewById(R.id.all_recipes_grid);
+        allRecipesGrid.setLayoutManager(new GridLayoutManager(requireContext(), 2));
+
+        recommendedRecycler = view.findViewById(R.id.recommended_recycler);
+        recommendedRecycler.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));
+
+        sortSpinner = view.findViewById(R.id.sort_spinner);
+        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_item, new String[]{"Alphabetical", "Cuisine"});
+        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        sortSpinner.setAdapter(spinnerAdapter);
+
+        searchBar = view.findViewById(R.id.search_bar);
+
         GroceryDatabase db = new GroceryDatabase(requireContext());
         List<Grocery> groceries = db.getGroceriesAlphabetical();
-        List<String> groceryNames = new ArrayList<>();
+        expiringIngredients = new HashSet<>();
+        LocalDate today = LocalDate.now();
         for (Grocery g : groceries) {
-            groceryNames.add(g.getName().toLowerCase());
-            Log.d(";0;", "sleepy" + g.getName());
-        }
-
-        // Filter recipes based on available groceries
-        List<Recipe> possibleRecipes = new ArrayList<>();
-        for (Recipe r : RecipeUtils.getAllRecipes()) {
-            boolean canMake = true;
-            for (String ingredient : r.getIngredients()) {
-                if (!groceryNames.contains(ingredient.toLowerCase())) {
-                    canMake = false;
-                    Log.d("we're in", groceryNames + " doesn't contain " + ingredient);
-//                  YOU SHALL NOT PASS!!!... if you don't have all the ingredients
-                    break;
-                }
-                else {
-                    Log.d("we're in", "contains " + ingredient);
-                }
+            if (!g.getExpirationDate().isBefore(today) && g.getExpirationDate().isBefore(today.plusDays(3))) {
+                expiringIngredients.add(g.getName().toLowerCase());
             }
-            if (canMake) possibleRecipes.add(r);
         }
 
-        Log.d("final cans", "Good Recipes: " + possibleRecipes);
+        RecipeUtils.fetchRecipes("a", new RecipeUtils.RecipeCallback() {
+            @Override
+            public void onRecipesLoaded(List<Recipe> recipes) {
+                Log.d("RECIPE_FETCH", "Fetched: " + recipes.size());
+                allRecipes = recipes;
 
-        RecyclerView recipesRecyclerView = recipes_view.findViewById(R.id.recipes_recycler_view);
-        recipesRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
-        recipesRecyclerView.setAdapter(new RecipesAdapter(possibleRecipes));
+                List<Recipe> sorted = new ArrayList<>(allRecipes);
+                sorted.sort((a, b) -> {
+                    long countB = b.getIngredients().stream().filter(i -> expiringIngredients.contains(i.toLowerCase())).count();
+                    long countA = a.getIngredients().stream().filter(i -> expiringIngredients.contains(i.toLowerCase())).count();
+                    return Long.compare(countB, countA);
+                });
+                recommendedRecipes = sorted.subList(0, Math.min(3, sorted.size()));
 
+                recommendedAdapter = new RecipesAdapter(recommendedRecipes, RecipesFragment.this, expiringIngredients);
+                recommendedRecycler.setAdapter(recommendedAdapter);
 
-        return recipes_view;
+                sortAndDisplay("Alphabetical");
+            }
+
+            @Override
+            public void onError(Exception e) {
+                Log.e("RECIPE_FETCH", "Error fetching recipes", e);
+            }
+        });
+
+        sortSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String sortOption = parent.getItemAtPosition(position).toString();
+                sortAndDisplay(sortOption);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {}
+        });
+
+        searchBar.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                filterRecipes(s.toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {}
+        });
+
+        return view;
     }
 
+    private void sortAndDisplay(String method) {
+        if (allRecipes == null) return;
+
+        filteredRecipes = new ArrayList<>(allRecipes);
+
+        if (method.equals("Alphabetical")) {
+            Collections.sort(filteredRecipes, Comparator.comparing(Recipe::getTitle));
+        } else if (method.equals("Cuisine")) {
+            Collections.sort(filteredRecipes, Comparator.comparing(Recipe::getArea));
+        }
+
+        filterRecipes(searchBar.getText().toString());
+    }
+
+    private void filterRecipes(String query) {
+        if (filteredRecipes == null) return;
+
+        List<Recipe> results = filteredRecipes.stream()
+                .filter(r -> r.getTitle().toLowerCase().contains(query.toLowerCase()))
+                .collect(Collectors.toList());
+
+        allRecipesAdapter = new RecipesAdapter(results, this);
+        allRecipesGrid.setAdapter(allRecipesAdapter);
+    }
+
+    @Override
+    public void onRecipeClick(Recipe recipe) {
+        StringBuilder builder = new StringBuilder();
+        builder.append("Category: ").append(recipe.getCategory()).append("\n");
+        builder.append("Area: ").append(recipe.getArea()).append("\n\n");
+        builder.append("Instructions:\n").append(recipe.getInstructions()).append("\n\n");
+        builder.append("Ingredients:\n");
+        for (String ing : recipe.getIngredients()) {
+            builder.append("- ").append(ing).append("\n");
+        }
+
+        new androidx.appcompat.app.AlertDialog.Builder(requireContext())
+                .setTitle(recipe.getTitle())
+                .setMessage(builder.toString())
+                .setPositiveButton("Close", null)
+                .show();
+    }
 }

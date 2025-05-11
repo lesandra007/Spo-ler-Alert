@@ -9,6 +9,10 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import java.lang.reflect.Type;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -16,6 +20,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
+
+import edu.sjsu.sase.android.spoleralert.notifications.Notification;
 
 /**
  *
@@ -36,7 +42,10 @@ public class GroceryDatabase extends SQLiteOpenHelper {
                                                 PRICE + " REAL, " +
                                                 FREEZER_STATUS + " INTEGER, " +
                                                 EXPIRATION_DATE + " DATE, " +
-                                                EXPIRATION_STATUS + " INTEGER);";
+                                                EXPIRATION_STATUS + " INTEGER, " +
+                                                USED_STATUS + " INTEGER, " +
+                                                WASTED_STATUS + " INTEGER, " +
+                                                NOTIFICATIONS_JSON + " TEXT);";
 
     public GroceryDatabase(Context context) {
         super(context, DATABASE_NAME, null, VERSION);
@@ -63,6 +72,8 @@ public class GroceryDatabase extends SQLiteOpenHelper {
 
     //create_grocery_from_db_row
     public Grocery createGroceryFromDbRow(Cursor cursor){
+        int id = cursor.getInt(
+                cursor.getColumnIndexOrThrow(ID));
         String name = cursor.getString(
                 cursor.getColumnIndexOrThrow(GROCERY_NAME));
         String food_group = cursor.getString(
@@ -81,14 +92,26 @@ public class GroceryDatabase extends SQLiteOpenHelper {
                 cursor.getColumnIndexOrThrow(EXPIRATION_DATE));
         int expiration_status = cursor.getInt(
                 cursor.getColumnIndexOrThrow(EXPIRATION_STATUS));
+        int used_status = cursor.getInt(
+                cursor.getColumnIndexOrThrow(USED_STATUS));
+        int wasted_status = cursor.getInt(
+                cursor.getColumnIndexOrThrow(WASTED_STATUS));
         boolean in_freezer = freezer_status == 1;
         boolean is_expired = expiration_status == 1;
+        boolean is_used = used_status == 1;
+        boolean is_wasted = wasted_status == 1;
         LocalDate expiration_date = Instant.ofEpochMilli(expiration_milli).atZone(timezone).toLocalDate();
+        String jsonString = cursor.getString(
+                cursor.getColumnIndexOrThrow(NOTIFICATIONS_JSON));
+        // convert jsonString to arraylist of notifications
+        Type listType = new TypeToken<ArrayList<Notification>>(){}.getType();
+        ArrayList<Notification> notifications = new Gson().fromJson(jsonString, listType);
 
         //create the Grocery object
-        return new Grocery(name, food_group, quantity,
+        return new Grocery(id, name, food_group, quantity,
                 pounds, ounces, price,
-                in_freezer, expiration_date, is_expired);
+                in_freezer, expiration_date, is_expired,
+                is_used, is_wasted, notifications);
     }
 
     //method to retrieve all groceries in alphabetical order as an ArrayList of Groceries
@@ -98,13 +121,19 @@ public class GroceryDatabase extends SQLiteOpenHelper {
         //we want the groceries to be sorted alphabetically
         String order_alphabetically = GROCERY_NAME + " COLLATE NOCASE ASC";
 
+        //only want items that aren't used or wasted
+        String selection =
+                USED_STATUS + " = ?" + " AND " +
+                WASTED_STATUS + " = ?";
+        String[] selection_args = { "0", "0" };
+
         //we want to get all columns,
         // so we pass null as the second param (projection param)
         Cursor alphabetical_cursor = groceries_db.query(
                 TABLE_NAME,
                 null, //columns to return, null means return all columns
-                null, //columns for the where clause, null for no where clause
-                null, //values for the where clause, null for no where clause
+                selection, //columns for the where clause, null for no where clause
+                selection_args, //values for the where clause, null for no where clause
                 null, //groupBy, null for no groupBy clause
                 null, //having, null for no having clause
                 order_alphabetically
@@ -128,8 +157,11 @@ public class GroceryDatabase extends SQLiteOpenHelper {
         SQLiteDatabase groceries_db = getReadableDatabase();
 
         //we only want groceries that are of a specific food group
-        String selection = FOOD_GROUP + " = ?";
-        String[] selection_args = { food_group };
+        //and that aren't used or wasted
+        String selection = FOOD_GROUP + " = ?" + " AND " +
+                            USED_STATUS + " = ?" + " AND " +
+                            WASTED_STATUS + " = ?";
+        String[] selection_args = { food_group, "0", "0" };
 
         //TODO: Do we want the groceries inside of each food group to be sorted? And if so, how?
 
@@ -174,7 +206,9 @@ public class GroceryDatabase extends SQLiteOpenHelper {
         Cursor expiration_date_cursor = groceries_db.rawQuery(
                 "SELECT * " +
                 " FROM " + TABLE_NAME +
-                " WHERE " + EXPIRATION_DATE +
+                " WHERE " + USED_STATUS + " = 0" +
+                " AND " + WASTED_STATUS + " = 0" +
+                " AND " + EXPIRATION_DATE +
                 " BETWEEN " + lower_thresh +
                 " AND " + upper_thresh, null);
 
@@ -193,6 +227,18 @@ public class GroceryDatabase extends SQLiteOpenHelper {
 
 
     //there will probably also be a method to remove an item from the groceries table
+    public long deleteGroceries(int grocery_id){
+        SQLiteDatabase groceries_db = getWritableDatabase();
+        return groceries_db.delete(TABLE_NAME, "ID = ?", new String[]{""+grocery_id});
+    }
+
+    //and a method to edit groceries
+    public long editGroceries(int grocery_id, ContentValues vals){
+        SQLiteDatabase groceries_db = getWritableDatabase();
+        return groceries_db.update(TABLE_NAME, vals, "ID = ?", new String[]{""+grocery_id});
+
+    }
+
 
 
 
