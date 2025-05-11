@@ -146,6 +146,14 @@ public class GroceriesFragment extends Fragment {
         ArrayList<Grocery> alphabetical_groceries = groceries_db.getGroceriesAlphabetical();
         Log.d("SHOW_BY_ALPHABETICAL", "size of groceries: " + alphabetical_groceries.size());
 
+        //for every grocery, print info about its updates
+        for(Grocery g : alphabetical_groceries){
+            Log.d("UPDATES_INFO", "For grocery: " + g.getName());
+            for(GroceryUsageUpdate u : g.getUpdates()){
+                Log.d("UPDATES_INFO", "weight: " + u.getWeight() + " price: " + u.getPrice() + " quantity: " + u.getQuantitySubtracted());
+            }
+        }
+
         //create the sublist for alphabetical, where the label is an empty string
         Pair<String, ArrayList<Grocery>> alphabetical_pair = new Pair<>("ALPHABETICAL", alphabetical_groceries);
         ArrayList<Pair<String, ArrayList<Grocery>>> alphabetical_sublist = new ArrayList<Pair<String, ArrayList<Grocery>>>();

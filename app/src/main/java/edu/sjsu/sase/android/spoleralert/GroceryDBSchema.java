@@ -20,6 +20,7 @@ public final class GroceryDBSchema {
         public static final String USED_STATUS = "used_status";
 
         public static final String WASTED_STATUS = "wasted_status";
+        public static final String UPDATES_JSON = "updates_json";
 
         public static final String NOTIFICATIONS_JSON = "notifications_json";
     }
