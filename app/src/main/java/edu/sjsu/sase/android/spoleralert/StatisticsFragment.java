@@ -14,6 +14,7 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +23,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.components.Legend;
@@ -60,20 +62,33 @@ public class StatisticsFragment extends Fragment {
                     if (result.getResultCode() == Activity.RESULT_OK) {
                         Intent data = result.getData();
                         if (data != null && getView() != null) {
-                            int selectedImageRes = data.getIntExtra("selectedImageRes", R.drawable.bird1_green);
-                            String selectedBirdName = data.getStringExtra("selectedBirdName");
 
                             ImageView profilePic = getView().findViewById(R.id.profilePicture);
                             TextView birdNameView = getView().findViewById(R.id.birdNameText);
-
-                            profilePic.setImageResource(selectedImageRes);
-                            birdNameView.setText(selectedBirdName);
+                            TextView birdSpeech = getView().findViewById(R.id.birdSpeech);
 
                             SharedPreferences prefs = requireContext().getSharedPreferences("AvatarPrefs", Context.MODE_PRIVATE);
-                            prefs.edit()
-                                    .putInt("avatarImage", selectedImageRes)
-                                    .putString("avatarName", selectedBirdName)
-                                    .apply();
+                            int selectedImageRes = data.getIntExtra("selectedImageRes", R.drawable.bird1_green);
+                            String savedName = prefs.getString("avatarName", "Chirplin");
+
+                            profilePic.setImageResource(selectedImageRes);
+                            birdNameView.setText(savedName);
+
+                            profilePic.setOnClickListener(v -> {
+                                List<String> phrases = new ArrayList<>();
+                                for (int i = 0; i < 5; i++) {
+                                    String phrase = prefs.getString("phrase_" + i, null);
+                                    if (phrase != null) phrases.add(phrase);
+                                }
+
+                                if (!phrases.isEmpty()) {
+                                    String selectedPhrase = phrases.get((int) (Math.random() * phrases.size()));
+                                    birdSpeech.setText(selectedPhrase);
+                                    birdSpeech.setVisibility(View.VISIBLE);
+                                    birdSpeech.postDelayed(() -> birdSpeech.setVisibility(View.GONE), 4000);
+                                }
+                            });
+
                         }
                     }
                 });
@@ -104,8 +119,24 @@ public class StatisticsFragment extends Fragment {
 
         // Set up Bar Chart and other UI elements as usual
         groceryDb = new GroceryDatabase(requireContext());
+        groceryDb.logCorruptUsageUpdates();
+        groceryDb.logAllGroceries();
         BarChart barChart = statistics_view.findViewById(R.id.barchart);
-        getData();
+
+        List<MonthlyStat> initialData = getMoneySpentData();
+        if (initialData == null || initialData.isEmpty()) {
+            initialData = getFallbackData();
+        }
+
+        barArraylist = new ArrayList<>();
+        monthLabels = new ArrayList<>();
+
+        for (int i = 0; i < initialData.size(); i++) {
+            MonthlyStat stat = initialData.get(i);
+            barArraylist.add(new BarEntry(i, stat.value));
+            monthLabels.add(stat.month.getMonth().name().substring(0, 3));
+        }
+
         BarDataSet barDataSet = new BarDataSet(barArraylist, "Spo!ler Alert Statistics");
         BarData barData = new BarData(barDataSet);
         barChart.setData(barData);
@@ -146,39 +177,58 @@ public class StatisticsFragment extends Fragment {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String sorting_type = parent.getItemAtPosition(position).toString();
 
-                float maxMoneyY = getMaxValue(List.of(
-                        getMoneySpentData(),
-                        getMoneyWasteData(),
-                        getMoneyUsedData()
-                )) * 1.1f;
+                List<MonthlyStat> selectedData = null;
+                String label = "";
+                int colorRes = R.color.fresh_green;
+                float defaultMaxY = 10f;
 
-                float maxFoodY = getMaxValue(List.of(
-                        getFoodBoughtData(),
-                        getFoodWasteData(),
-                        getFoodUsedData()
-                )) * 1.1f;
-
-                // Update bar chart based on selection
                 switch (sorting_type) {
                     case "Money Spent":
-                        updateChart(getMoneySpentData(), barChart, "Money Spent in Dollars", R.color.fresh_green, maxMoneyY);
+                        selectedData = getMoneySpentData();
+                        label = "Money Spent in Dollars";
+                        colorRes = R.color.fresh_green;
                         break;
                     case "Money Waste":
-                        updateChart(getMoneyWasteData(), barChart, "Money Waste in Dollars", R.color.expiring_red, maxMoneyY);
+                        selectedData = getMoneyWasteData();
+                        label = "Money Waste in Dollars";
+                        colorRes = R.color.expiring_red;
                         break;
                     case "Total Money Used":
-                        updateChart(getMoneyUsedData(), barChart, "Total Money Used in Dollars", R.color.fresh_green, maxMoneyY);
+                        selectedData = getMoneyUsedData();
+                        label = "Total Money Used in Dollars";
+                        colorRes = R.color.fresh_green;
                         break;
                     case "Food Bought":
-                        updateChart(getFoodBoughtData(), barChart, "Food Bought in lbs", R.color.fresh_green, maxFoodY);
+                        selectedData = getFoodBoughtData();
+                        label = "Food Bought in lbs";
+                        colorRes = R.color.fresh_green;
                         break;
                     case "Food Wasted":
-                        updateChart(getFoodWasteData(), barChart, "Food Wasted in lbs", R.color.expiring_red, maxFoodY);
+                        selectedData = getFoodWasteData();
+                        label = "Food Wasted in lbs";
+                        colorRes = R.color.expiring_red;
                         break;
                     case "Total Food Used":
-                        updateChart(getFoodUsedData(), barChart, "Total Food Used in lbs", R.color.fresh_green, maxFoodY);
+                        selectedData = getFoodUsedData();
+                        label = "Total Food Used in lbs";
+                        colorRes = R.color.fresh_green;
                         break;
+                    case "Money Overview":
+                        List<MonthlyStat> spent = getMoneySpentData();
+                        List<MonthlyStat> waste = getMoneyWasteData();
+                        List<MonthlyStat> used = getMoneyUsedData();
+                        updateGroupedChart(spent, waste, used, barChart);
+                        return; // skip normal single-bar update
                 }
+
+                // Null/empty check
+                if (selectedData == null || selectedData.isEmpty()) {
+                    selectedData = getFallbackData();
+                    Toast.makeText(requireContext(), "No data found. Showing default chart.", Toast.LENGTH_SHORT).show();
+                }
+
+                float maxY = getMaxValue(List.of(selectedData)) * 1.1f;
+                updateChart(selectedData, barChart, label, colorRes, maxY > 0 ? maxY : defaultMaxY);
             }
 
             @Override
@@ -200,34 +250,15 @@ public class StatisticsFragment extends Fragment {
         return statistics_view;
     }
 
-    private void getData() {
-        // Simulated full dataset
-        ArrayList<MonthlyStat> allStats = new ArrayList<>();
-        allStats.add(new MonthlyStat(YearMonth.of(2023, 12), 30));
-        allStats.add(new MonthlyStat(YearMonth.of(2024, 1), 40));
-        allStats.add(new MonthlyStat(YearMonth.of(2024, 2), 50));
-        allStats.add(new MonthlyStat(YearMonth.of(2024, 3), 70));
-        allStats.add(new MonthlyStat(YearMonth.of(2024, 4), 80));
-        allStats.add(new MonthlyStat(YearMonth.of(2024, 5), 60)); // Extra month
+    private List<MonthlyStat> getFallbackData() {
+        List<MonthlyStat> fallback = new ArrayList<>();
+        YearMonth current = YearMonth.now();
 
-        // Sort descending by month
-        allStats.sort((a, b) -> b.month.compareTo(a.month));
-
-        // Take only the 5 most recent
-        List<MonthlyStat> recentFive = allStats.subList(0, Math.min(6, allStats.size()));
-
-        // Reverse to display oldest to newest
-        Collections.reverse(recentFive);
-
-        // Prepare data for chart
-        barArraylist = new ArrayList<>();
-        monthLabels = new ArrayList<>();
-
-        for (int i = 0; i < recentFive.size(); i++) {
-            MonthlyStat stat = recentFive.get(i);
-            barArraylist.add(new BarEntry(i, stat.value));
-            monthLabels.add(stat.month.getMonth().name().substring(0, 3)); // e.g. "JAN"
+        for (int i = 5; i >= 0; i--) {
+            YearMonth month = current.minusMonths(i);
+            fallback.add(new MonthlyStat(month, 0));
         }
+        return fallback;
     }
 
     private float getMaxValue(List<List<MonthlyStat>> groups) {
@@ -243,36 +274,58 @@ public class StatisticsFragment extends Fragment {
     }
 
     private List<MonthlyStat> getMoneySpentData() {
-        return groceryDb.getMonthlyMoneySpentStats();
+        return groceryDb.getMoneySpentData();
     }
 
     private List<MonthlyStat> getMoneyWasteData() {
-        return groceryDb.getMonthlyMoneySpentStats();
+        return groceryDb.getMoneyWasteData();
     }
 
     private List<MonthlyStat> getMoneyUsedData() {
-        return groceryDb.getMonthlyMoneySpentStats();
+        return groceryDb.getMoneyUsedData();
     }
 
     private List<MonthlyStat> getFoodBoughtData() {
-        return groceryDb.getMonthlyMoneySpentStats();
+        return groceryDb.getFoodBoughtData();
     }
 
     private List<MonthlyStat> getFoodWasteData() {
-        return groceryDb.getMonthlyMoneySpentStats();
+        return groceryDb.getFoodWasteData();
     }
 
     private List<MonthlyStat> getFoodUsedData() {
-        return groceryDb.getMonthlyMoneySpentStats();
+        return groceryDb.getFoodUsedData();
     }
 
     private void updateChart(List<MonthlyStat> data, BarChart chart, String label, int colorResId, float maxY) {
+        if (data == null || data.isEmpty()) {
+            chart.clear();
+            chart.setNoDataText("No data available.");
+            chart.invalidate();
+            return;
+        }
+
         ArrayList<BarEntry> entries = new ArrayList<>();
         ArrayList<String> labels = new ArrayList<>();
 
         for (int i = 0; i < data.size(); i++) {
-            entries.add(new BarEntry(i, data.get(i).value));
-            labels.add(data.get(i).month.getMonth().name().substring(0, 3));
+            MonthlyStat stat = data.get(i);
+
+            // 🚨 Avoid corrupt/huge values
+            if (Float.isNaN(stat.value) || stat.value < 0 || stat.value > 1_000_000f) {
+                Log.e("ChartSkip", "Skipping invalid stat: " + stat.month + " -> " + stat.value);
+                continue;
+            }
+
+            entries.add(new BarEntry(i, stat.value));
+            labels.add(stat.month.getMonth().name().substring(0, 3));
+        }
+
+        if (entries.isEmpty()) {
+            chart.clear();
+            chart.setNoDataText("No valid chart data.");
+            chart.invalidate();
+            return;
         }
 
         BarDataSet dataSet = new BarDataSet(entries, label);
@@ -285,12 +338,71 @@ public class StatisticsFragment extends Fragment {
 
         XAxis xAxis = chart.getXAxis();
         xAxis.setValueFormatter(new IndexAxisValueFormatter(labels));
+        xAxis.setGranularity(1f);
 
         YAxis yAxis = chart.getAxisLeft();
         yAxis.setAxisMinimum(0f);
-        yAxis.setAxisMaximum(maxY); // lock the upper bound
+        yAxis.setAxisMaximum(Math.max(maxY, 10f));  // avoid maxY == 0
 
-        chart.getAxisRight().setEnabled(false); // optional: hide right axis
-        chart.invalidate(); // refresh
+        chart.getAxisRight().setEnabled(false);
+        chart.invalidate();
     }
+
+    private void updateGroupedChart(
+            List<MonthlyStat> spentData,
+            List<MonthlyStat> wasteData,
+            List<MonthlyStat> usedData,
+            BarChart chart
+    ) {
+        ArrayList<BarEntry> spentEntries = new ArrayList<>();
+        ArrayList<BarEntry> wasteEntries = new ArrayList<>();
+        ArrayList<BarEntry> usedEntries = new ArrayList<>();
+        ArrayList<String> labels = new ArrayList<>();
+
+        for (int i = 0; i < spentData.size(); i++) {
+            float x = i;
+            spentEntries.add(new BarEntry(x, spentData.get(i).value));
+            wasteEntries.add(new BarEntry(x, wasteData.get(i).value));
+            usedEntries.add(new BarEntry(x, usedData.get(i).value));
+            labels.add(spentData.get(i).month.getMonth().name().substring(0, 3));
+        }
+
+        BarDataSet spentSet = new BarDataSet(spentEntries, "Spent");
+        BarDataSet wasteSet = new BarDataSet(wasteEntries, "Wasted");
+        BarDataSet usedSet = new BarDataSet(usedEntries, "Used");
+
+        spentSet.setColor(ContextCompat.getColor(requireContext(), R.color.fresh_green));
+        wasteSet.setColor(ContextCompat.getColor(requireContext(), R.color.expiring_red));
+        usedSet.setColor(ContextCompat.getColor(requireContext(), R.color.spoiler_yellow));
+
+        spentSet.setValueTextSize(12f);
+        wasteSet.setValueTextSize(12f);
+        usedSet.setValueTextSize(12f);
+
+        BarData data = new BarData(spentSet, wasteSet, usedSet);
+        float groupSpace = 0.2f;
+        float barSpace = 0.05f;
+        float barWidth = 0.25f;
+
+        data.setBarWidth(barWidth);
+        chart.setData(data);
+
+        chart.getXAxis().setValueFormatter(new IndexAxisValueFormatter(labels));
+        chart.getXAxis().setGranularity(1f);
+        chart.getXAxis().setGranularityEnabled(true);
+        chart.getXAxis().setCenterAxisLabels(true);
+        chart.getXAxis().setPosition(XAxis.XAxisPosition.BOTTOM);
+
+        chart.getAxisLeft().setAxisMinimum(0f);
+        chart.getAxisRight().setEnabled(false);
+
+        chart.getXAxis().setAxisMinimum(0f);
+        chart.getXAxis().setAxisMaximum(spentData.size());
+        chart.groupBars(0f, groupSpace, barSpace);
+
+        chart.setFitBars(true);
+        chart.getDescription().setEnabled(false);
+        chart.invalidate();
+    }
+
 }

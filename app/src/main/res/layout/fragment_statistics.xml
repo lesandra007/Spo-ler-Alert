@@ -14,21 +14,27 @@
         android:background="@drawable/green_faded_circle"
         android:alpha="0.25"
         android:translationX="-120dp"
-        android:translationY="-90dp" />
+        android:translationY="-90dp"
+        android:clickable="false"
+        android:focusable="false"/>
     <View
         android:layout_width="800dp"
         android:layout_height="800dp"
         android:alpha="0.25"
         android:background="@drawable/green_faded_circle"
         android:translationX="125dp"
-        android:translationY="400dp" />
+        android:translationY="400dp"
+        android:clickable="false"
+        android:focusable="false"/>
     <View
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:alpha="0.3"
         android:background="@drawable/green_faded_circle"
         android:translationX="340dp"
-        android:translationY="50dp" />
+        android:translationY="50dp"
+        android:clickable="false"
+        android:focusable="false"/>
 
     <!-- Yellow circles -->
     <View
@@ -39,160 +45,185 @@
         android:translationX="-20dp"
         android:translationY="70dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        android:clickable="false"
+        android:focusable="false"/>
     <View
         android:layout_width="30dp"
         android:layout_height="30dp"
         android:alpha="0.3"
         android:background="@drawable/yellow_faded_circle"
         android:translationX="370dp"
-        android:translationY="40dp" />
+        android:translationY="40dp"
+        android:clickable="false"
+        android:focusable="false"/>
 
-    <!-- Foreground layout -->
-    <LinearLayout
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@android:color/transparent"
-        android:clipToPadding="false"
-        android:orientation="vertical"
-        android:padding="0dp">
+        android:fillViewport="true"
+        android:background="@android:color/transparent">
 
-        <!--   Title Spoiler Alert -->
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <!-- Foreground layout -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
-            android:layout_marginTop="20dp"
-            android:layout_marginEnd="20dp"
-            android:layout_marginBottom="-20dp">
+            android:background="@android:color/transparent"
+            android:clipToPadding="false"
+            android:orientation="vertical"
+            android:padding="0dp">
 
-            <TextView
-                android:id="@+id/titleText"
-                android:layout_width="wrap_content"
+            <!--   Title Spoiler Alert -->
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="SPO"
-                android:textSize="32sp"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toStartOf="@+id/exclamation"
-                app:layout_constraintHorizontal_chainStyle="packed"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginBottom="-20dp">
 
-            <TextView
-                android:id="@+id/exclamation"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="!"
-                android:textColor="#00b215"
-                android:textSize="32sp"
-                android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="@id/titleText"
-                app:layout_constraintEnd_toStartOf="@+id/alert"
-                app:layout_constraintStart_toEndOf="@id/titleText" />
+                <TextView
+                    android:id="@+id/titleText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="SPO"
+                    android:textSize="32sp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toStartOf="@+id/exclamation"
+                    app:layout_constraintHorizontal_chainStyle="packed"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-            <TextView
-                android:id="@+id/alert"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="LER ALERT"
-                android:textSize="32sp"
-                android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="@id/titleText"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/exclamation" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
+                <TextView
+                    android:id="@+id/exclamation"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="!"
+                    android:textColor="#00b215"
+                    android:textSize="32sp"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="@id/titleText"
+                    app:layout_constraintEnd_toStartOf="@+id/alert"
+                    app:layout_constraintStart_toEndOf="@id/titleText" />
 
-        <!--    Profile picture     -->
-        <FrameLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_margin="20dp">
-
-            <!-- Main Profile Picture -->
-            <ImageView
-                android:id="@+id/profilePicture"
-                android:layout_width="250dp"
-                android:layout_height="250dp"
-                android:layout_gravity="center"
-                android:layout_margin="16dp"
-                android:clickable="true"
-                android:contentDescription="Profile picture"
-                android:focusable="true"
-                android:src="@drawable/bird1_green" />
-
-            <!-- Edit Icon (overlayed on bottom right) -->
-            <ImageView
-                android:id="@+id/editIcon"
-                android:layout_width="45dp"
-                android:layout_height="45dp"
-                android:layout_gravity="bottom|end"
-                android:layout_marginRight="25dp"
-                android:layout_marginBottom="45dp"
-                android:contentDescription="Edit profile picture"
-                android:src="@drawable/ic_edit" />
-
-            <TextView
-                android:id="@+id/birdNameText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="top|center"
-                android:layout_marginTop="16dp"
-                android:text="ROSETTE"
-                android:textAllCaps="true"
-                android:textSize="@dimen/label_text_size"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/textView3"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom|center"
-                android:layout_marginBottom="15dp"
-                android:text="YOUR STATISTICS"
-                android:textAlignment="center"
-                android:textSize="@dimen/label_text_size"
-                android:textStyle="bold" />
-
-        </FrameLayout>
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
-            android:layout_marginTop="-15dp"
-            android:layout_marginEnd="20dp"
-            android:background="@drawable/bottom_buttons"
-            android:padding="20dp">
-
-            <Spinner
-                android:id="@+id/bar_graph_dropdown"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="left"
-                android:entries="@array/bar_graph_sorting"
-                android:spinnerMode="dropdown"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                <TextView
+                    android:id="@+id/alert"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="LER ALERT"
+                    android:textSize="32sp"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="@id/titleText"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/exclamation" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <Space
-                android:id="@+id/spacer"
                 android:layout_width="match_parent"
-                android:layout_height="10dp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/bar_graph_dropdown" />
+                android:layout_height="20dp"></Space>
 
-            <com.github.mikephil.charting.charts.BarChart
-                android:id="@+id/barchart"
+            <!--    Profile picture     -->
+            <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="280dp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/spacer" />
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_margin="20dp"
+                android:background="@drawable/rounded_square">
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
+                <!-- Main Profile Picture -->
+                <ImageView
+                    android:id="@+id/profilePicture"
+                    android:layout_width="250dp"
+                    android:layout_height="250dp"
+                    android:layout_gravity="center"
+                    android:layout_margin="16dp"
+                    android:clickable="true"
+                    android:contentDescription="Profile picture"
+                    android:focusable="true"
+                    android:src="@drawable/bird1_green" />
 
-        <include layout="@layout/bottom_bar" />
+                <!-- Edit Icon (overlayed on bottom right) -->
+                <ImageView
+                    android:id="@+id/editIcon"
+                    android:layout_width="45dp"
+                    android:layout_height="45dp"
+                    android:layout_gravity="bottom|end"
+                    android:layout_marginRight="25dp"
+                    android:layout_marginBottom="45dp"
+                    android:contentDescription="Edit profile picture"
+                    android:src="@drawable/ic_edit" />
 
-    </LinearLayout>
+                <TextView
+                    android:id="@+id/birdNameText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="top|center"
+                    android:layout_marginTop="16dp"
+                    android:text="ROSETTE"
+                    android:textAllCaps="true"
+                    android:textSize="@dimen/label_text_size"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/textView3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom|center"
+                    android:layout_marginBottom="15dp"
+                    android:text="YOUR STATISTICS"
+                    android:textAlignment="center"
+                    android:textSize="@dimen/label_text_size"
+                    android:textStyle="bold" />
+            </FrameLayout>
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="10dp"></Space>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="-15dp"
+                android:layout_marginEnd="20dp"
+                android:background="@drawable/rounded_square"
+                android:padding="20dp">
+
+                <Spinner
+                    android:id="@+id/bar_graph_dropdown"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left"
+                    android:entries="@array/bar_graph_sorting"
+                    android:spinnerMode="dropdown"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <Space
+                    android:id="@+id/spacer"
+                    android:layout_width="match_parent"
+                    android:layout_height="10dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/bar_graph_dropdown" />
+
+                <com.github.mikephil.charting.charts.BarChart
+                    android:id="@+id/barchart"
+                    android:layout_width="match_parent"
+                    android:layout_height="280dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/spacer" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="100dp" />
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <include layout="@layout/bottom_bar"
+        android:clickable="false"
+        android:focusable="false"
+        android:importantForAccessibility="no"/>
 
 </FrameLayout>

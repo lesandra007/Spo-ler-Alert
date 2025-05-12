@@ -41,6 +41,7 @@ public class GroceryUsageUpdate {
     public double getPrice() {
         return price;
     }
+
     public double getQuantitySubtracted() {
         return quantity_subtracted;
     }

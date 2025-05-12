@@ -1,5 +1,7 @@
 package edu.sjsu.sase.android.spoleralert;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -10,7 +12,9 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
@@ -50,6 +54,37 @@ public class RecipesFragment extends Fragment implements RecipesAdapter.OnRecipe
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_recipes, container, false);
+
+        ImageView profilePic = view.findViewById(R.id.profilePicture);
+        TextView birdSpeech = view.findViewById(R.id.birdSpeech);
+        profilePic.setOnClickListener(v -> {
+            SharedPreferences prefs = requireContext().getSharedPreferences("AvatarPrefs", Context.MODE_PRIVATE);
+            List<String> phrases = new ArrayList<>();
+            for (int i = 0; i < 7; i++) {
+                String phrase = prefs.getString("phrase_" + i, null);
+                if (phrase != null) phrases.add(phrase);
+            }
+
+            if (!phrases.isEmpty()) {
+                String selectedPhrase = phrases.get((int) (Math.random() * phrases.size()));
+                birdSpeech.setText(selectedPhrase);
+                birdSpeech.setVisibility(View.VISIBLE);
+
+                // ✨ Fade in animation
+                birdSpeech.setAlpha(0f);
+                birdSpeech.animate().alpha(1f).setDuration(300).start();
+
+                // ⏳ Auto-hide after 4 seconds
+                birdSpeech.postDelayed(() -> birdSpeech.setVisibility(View.GONE), 4000);
+            }
+        });
+
+        SharedPreferences prefs = requireContext().getSharedPreferences("AvatarPrefs", getContext().MODE_PRIVATE);
+        int savedAvatar = prefs.getInt("avatarImage", R.drawable.bird1_green);
+        String selectedName = prefs.getString("avatarName", "Chirplin");
+
+        profilePic.setImageResource(savedAvatar);
+
         NavController controller = NavHostFragment.findNavController(this);
 
         view.findViewById(R.id.grocery_list_bottom_bar).setOnClickListener(v -> controller.navigate(R.id.groceriesFragment));

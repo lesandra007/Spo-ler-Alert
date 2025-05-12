@@ -38,12 +38,13 @@
     </string-array>
 
     <string-array name="bar_graph_sorting">
-        <item >Money Spent</item>
-        <item >Money Waste</item>
-        <item >Total Money Used</item>
-        <item >Food Bought</item>
-        <item >Food Wasted</item>
-        <item >Total Food Used</item>
+        <item>Money Spent</item>
+        <item>Money Waste</item>
+        <item>Total Money Used</item>
+        <item>Food Bought</item>
+        <item>Food Wasted</item>
+        <item>Total Food Used</item>
+        <item>Money Overview</item>
     </string-array>
 
 </resources>

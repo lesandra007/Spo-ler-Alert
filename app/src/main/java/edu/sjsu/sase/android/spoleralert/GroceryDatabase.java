@@ -249,43 +249,165 @@ public class GroceryDatabase extends SQLiteOpenHelper {
 
     }
 
-    public List<MonthlyStat> getMonthlyMoneySpentStats() {
-        SQLiteDatabase db = getReadableDatabase();
+    public List<MonthlyStat> getMoneySpentData() {
         Map<YearMonth, Float> monthTotals = new HashMap<>();
-
-        Cursor cursor = db.rawQuery(
-                "SELECT strftime('%Y-%m', EXPIRATION_DATE / 1000, 'unixepoch') AS month, " +
-                        "SUM(PRICE) AS total_spent " +
-                        "FROM " + TABLE_NAME + " " +
-                        "GROUP BY month", null);
-
-        while (cursor.moveToNext()) {
-            String monthStr = cursor.getString(cursor.getColumnIndexOrThrow("month"));
-            double total = cursor.getDouble(cursor.getColumnIndexOrThrow("total_spent"));
-            YearMonth month = YearMonth.parse(monthStr);
-            monthTotals.put(month, (float) total);
+        for (Grocery g : getAllGroceries()) {
+            YearMonth ym = YearMonth.from(g.getExpirationDate());
+            monthTotals.put(ym, monthTotals.getOrDefault(ym, 0f) + (float) g.getPrice());
         }
-        cursor.close();
+        return toLast6MonthsList(monthTotals);
+    }
 
-        // Get the most recent month with data, or fallback to current month
-        YearMonth now = YearMonth.now();
-        YearMonth latestMonth = monthTotals.keySet().stream()
-                .max(Comparator.naturalOrder())
-                .orElse(now);
+    public List<MonthlyStat> getMoneyWasteData() {
+        return getMonthlyUpdateTotals(false, true);
+    }
 
-        // Generate last 6 months ending with latestMonth (including future ones if needed)
-        List<MonthlyStat> result = new ArrayList<>();
-        for (int i = 5; i >= 0; i--) {
-            YearMonth targetMonth = latestMonth.minusMonths(i);
-            float value = monthTotals.getOrDefault(targetMonth, 0f);
-            result.add(new MonthlyStat(targetMonth, value));
+    public List<MonthlyStat> getMoneyUsedData() {
+        Map<YearMonth, Float> spent = mapFromList(getMoneySpentData());
+        Map<YearMonth, Float> wasted = mapFromList(getMoneyWasteData());
+
+        Map<YearMonth, Float> used = new HashMap<>();
+        for (YearMonth month : spent.keySet()) {
+            float spentVal = spent.getOrDefault(month, 0f);
+            float wasteVal = wasted.getOrDefault(month, 0f);
+            used.put(month, Math.max(spentVal - wasteVal, 0f));
         }
+        return toLast6MonthsList(used);
+    }
 
+    public List<MonthlyStat> getFoodBoughtData() {
+        Map<YearMonth, Float> monthTotals = new HashMap<>();
+        for (Grocery g : getAllGroceries()) {
+            YearMonth ym = YearMonth.from(g.getExpirationDate());
+            float weightOunces = (g.getPounds() * 16 + g.getOunces());
+            monthTotals.put(ym, monthTotals.getOrDefault(ym, 0f) + weightOunces);
+        }
+        return toLast6MonthsList(monthTotals);
+    }
+
+    public List<MonthlyStat> getFoodWasteData() {
+        return getMonthlyUpdateTotals(false, false);
+    }
+
+    public List<MonthlyStat> getFoodUsedData() {
+        Map<YearMonth, Float> bought = mapFromList(getFoodBoughtData());
+        Map<YearMonth, Float> wasted = mapFromList(getFoodWasteData());
+
+        Map<YearMonth, Float> used = new HashMap<>();
+        for (YearMonth month : bought.keySet()) {
+            float boughtVal = bought.getOrDefault(month, 0f);
+            float wasteVal = wasted.getOrDefault(month, 0f);
+            used.put(month, Math.max(boughtVal - wasteVal, 0f));
+        }
+        return toLast6MonthsList(used);
+    }
+
+    private List<MonthlyStat> getMonthlyUpdateTotals(boolean isUse, boolean isMoney) {
+        Map<YearMonth, Float> monthTotals = new HashMap<>();
+        for (Grocery g : getAllGroceries()) {
+            for (GroceryUsageUpdate update : g.getUpdates()) {
+                if (update.getType() == isUse) {
+                    try {
+                        LocalDate date = update.getDate();
+                        if (date == null || date.getYear() < 1900 || date.getMonthValue() < 1 || date.getMonthValue() > 12) {
+                            Log.w("GroceryDB", "Skipping invalid update date: " + date);
+                            continue;
+                        }
+
+                        YearMonth ym = YearMonth.from(date);
+                        float value = (float) (isMoney ? update.getPrice() : update.getWeight());
+                        monthTotals.put(ym, monthTotals.getOrDefault(ym, 0f) + value);
+                    } catch (Exception e) {
+                        Log.e("GroceryDB", "Invalid date in GroceryUsageUpdate: " + e.getMessage());
+                    }
+                }
+            }
+        }
+        return toLast6MonthsList(monthTotals);
+    }
+
+    private Map<YearMonth, Float> mapFromList(List<MonthlyStat> stats) {
+        Map<YearMonth, Float> result = new HashMap<>();
+        for (MonthlyStat stat : stats) {
+            result.put(stat.month, stat.value);
+        }
         return result;
     }
 
+    private List<MonthlyStat> toLast6MonthsList(Map<YearMonth, Float> dataMap) {
+        YearMonth now = YearMonth.now();
+        List<MonthlyStat> stats = new ArrayList<>();
+        for (int i = 5; i >= 0; i--) {
+            YearMonth target = now.minusMonths(i);
+            stats.add(new MonthlyStat(target, dataMap.getOrDefault(target, 0f)));
+        }
+        return stats;
+    }
 
+    private List<Grocery> getAllGroceries() {
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME, null);
+        List<Grocery> groceries = new ArrayList<>();
+        while (cursor.moveToNext()) {
+            groceries.add(createGroceryFromDbRow(cursor));
+        }
+        cursor.close();
+        return groceries;
+    }
 
+    public void logCorruptUsageUpdates() {
+        for (Grocery g : getAllGroceries()) {
+            for (GroceryUsageUpdate update : g.getUpdates()) {
+                try {
+                    LocalDate d = update.getDate();
+                    boolean isUse = update.getType();
+                    double price = update.getPrice();
+                    double weight = update.getWeight();
+                    double quantity = update.getQuantitySubtracted();
 
+                    if (d == null || d.getYear() < 1900 || d.getMonthValue() < 1 || d.getMonthValue() > 12) {
+                        Log.e("CorruptData", "Invalid update in grocery '" + g.getName() + "' -> " +
+                                "date=" + d + ", type=" + (isUse ? "used" : "wasted") +
+                                ", price=" + price + ", weight=" + weight + ", quantity=" + quantity);
+                    }
+                } catch (Exception e) {
+                    Log.e("CorruptData", "Parse error in update for grocery '" + g.getName() + "': " + e.getMessage());
+                }
+            }
+        }
+    }
+
+    public void logAllGroceries() {
+        List<Grocery> groceries = getAllGroceries();
+        Log.d("DB_DUMP", "------ GROCERIES IN DATABASE ------");
+        for (Grocery g : groceries) {
+            Log.d("DB_DUMP", "Grocery: " + g.getName());
+            Log.d("DB_DUMP", "  ID: " + g.getId());
+            Log.d("DB_DUMP", "  Group: " + g.getFoodGroup());
+            Log.d("DB_DUMP", "  Quantity: " + g.getQuantity());
+            Log.d("DB_DUMP", "  Weight: " + g.getPounds() + " lbs " + g.getOunces() + " oz");
+            Log.d("DB_DUMP", "  Price: $" + g.getPrice());
+            Log.d("DB_DUMP", "  Freezer: " + g.getFreezerStatus());
+            Log.d("DB_DUMP", "  Expiration Date: " + g.getExpirationDate());
+            Log.d("DB_DUMP", "  Expired: " + g.getHasExpired());
+            Log.d("DB_DUMP", "  Used: " + g.getUsedStatus());
+            Log.d("DB_DUMP", "  Wasted: " + g.getWastedStatus());
+
+            ArrayList<GroceryUsageUpdate> updates = g.getUpdates();
+            if (updates == null || updates.isEmpty()) {
+                Log.d("DB_DUMP", "  No updates.");
+            } else {
+                for (GroceryUsageUpdate u : updates) {
+                    Log.d("DB_DUMP", "  Update:");
+                    Log.d("DB_DUMP", "    Type: " + (u.getType() ? "Used" : "Wasted"));
+                    Log.d("DB_DUMP", "    Date: " + u.getDate());
+                    Log.d("DB_DUMP", "    Price: $" + u.getPrice());
+                    Log.d("DB_DUMP", "    Weight: " + u.getWeight() + " oz");
+                    Log.d("DB_DUMP", "    Quantity Subtracted: " + u.getQuantitySubtracted());
+                }
+            }
+        }
+        Log.d("DB_DUMP", "-----------------------------------");
+    }
 
 }
