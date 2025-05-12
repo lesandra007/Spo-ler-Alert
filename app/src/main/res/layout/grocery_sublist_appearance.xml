@@ -18,8 +18,10 @@ of each sublist. -->
         android:id="@+id/sublist_label"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="@dimen/label_text_size"
+        android:textSize="30sp"
+        android:textStyle="bold"
         android:text="default sublist label text"
+        android:layout_marginStart="10dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
 
@@ -30,5 +32,12 @@ of each sublist. -->
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/sublist_label"/>
+
+    <Space
+        android:id="@+id/sublist_spacer"
+        android:layout_width="match_parent"
+        android:layout_height="10dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/sublist_rv" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

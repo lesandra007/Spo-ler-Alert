@@ -1,5 +1,6 @@
 package edu.sjsu.sase.android.spoleralert;
 
+import android.graphics.Color;
 import android.util.Log;
 import android.util.Pair;
 import android.view.LayoutInflater;
@@ -71,6 +72,42 @@ public class GroceriesSublistAdapter extends RecyclerView.Adapter<GroceriesSubli
 
         //set the label of the sublist ex. "", "Fruits", "Expiring Soon", etc.
         holder.getSublistLabel().setText(label);
+
+        switch (label) {
+            case "ALPHABETICAL":
+                holder.getSublistLabel().setTextColor(Color.parseColor("#00b215"));
+                break;
+            case "Fruits":
+                holder.getSublistLabel().setTextColor(Color.parseColor("#e65843"));
+                break;
+            case "Vegetables":
+                holder.getSublistLabel().setTextColor(Color.parseColor("#6feb50"));
+                break;
+            case "Grains":
+                holder.getSublistLabel().setTextColor(Color.parseColor("#eb8817"));
+                break;
+            case "Protein":
+                holder.getSublistLabel().setTextColor(Color.parseColor("#a729e6"));
+                break;
+            case "Dairy":
+                holder.getSublistLabel().setTextColor(Color.parseColor("#28e1eb"));
+                break;
+            case "EXPIRED":
+                holder.getSublistLabel().setTextColor(Color.parseColor("#e60e0e"));
+                break;
+            case "Expiring Soon":
+                holder.getSublistLabel().setTextColor(Color.parseColor("#E3B612"));
+                break;
+            case "Ready":
+                holder.getSublistLabel().setTextColor(Color.parseColor("#5BC232"));
+                break;
+            case "Fresh":
+                holder.getSublistLabel().setTextColor(Color.parseColor("#0d801c"));
+                break;
+
+
+        }
+
 
         //set up the inner recyclerview
         GroceriesAdapter groceries_adapter = new GroceriesAdapter(groceries, groceries_db, label);
