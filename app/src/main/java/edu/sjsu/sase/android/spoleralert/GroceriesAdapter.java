@@ -36,6 +36,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
@@ -388,7 +389,7 @@ public class GroceriesAdapter extends RecyclerView.Adapter<GroceriesAdapter.View
                     double consumed_quantity = original_quantity * percent;
 
                     //create the new GroceryUsageUpdate
-                    GroceryUsageUpdate new_update = new GroceryUsageUpdate(update_date, type_of_activity, consumed_weight, consumed_price, consumed_quantity);
+                    GroceryUsageUpdate new_update = new GroceryUsageUpdate(update_date.toString(), type_of_activity, consumed_weight, consumed_price, consumed_quantity);
 
                     //add the new update to the grocery's list of updates
                     updates.add(new_update);
