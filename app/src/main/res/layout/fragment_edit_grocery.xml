@@ -27,6 +27,7 @@
                 android:layout_marginStart="5dp"
                 android:layout_marginTop="5dp"
                 android:text="Back"
+                android:backgroundTint="#888888"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -37,19 +38,37 @@
                 android:layout_marginTop="5dp"
                 android:layout_marginEnd="5dp"
                 android:text="Save"
+                android:backgroundTint="#00b215"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <!-- Title -->
             <TextView
-                android:id="@+id/edit_item_title"
-                android:layout_width="match_parent"
+                android:id="@+id/edit_item_title_1"
+                android:layout_width="wrap_content"
                 android:layout_height="60dp"
                 android:gravity="center"
-                android:text="EDIT ITEM"
+                android:text="EDIT"
+                android:layout_marginStart="132dp"
                 android:textAllCaps="true"
                 android:textSize="@dimen/title_size"
+                android:textStyle="bold"
+                android:textColor="#00b215"
                 app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/edit_item_title_2"
+                android:layout_width="wrap_content"
+                android:layout_height="60dp"
+                android:gravity="center"
+                android:layout_marginStart="7dp"
+                android:text="ITEM"
+                android:textAllCaps="true"
+                android:textSize="@dimen/title_size"
+                android:textStyle="bold"
+                android:textColor="#000000"
+                app:layout_constraintStart_toEndOf="@id/edit_item_title_1"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <!-- Input Grocery Name -->
@@ -60,8 +79,10 @@
                 android:gravity="center"
                 android:text="@string/item_name"
                 android:textSize="@dimen/label_text_size"
+                android:textStyle="bold"
+                android:textColor="#00b215"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/edit_item_title" />
+                app:layout_constraintTop_toBottomOf="@id/edit_item_title_1" />
 
             <EditText
                 android:id="@+id/edit_item_name_input"
@@ -69,7 +90,7 @@
                 android:layout_height="50dp"
                 android:hint="@string/item_name_hint"
                 app:layout_constraintStart_toEndOf="@id/edit_item_name_label"
-                app:layout_constraintTop_toBottomOf="@id/edit_item_title" />
+                app:layout_constraintTop_toBottomOf="@id/edit_item_title_1" />
 
             <Space
                 android:id="@+id/edit_item_name_spacer"
@@ -86,6 +107,8 @@
                 android:gravity="center"
                 android:text="@string/item_food_group"
                 android:textSize="@dimen/label_text_size"
+                android:textStyle="bold"
+                android:textColor="#00b215"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/edit_item_name_spacer" />
 
@@ -111,6 +134,8 @@
                 android:gravity="center"
                 android:text="@string/item_quantity"
                 android:textSize="@dimen/label_text_size"
+                android:textStyle="bold"
+                android:textColor="#00b215"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/edit_item_food_group_spacer" />
 
@@ -139,6 +164,8 @@
                 android:gravity="center"
                 android:text="@string/item_weight"
                 android:textSize="@dimen/label_text_size"
+                android:textStyle="bold"
+                android:textColor="#00b215"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/edit_item_quantity_spacer" />
 
@@ -177,6 +204,8 @@
                 android:gravity="center"
                 android:text="@string/item_price"
                 android:textSize="@dimen/label_text_size"
+                android:textStyle="bold"
+                android:textColor="#00b215"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/edit_item_weight_spacer" />
 
@@ -205,6 +234,8 @@
                 android:gravity="center"
                 android:text="@string/freezer_status"
                 android:textSize="@dimen/label_text_size"
+                android:textStyle="bold"
+                android:textColor="#00b215"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/edit_item_price_spacer" />
 
@@ -230,6 +261,8 @@
                 android:gravity="center"
                 android:text="@string/item_expiration"
                 android:textSize="@dimen/label_text_size"
+                android:textStyle="bold"
+                android:textColor="#00b215"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/edit_item_freezer_status_spacer" />
 
