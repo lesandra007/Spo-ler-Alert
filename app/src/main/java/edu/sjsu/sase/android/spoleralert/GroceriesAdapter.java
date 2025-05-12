@@ -167,7 +167,6 @@ public class GroceriesAdapter extends RecyclerView.Adapter<GroceriesAdapter.View
         if (difference_milli >= 0){
             long days_left_num = TimeUnit.MILLISECONDS.toDays(difference_milli);
             days_left = days_left_num + " days left";
-
         }
         else{
             long days_over_num = TimeUnit.MILLISECONDS.toDays(Math.abs(difference_milli));
@@ -185,9 +184,14 @@ public class GroceriesAdapter extends RecyclerView.Adapter<GroceriesAdapter.View
             }
         });
 
+        View divider = holder.itemView.findViewById(R.id.divider);
+        if (position == getItemCount() - 1) {
+            divider.setVisibility(View.GONE);
+        } else {
+            divider.setVisibility(View.VISIBLE);
+        }
 
         Log.d("GROCERIES_ADAPTER_BIND_VIEW_HOLDER", "Entered Bind View Holder: " + grocery_name);
-
 
     }
 
