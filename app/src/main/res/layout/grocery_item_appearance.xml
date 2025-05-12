@@ -13,7 +13,11 @@ appearance of each item in the grocery list -->
         android:id="@+id/grocery_list_item"
         android:layout_width="200dp"
         android:layout_height="wrap_content"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="20dp"
         android:text="default_text"
+        android:textSize="22sp"
+        android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -21,62 +25,30 @@ appearance of each item in the grocery list -->
         android:id="@+id/grocery_days_left"
         android:layout_width="75dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="14dp"
+        android:layout_marginEnd="75dp"
+        android:textSize="18sp"
         android:text="default_days_left"
-        android:layout_marginEnd="100dp"
+        android:textAlignment="center"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-<!--    I'd prefer this to be the triple vertical dots-->
-        <ImageButton
+    <ImageButton
             android:id="@+id/grocery_options"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_marginEnd="10dp"
-            app:srcCompat="@android:drawable/ic_menu_manage"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            style="?android:attr/actionOverflowButtonStyle"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-<!--    <ImageButton-->
-<!--        android:id="@+id/grocery_delete"-->
-<!--        android:layout_width="50dp"-->
-<!--        android:layout_height="50dp"-->
-<!--        android:layout_marginEnd="25dp"-->
-<!--        app:srcCompat="@android:drawable/ic_menu_delete"-->
-<!--        app:layout_constraintEnd_toEndOf="parent"-->
-<!--        app:layout_constraintTop_toTopOf="parent" />-->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginStart="15dp"
+        android:background="#888888"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+         />
 
-<!--    <ImageButton-->
-<!--        android:id="@+id/grocery_edit"-->
-<!--        android:layout_width="50dp"-->
-<!--        android:layout_height="50dp"-->
-<!--        android:layout_marginEnd="25dp"-->
-<!--        app:srcCompat="@android:drawable/ic_menu_edit"-->
-<!--        app:layout_constraintEnd_toEndOf="parent"-->
-<!--        app:layout_constraintTop_toTopOf="parent" />-->
 
-<!--    <ImageButton-->
-<!--        android:id="@+id/grocery_use_one"-->
-<!--        android:layout_width="50dp"-->
-<!--        android:layout_height="50dp"-->
-<!--        android:layout_marginEnd="25dp"-->
-<!--        app:srcCompat="@android:drawable/ic_menu_manage"-->
-<!--        app:layout_constraintEnd_toEndOf="parent"-->
-<!--        app:layout_constraintTop_toTopOf="parent" />-->
 </androidx.constraintlayout.widget.ConstraintLayout>
-
-
-<!--&lt;!&ndash; Temporary Layout for testing grocery item appearance &ndash;&gt;-->
-<!--<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
-<!--    android:layout_width="match_parent"-->
-<!--    android:layout_height="wrap_content"-->
-<!--    android:gravity="center_vertical">-->
-
-<!--    &lt;!&ndash; This is the xml file for the-->
-<!--appearance of each item in the grocery list &ndash;&gt;-->
-
-<!--    <TextView-->
-<!--        android:id="@+id/myTextView"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:text="default_text"/>-->
-<!--</FrameLayout>-->

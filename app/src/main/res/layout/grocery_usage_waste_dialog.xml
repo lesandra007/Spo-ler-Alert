@@ -5,14 +5,40 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
+    <TextView
+        android:id="@+id/subtract_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="Information filled out here will be used in calculating your food usage and waste statistics"
+        android:textSize="@dimen/label_text_size"
+        android:textStyle="bold"
+        android:textColor="#000000"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/amount_to_subtract_label"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:gravity="center"
+        android:text="Amount to subtract: "
+        android:textSize="@dimen/label_text_size"
+        android:textStyle="bold"
+        android:textColor="#00b215"
+        android:layout_marginStart="@dimen/text_margin"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/subtract_label" />
+
     <EditText
         android:id="@+id/val_to_subtract"
         android:layout_width="@dimen/input_width"
         android:layout_height="50dp"
         android:hint="Value to Subtract"
         android:inputType="numberDecimal"
+        android:layout_marginStart="@dimen/text_margin"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/amount_to_subtract_label" />
 
     <TextView
         android:id="@+id/or_label"
@@ -21,15 +47,18 @@
         android:gravity="center"
         android:text="or"
         android:textSize="@dimen/label_text_size"
+        android:textStyle="bold"
+        android:textColor="#00b215"
         app:layout_constraintStart_toEndOf="@id/val_to_subtract"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/amount_to_subtract_label" />
 
     <EditText
         android:id="@+id/percent_to_consume"
         android:layout_width="@dimen/input_width"
         android:layout_height="50dp"
-        android:hint="Percent to Consume"
+        android:hint="Percent to Subtract"
         android:inputType="numberDecimal"
+        android:layout_marginStart="@dimen/text_margin"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/val_to_subtract" />
 
@@ -40,22 +69,46 @@
         android:gravity="center"
         android:text="%"
         android:textSize="@dimen/label_text_size"
+        android:textStyle="bold"
+        android:textColor="#00b215"
         app:layout_constraintStart_toEndOf="@id/percent_to_consume"
         app:layout_constraintTop_toBottomOf="@id/val_to_subtract" />
+
+    <TextView
+        android:id="@+id/use_or_waste_label"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:gravity="center"
+        android:text="Was the grocery used or wasted?"
+        android:textSize="@dimen/label_text_size"
+        android:textStyle="bold"
+        android:textColor="#00b215"
+        android:layout_marginStart="@dimen/text_margin"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/percent_to_consume" />
 
     <RadioGroup
         android:id="@+id/use_waste_radio_group"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginStart="@dimen/text_margin"
 
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/percent_to_consume" >
+        app:layout_constraintTop_toBottomOf="@id/use_or_waste_label" >
 
         <RadioButton
             android:id="@+id/use_radio_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Use" />
+
+        <Space
+            android:id="@+id/radio_button_spacer"
+            android:layout_width="25dp"
+            android:layout_height="50dp"
+            app:layout_constraintStart_toEndOf="@id/use_radio_button"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <RadioButton
             android:id="@+id/waste_radio_button"
@@ -70,8 +123,11 @@
         android:layout_width="wrap_content"
         android:layout_height="50dp"
         android:gravity="center"
-        android:text="Date item was used or wasted:"
+        android:text="Date grocery was used or wasted:"
         android:textSize="@dimen/label_text_size"
+        android:textStyle="bold"
+        android:textColor="#00b215"
+        android:layout_marginStart="@dimen/text_margin"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/use_waste_radio_group" />
 
@@ -87,9 +143,9 @@
         android:id="@+id/used_wasted_save"
         android:layout_width="wrap_content"
         android:layout_height="50dp"
-        android:layout_marginStart="140dp"
-        android:layout_marginEnd="@dimen/text_margin"
+        android:layout_marginStart="125dp"
         android:text="Save"
+        android:backgroundTint="#00b215"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/item_partial_consume_calendar" />
 
