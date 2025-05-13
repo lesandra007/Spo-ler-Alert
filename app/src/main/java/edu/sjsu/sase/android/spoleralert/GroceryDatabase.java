@@ -307,19 +307,19 @@ public class GroceryDatabase extends SQLiteOpenHelper {
         for (Grocery g : getAllGroceries()) {
             for (GroceryUsageUpdate update : g.getUpdates()) {
                 if (update.getType() == isUse) {
-                    try {
-                        LocalDate date = update.getDate();
-                        if (date == null || date.getYear() < 1900 || date.getMonthValue() < 1 || date.getMonthValue() > 12) {
-                            Log.w("GroceryDB", "Skipping invalid update date: " + date);
-                            continue;
-                        }
-
-                        YearMonth ym = YearMonth.from(date);
-                        float value = (float) (isMoney ? update.getPrice() : update.getWeight());
-                        monthTotals.put(ym, monthTotals.getOrDefault(ym, 0f) + value);
-                    } catch (Exception e) {
-                        Log.e("GroceryDB", "Invalid date in GroceryUsageUpdate: " + e.getMessage());
-                    }
+//                    try {
+//                        LocalDate date = update.getDate();
+//                        if (date == null || date.getYear() < 1900 || date.getMonthValue() < 1 || date.getMonthValue() > 12) {
+//                            Log.w("GroceryDB", "Skipping invalid update date: " + date);
+//                            continue;
+//                        }
+//
+//                        YearMonth ym = YearMonth.from(date);
+//                        float value = (float) (isMoney ? update.getPrice() : update.getWeight());
+//                        monthTotals.put(ym, monthTotals.getOrDefault(ym, 0f) + value);
+//                    } catch (Exception e) {
+//                        Log.e("GroceryDB", "Invalid date in GroceryUsageUpdate: " + e.getMessage());
+//                    }
                 }
             }
         }
@@ -355,28 +355,6 @@ public class GroceryDatabase extends SQLiteOpenHelper {
         return groceries;
     }
 
-    public void logCorruptUsageUpdates() {
-        for (Grocery g : getAllGroceries()) {
-            for (GroceryUsageUpdate update : g.getUpdates()) {
-                try {
-                    LocalDate d = update.getDate();
-                    boolean isUse = update.getType();
-                    double price = update.getPrice();
-                    double weight = update.getWeight();
-                    double quantity = update.getQuantitySubtracted();
-
-                    if (d == null || d.getYear() < 1900 || d.getMonthValue() < 1 || d.getMonthValue() > 12) {
-                        Log.e("CorruptData", "Invalid update in grocery '" + g.getName() + "' -> " +
-                                "date=" + d + ", type=" + (isUse ? "used" : "wasted") +
-                                ", price=" + price + ", weight=" + weight + ", quantity=" + quantity);
-                    }
-                } catch (Exception e) {
-                    Log.e("CorruptData", "Parse error in update for grocery '" + g.getName() + "': " + e.getMessage());
-                }
-            }
-        }
-    }
-
     public void logAllGroceries() {
         List<Grocery> groceries = getAllGroceries();
         Log.d("DB_DUMP", "------ GROCERIES IN DATABASE ------");
@@ -400,7 +378,6 @@ public class GroceryDatabase extends SQLiteOpenHelper {
                 for (GroceryUsageUpdate u : updates) {
                     Log.d("DB_DUMP", "  Update:");
                     Log.d("DB_DUMP", "    Type: " + (u.getType() ? "Used" : "Wasted"));
-                    Log.d("DB_DUMP", "    Date: " + u.getDate());
                     Log.d("DB_DUMP", "    Price: $" + u.getPrice());
                     Log.d("DB_DUMP", "    Weight: " + u.getWeight() + " oz");
                     Log.d("DB_DUMP", "    Quantity Subtracted: " + u.getQuantitySubtracted());

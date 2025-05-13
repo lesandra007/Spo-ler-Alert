@@ -59,39 +59,27 @@ public class StatisticsFragment extends Fragment {
         profilePickerLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 result -> {
-                    if (result.getResultCode() == Activity.RESULT_OK) {
+                    if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
                         Intent data = result.getData();
-                        if (data != null && getView() != null) {
+                        int selectedImageRes = data.getIntExtra("selectedImageRes", R.drawable.bird1_green);
+                        String selectedBirdName = data.getStringExtra("selectedBirdName");
 
+                        SharedPreferences prefs = requireContext().getSharedPreferences("AvatarPrefs", Context.MODE_PRIVATE);
+                        prefs.edit()
+                                .putInt("avatarImage", selectedImageRes)
+                                .putString("avatarName", selectedBirdName)
+                                .apply();
+
+                        // ⏬ Immediately update the UI after saving
+                        if (getView() != null) {
                             ImageView profilePic = getView().findViewById(R.id.profilePicture);
                             TextView birdNameView = getView().findViewById(R.id.birdNameText);
-                            TextView birdSpeech = getView().findViewById(R.id.birdSpeech);
-
-                            SharedPreferences prefs = requireContext().getSharedPreferences("AvatarPrefs", Context.MODE_PRIVATE);
-                            int selectedImageRes = data.getIntExtra("selectedImageRes", R.drawable.bird1_green);
-                            String savedName = prefs.getString("avatarName", "Chirplin");
-
                             profilePic.setImageResource(selectedImageRes);
-                            birdNameView.setText(savedName);
-
-                            profilePic.setOnClickListener(v -> {
-                                List<String> phrases = new ArrayList<>();
-                                for (int i = 0; i < 5; i++) {
-                                    String phrase = prefs.getString("phrase_" + i, null);
-                                    if (phrase != null) phrases.add(phrase);
-                                }
-
-                                if (!phrases.isEmpty()) {
-                                    String selectedPhrase = phrases.get((int) (Math.random() * phrases.size()));
-                                    birdSpeech.setText(selectedPhrase);
-                                    birdSpeech.setVisibility(View.VISIBLE);
-                                    birdSpeech.postDelayed(() -> birdSpeech.setVisibility(View.GONE), 4000);
-                                }
-                            });
-
+                            birdNameView.setText(selectedBirdName);
                         }
                     }
-                });
+                }
+        );
     }
 
     @Override
@@ -99,27 +87,46 @@ public class StatisticsFragment extends Fragment {
                              Bundle savedInstanceState) {
         View statistics_view = inflater.inflate(R.layout.fragment_statistics, container, false);
 
+        TextView birdSpeech = statistics_view.findViewById(R.id.birdSpeech);
         profilePic = statistics_view.findViewById(R.id.profilePicture);
         TextView birdNameView = statistics_view.findViewById(R.id.birdNameText);
 
-        // Load saved avatar data if it exists
+        // Load saved avatar data
         SharedPreferences prefs = requireContext().getSharedPreferences("AvatarPrefs", Context.MODE_PRIVATE);
-        int savedAvatar = prefs.getInt("avatarImage", R.drawable.bird1_green);
-        String savedName = prefs.getString("avatarName", "Rosette");
+        int savedAvatar = prefs.getInt("avatarImage", R.drawable.no_avatar);
+        String savedName = prefs.getString("avatarName", "Choose your avatar");
 
-        // Set the profile picture and name from saved preferences
+        // Set image and name
         profilePic.setImageResource(savedAvatar);
         birdNameView.setText(savedName);
 
-        // Set a click listener for the profile picture to launch the ProfilePickerActivity
+        // Profile Picture shows speech bubble
         profilePic.setOnClickListener(v -> {
+            List<String> phrases = new ArrayList<>();
+            for (int i = 0; i < 7; i++) {
+                String phrase = prefs.getString("phrase_" + i, null);
+                if (phrase != null) phrases.add(phrase);
+            }
+
+            if (!phrases.isEmpty()) {
+                String selectedPhrase = phrases.get((int) (Math.random() * phrases.size()));
+                birdSpeech.setText(selectedPhrase);
+                birdSpeech.setAlpha(0f);
+                birdSpeech.setVisibility(View.VISIBLE);
+                birdSpeech.animate().alpha(1f).setDuration(300).start();
+                birdSpeech.postDelayed(() -> birdSpeech.setVisibility(View.GONE), 4000);
+            }
+        });
+
+        // Edit icon opens the profile picker
+        ImageView editIcon = statistics_view.findViewById(R.id.editIcon);
+        editIcon.setOnClickListener(v -> {
             Intent intent = new Intent(requireContext(), ProfilePickerActivity.class);
             profilePickerLauncher.launch(intent);
         });
 
         // Set up Bar Chart and other UI elements as usual
         groceryDb = new GroceryDatabase(requireContext());
-        groceryDb.logCorruptUsageUpdates();
         groceryDb.logAllGroceries();
         BarChart barChart = statistics_view.findViewById(R.id.barchart);
 

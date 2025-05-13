@@ -142,6 +142,21 @@
                     android:focusable="true"
                     android:src="@drawable/bird1_green" />
 
+                <TextView
+                    android:id="@+id/birdSpeech"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal|bottom"
+                    android:background="@drawable/speech_bubble_background"
+                    android:textColor="@android:color/black"
+                    android:textSize="18sp"
+                    android:textStyle="italic"
+                    android:gravity="center|bottom"
+                    android:padding="8dp"
+                    android:maxWidth="300dp"
+                    android:visibility="gone"
+                    android:elevation="10dp"/>
+
                 <!-- Edit Icon (overlayed on bottom right) -->
                 <ImageView
                     android:id="@+id/editIcon"
