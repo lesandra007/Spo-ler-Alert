@@ -13,8 +13,11 @@ import static edu.sjsu.sase.android.spoleralert.GroceryDBSchema.GroceryDBColumns
 import static edu.sjsu.sase.android.spoleralert.GroceryDBSchema.GroceryDBColumns.USED_STATUS;
 import static edu.sjsu.sase.android.spoleralert.GroceryDBSchema.GroceryDBColumns.WASTED_STATUS;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.ContentValues;
+import android.content.Context;
+import android.content.ContextWrapper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
@@ -34,15 +37,23 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentContainerView;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkManager;
 
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.concurrent.TimeUnit;
 
+import edu.sjsu.sase.android.spoleralert.notifications.NotifEnum;
 import edu.sjsu.sase.android.spoleralert.notifications.Notification;
+import edu.sjsu.sase.android.spoleralert.notifications.NotificationFragment;
 
 public class GroceriesAdapter extends RecyclerView.Adapter<GroceriesAdapter.ViewHolder>{
     private ArrayList<Grocery> groceries;
@@ -55,6 +66,11 @@ public class GroceriesAdapter extends RecyclerView.Adapter<GroceriesAdapter.View
     //calendar variables for editing
     private LocalDate new_expiration_date;
     private LocalDate update_date;
+
+    // notifications
+    Calendar selectedDate;
+    NotificationFragment notifFragment;
+    ArrayList<Notification> newNotifs = new ArrayList<>();
 
     public GroceriesAdapter(ArrayList<Grocery> groceries_data, GroceryDatabase groceries_db, String adapter_name){
         groceries = groceries_data;
@@ -458,6 +474,29 @@ public class GroceriesAdapter extends RecyclerView.Adapter<GroceriesAdapter.View
         edit_grocery.setContentView(R.layout.fragment_edit_grocery);
         edit_grocery.show();
 
+        // ************ Implement Notifications ****************
+        // initialize the notification fragment
+        Context context = edit_grocery.getContext();
+        while (context instanceof ContextWrapper && !(context instanceof AppCompatActivity)) {
+            context = ((ContextWrapper) context).getBaseContext();
+        }
+
+        if (context instanceof AppCompatActivity) {
+            FragmentManager fragmentManager = ((AppCompatActivity) context).getSupportFragmentManager();
+            notifFragment = (NotificationFragment) fragmentManager.findFragmentById(R.id.notifList);
+
+            if (notifFragment != null && notifFragment.isAdded()) {
+                // Fragment is properly initialized, you can now work with it
+            } else {
+                Log.e("Dialog", "NotificationFragment is not initialized or attached yet!");
+            }
+        } else {
+            Log.e("Dialog", "Could not retrieve AppCompatActivity context!");
+        }
+        // add notification button
+        Button addNotif = edit_grocery.findViewById(R.id.addNotifBtn);
+        addNotif.setOnClickListener(this::showNotifDialog);
+
         //set the onclick event for back button
         Button edit_back_button = edit_grocery.findViewById(R.id.edit_item_back_button);
         edit_back_button.setOnClickListener(new View.OnClickListener() {
@@ -500,6 +539,7 @@ public class GroceriesAdapter extends RecyclerView.Adapter<GroceriesAdapter.View
         double price = grocery_to_edit.getPrice();
         boolean freezer_status = grocery_to_edit.getFreezerStatus();
         LocalDate expiration_date = grocery_to_edit.getExpirationDate();
+        ArrayList<Notification> oldNotifications = grocery_to_edit.getNotifications();
 
         //get the objects in the edit_grocery dialog
         EditText name_et = edit_grocery.findViewById(R.id.edit_item_name_input);
@@ -519,6 +559,14 @@ public class GroceriesAdapter extends RecyclerView.Adapter<GroceriesAdapter.View
         price_et.setText(String.valueOf(price));
         freezer_check.setChecked(freezer_status);
         expiration_cal.setDate(expiration_date.atStartOfDay(timezone).toInstant().toEpochMilli());
+
+        notifFragment.getNotifications().clear();
+        for (Notification notif: oldNotifications) {
+            Log.d("Notification", "an old notif: " + notif.toString());
+            addNotification(notif);
+            Log.d("Notification frag", "size" + notifFragment.getNotifications().size());
+            Log.d("Notification frag adapter", "size" + notifFragment.getAdapter().getItemCount());
+        }
 
         //if the item has been used, lock the quantity/price/weight from being changed
         if (!grocery_to_edit.getUpdates().isEmpty()){
@@ -587,6 +635,9 @@ public class GroceriesAdapter extends RecyclerView.Adapter<GroceriesAdapter.View
                 //and assuming everything else works, i think its fine just having the user refresh the list
                 //instead of somehow refreshing everything right here
                 //and besides, its normal for a user to refresh to see their changes reflected anyways in other products
+
+                // schedule reminder
+                scheduleReminder(view, view.getContext());
 
                 notifyItemChanged(position);
                 edit_grocery.dismiss();
@@ -664,6 +715,119 @@ public class GroceriesAdapter extends RecyclerView.Adapter<GroceriesAdapter.View
                 item_options.dismiss();
             }
         });
+    }
+
+    /**
+     * Shows Dialog where user can select when they want notifications relative to the expiration date
+     * @param view the view
+     */
+    private void showNotifDialog(View view) {
+        // show dialog view
+        Dialog notifDialog = new Dialog(view.getContext());
+        notifDialog.setContentView(R.layout.notification_dialog);
+        notifDialog.show();
+
+        // set spinner options
+        Spinner notif_spin = (Spinner) notifDialog.findViewById(R.id.notif_spinner);
+        ArrayAdapter<NotifEnum> fg_adapter = new ArrayAdapter<>(view.getContext(), android.R.layout.simple_spinner_item, NotifEnum.values());
+        fg_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        notif_spin.setAdapter(fg_adapter);
+
+        // save button
+        Button saveBtn = notifDialog.findViewById(R.id.save_btn);
+        saveBtn.setOnClickListener(v -> onClickNotifDialogSave(notifDialog, notif_spin));
+
+        // cancel button
+        Button cancelBtn = notifDialog.findViewById(R.id.cancel_btn);
+        cancelBtn.setOnClickListener(v -> notifDialog.dismiss());
+    }
+
+    /**
+     *
+     * @param dialog the notification dialog
+     * @param spinner the spinner for notification times
+     */
+    public void onClickNotifDialogSave(Dialog dialog, Spinner spinner) {
+        // retrieve input values
+        EditText numText = dialog.findViewById(R.id.editTextNumber);
+        String numStr = numText.getText().toString();
+        String notifTime = spinner.getSelectedItem().toString();
+
+        // add notification to add groceries screen and close dialog
+        if (!numStr.matches("") && !notifTime.matches("")){
+            int num = Integer.parseInt(numText.getText().toString());
+            addNotification(num, notifTime);
+            dialog.dismiss();
+        }
+    }
+
+    /**
+     * Adds notification to notification fragment in add groceries screen
+     * @param num the number of days/weeks/months to schedule the notification before expiration date
+     * @param notifTime days/weeks/months
+     */
+    public boolean addNotification(int num, String notifTime) {
+        Notification newNotif = new Notification(num, notifTime);
+
+        if (notifFragment.getNotifications().contains(newNotif)) {
+            Log.d("Notification", "fragment contains new notif with num and notifTime");
+            return false;
+        }
+        notifFragment.addNotification(newNotif);
+        Log.d("Notification", "notif added to fragment: " + newNotif.toString());
+        newNotifs.add(newNotif);
+        return true;
+    }
+
+    /**
+     * Adds notification to notification fragment in add groceries screen
+     * @param notif a notification to add
+     */
+    public boolean addNotification(Notification notif) {
+        Notification newNotif = notif;
+
+        if (notifFragment.getNotifications().contains(newNotif)) {
+            Log.d("Notification", "fragment contains new notif");
+            return false;
+        }
+        notifFragment.addNotification(newNotif);
+        newNotifs.add(newNotif);
+        return true;
+    }
+
+    /**
+     * Schedules a notification that reminds the user of the expiration date of an item
+     * @param view the view
+     * @param context the context
+     */
+    public void scheduleReminder(View view, Context context) {
+        // check if date is selected
+        if (selectedDate == null) {
+            Log.e("schedule reminder", "selected date is null");
+            return;
+        }
+        // return if no notifications are scheduled
+        if (newNotifs.isEmpty()) {
+            Log.e("schedule reminder", "none to schedule");
+            return;
+        }
+
+        OneTimeWorkRequest reminderRequest = null;
+        // get name of grocery item
+        EditText name_et = view.findViewById(R.id.item_name_input);
+        String name = name_et.getText().toString();
+
+        // for each notification
+        for (Notification notif: newNotifs) {
+            reminderRequest = notif.scheduleItemBefore(name, selectedDate);
+
+            // notification date already passed
+            if (reminderRequest == null) {
+                return;
+            }
+            // enqueue the request
+            WorkManager.getInstance(context).enqueue(reminderRequest);
+        }
     }
 
 }

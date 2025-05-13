@@ -7,6 +7,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.work.Data;
@@ -288,79 +289,12 @@ public class AddGroceryFragment extends Fragment {
         // for each notification
         for (Notification notif: notifications) {
             // TODO: check if notification is already in the database
-            // set notification day and message
-            Data inputData = null;
-            Calendar notifDay = (Calendar) selectedDate.clone(); // Clone to avoid modifying original
-            int num = notif.getNumber();
-            if (notif.getNotifEnum() == NotifEnum.DAYS) {
-                notifDay.add(Calendar.DATE, -num);
-                if (num == 1) {
-                    inputData = new Data.Builder()
-                            .putString("custom_message", "Your " + name + " is expiring tomorrow!")
-                            .build();
-                }
-                else if (num == 0) {
-                    inputData = new Data.Builder()
-                            .putString("custom_message", "Your " + name + " is expiring today!")
-                            .build();
-                }
-                else{
-                    inputData = new Data.Builder()
-                            .putString("custom_message", "Your " + name + " is expiring in " + num + " days!")
-                            .build();
-                }
-            }
-            else if (notif.getNotifEnum() == NotifEnum.WEEKS) {
-                notifDay.add(Calendar.WEEK_OF_YEAR, -num);
-                if (num == 1) {
-                    inputData = new Data.Builder()
-                            .putString("custom_message", "Your " + name + " is expiring in 1 week!")
-                            .build();
-                }
-                else {
-                    inputData = new Data.Builder()
-                            .putString("custom_message", "Your " + name + " is expiring in " + num + " weeks!")
-                            .build();
-                }
-            }
-            else if (notif.getNotifEnum() == NotifEnum.MONTHS) {
-                notifDay.add(Calendar.MONTH, -num);
-                if (num == 1) {
-                    inputData = new Data.Builder()
-                            .putString("custom_message", "Your " + name + " is expiring in 1 month!")
-                            .build();
-                }
-                else {
-                    inputData = new Data.Builder()
-                            .putString("custom_message", "Your " + name + " is expiring in " + num + " months!")
-                            .build();
-                }
-            }
-            Log.d("notification", "notification date: " + notifDay);
-            // calculate the delay from today in milliseconds
-            Calendar today = Calendar.getInstance();
-            long delayInMillis = notifDay.getTimeInMillis() - today.getTimeInMillis();
-            long delayInMinutes = TimeUnit.MILLISECONDS.toMinutes(delayInMillis);
+            reminderRequest = notif.scheduleItemBefore(name, selectedDate);
 
-            int notifDayOfWeek = notifDay.get(Calendar.DAY_OF_WEEK);
-            int todayDayOfWeek = today.get(Calendar.DAY_OF_WEEK);
-            // notify immediately if notification date is today
-            if (notifDayOfWeek == todayDayOfWeek && delayInMinutes < 10 && delayInMinutes > -10){
-                delayInMinutes = 0;
-                Log.d("notification", "notify today");
-            }
-            // don't schedule if notification date has already passed
-            else if (notifDay.compareTo(today) < 0) {
-                Log.d("notification", "notify in past");
+            // notification date already passed
+            if (reminderRequest == null) {
                 return;
             }
-
-
-            // Create a WorkManager request with the calculated delay
-            reminderRequest = new OneTimeWorkRequest.Builder(NotificationWorker.class)
-                    .setInitialDelay(delayInMinutes, TimeUnit.MINUTES) // Set the calculated delay
-                    .setInputData(inputData) // Pass the data to the worker
-                    .build();
 
             // enqueue the request
             WorkManager.getInstance(context).enqueue(reminderRequest);

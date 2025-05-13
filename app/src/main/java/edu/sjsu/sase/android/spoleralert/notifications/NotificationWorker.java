@@ -3,8 +3,12 @@ package edu.sjsu.sase.android.spoleralert.notifications;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
+import androidx.core.content.ContextCompat;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
@@ -32,7 +36,8 @@ public class NotificationWorker extends Worker {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), "reminder_channel")
                 .setContentTitle("SPO!LER ALERT")
                 .setContentText(customMessage != null ? customMessage : "Use your food before they expire!")
-                .setSmallIcon(R.drawable.spoiler_alert_logo)
+                .setSmallIcon(R.drawable.logo)
+                .setColor(ContextCompat.getColor(getApplicationContext(), R.color.spoiler_green))
                 .setPriority(NotificationCompat.PRIORITY_HIGH);
 
         manager.notify(101, builder.build());

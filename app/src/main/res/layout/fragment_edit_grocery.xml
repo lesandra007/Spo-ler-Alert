@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/relativeLayout"
+    android:id="@+id/editGroceryLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -275,35 +275,38 @@
                 app:layout_constraintTop_toBottomOf="@+id/edit_item_expiration_date_label" />
 
             <!--Notifications-->
-<!--            <TextView-->
-<!--                android:id="@+id/textView"-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:layout_marginStart="12dp"-->
-<!--                android:layout_marginTop="24dp"-->
-<!--                android:text="Expiration Reminders"-->
-<!--                android:textSize="@dimen/label_text_size"-->
-<!--                app:layout_constraintStart_toStartOf="@+id/item_expiration_date_label"-->
-<!--                app:layout_constraintTop_toBottomOf="@+id/item_expiration_calendar" />-->
+            <TextView
+                android:id="@+id/textView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:layout_marginTop="24dp"
+                android:text="Expiration Reminders"
+                android:textSize="@dimen/label_text_size"
+                android:textStyle="bold"
+                android:textColor="#00b215"
+                app:layout_constraintStart_toStartOf="@+id/edit_item_expiration_date_label"
+                app:layout_constraintTop_toBottomOf="@+id/edit_item_expiration_calendar" />
 
-<!--            <androidx.fragment.app.FragmentContainerView-->
-<!--                android:id="@+id/notifList"-->
-<!--                android:name="edu.sjsu.sase.android.spoleralert.notifications.NotificationFragment"-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                tools:layout_editor_absoluteX="85dp"-->
-<!--                tools:layout_editor_absoluteY="772dp"-->
-<!--                app:layout_constraintStart_toStartOf="@+id/textView"-->
-<!--                app:layout_constraintTop_toBottomOf="@+id/textView"/>-->
+            <androidx.fragment.app.FragmentContainerView
+                android:id="@+id/notifList"
+                android:name="edu.sjsu.sase.android.spoleralert.notifications.NotificationFragment"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:layout_editor_absoluteX="85dp"
+                tools:layout_editor_absoluteY="772dp"
+                app:layout_constraintStart_toStartOf="@+id/textView"
+                app:layout_constraintTop_toBottomOf="@+id/textView"/>
 
-<!--            <Button-->
-<!--                android:id="@+id/addNotifBtn"-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:layout_marginTop="24dp"-->
-<!--                android:text="Add Notification"-->
-<!--                app:layout_constraintStart_toStartOf="@+id/textView"-->
-<!--                app:layout_constraintTop_toBottomOf="@+id/notifList" />-->
+            <Button
+                android:id="@+id/addNotifBtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="Add Notification"
+                android:backgroundTint="#00b215"
+                app:layout_constraintStart_toStartOf="@+id/textView"
+                app:layout_constraintTop_toBottomOf="@+id/notifList" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
 
