@@ -150,7 +150,7 @@ public class GroceriesFragment extends Fragment {
         for(Grocery g : alphabetical_groceries){
             Log.d("UPDATES_INFO", "For grocery: " + g.getName());
             for(GroceryUsageUpdate u : g.getUpdates()){
-                Log.d("UPDATES_INFO", "weight: " + u.getWeight() + " price: " + u.getPrice() + " quantity: " + u.getQuantitySubtracted());
+                Log.d("UPDATES_INFO", "weight: " + u.getWeight() + " price: " + u.getPrice() + " quantity: " + u.getQuantitySubtracted() + " date: " + u.getUpdateDate().toString());
             }
         }
 
