@@ -304,9 +304,9 @@ public class GroceryDatabase extends SQLiteOpenHelper {
 
     private List<MonthlyStat> getMonthlyUpdateTotals(boolean isUse, boolean isMoney) {
         Map<YearMonth, Float> monthTotals = new HashMap<>();
-        for (Grocery g : getAllGroceries()) {
-            for (GroceryUsageUpdate update : g.getUpdates()) {
-                if (update.getType() == isUse) {
+//        for (Grocery g : getAllGroceries()) {
+//            for (GroceryUsageUpdate update : g.getUpdates()) {
+//                if (update.getType() == isUse) {
 //                    try {
 //                        LocalDate date = update.getDate();
 //                        if (date == null || date.getYear() < 1900 || date.getMonthValue() < 1 || date.getMonthValue() > 12) {
@@ -320,9 +320,9 @@ public class GroceryDatabase extends SQLiteOpenHelper {
 //                    } catch (Exception e) {
 //                        Log.e("GroceryDB", "Invalid date in GroceryUsageUpdate: " + e.getMessage());
 //                    }
-                }
-            }
-        }
+//                }
+//            }
+//        }
         return toLast6MonthsList(monthTotals);
     }
 
