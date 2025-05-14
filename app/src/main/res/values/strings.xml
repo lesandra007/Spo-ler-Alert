@@ -47,4 +47,10 @@
         <item>Money Overview</item>
     </string-array>
 
+    <string-array name="recent_list_filters">
+        <item>All Recent Purchases</item>
+        <item>Recently Eaten</item>
+        <item>Recently Wasted</item>
+    </string-array>
+
 </resources>

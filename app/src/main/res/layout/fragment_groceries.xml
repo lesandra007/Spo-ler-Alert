@@ -94,18 +94,131 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/grocery_list_title_1" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/grocery_list_area"
-        android:layout_width="match_parent"
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/grocery_scroll_container"
+        android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_margin="10dp"
-        android:scrollbars="vertical"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:paddingBottom="100dp"
+        android:fillViewport="true"
         app:layout_constraintTop_toBottomOf="@id/grocery_list_sorting_dropdown"
+        app:layout_constraintBottom_toTopOf="@+id/add_groceries_button"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:contentDescription="Grocery List View"/>
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <LinearLayout
+            android:id="@+id/grocery_scroll_content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="10dp">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/grocery_list_area"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:nestedScrollingEnabled="false"
+                android:scrollbars="vertical"
+                android:contentDescription="Grocery List View" />
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/recent_sections_card"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp"
+                app:cardElevation="4dp"
+                app:cardCornerRadius="20dp"
+                android:backgroundTint="@android:color/transparent"
+                android:layout_marginHorizontal="12dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="12dp"
+                    android:background="@drawable/rounded_square">
+
+                    <!-- Recent Purchases -->
+                    <TextView
+                        android:id="@+id/recent_purchases_title"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Recent Purchases"
+                        android:textStyle="bold"
+                        android:textSize="20sp"
+                        android:textAllCaps="true"
+                        android:textColor="@color/spoiler_green"
+                        android:layout_margin="10dp" />
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/recent_purchases_list"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginEnd="10dp"
+                        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                        android:nestedScrollingEnabled="false" />
+
+                    <!-- Repeat for Recent Eats -->
+                    <TextView
+                        android:id="@+id/recent_eats_title"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Recently Eaten"
+                        android:textStyle="bold"
+                        android:textSize="20sp"
+                        android:textAllCaps="true"
+                        android:textColor="@color/spoiler_green"
+                        android:layout_margin="10dp" />
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/recent_eats_list"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginEnd="10dp"
+                        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                        android:nestedScrollingEnabled="false" />
+
+                    <!-- Repeat for Recent Wastes -->
+                    <TextView
+                        android:id="@+id/recent_wastes_title"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Recently Wasted"
+                        android:textStyle="bold"
+                        android:textSize="20sp"
+                        android:textAllCaps="true"
+                        android:textColor="@color/spoiler_green"
+                        android:layout_margin="10dp" />
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/recent_wastes_list"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginEnd="10dp"
+                        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                        android:nestedScrollingEnabled="false" />
+
+<!--                    &lt;!&ndash; See more button &ndash;&gt;-->
+<!--                    <TextView-->
+<!--                        android:id="@+id/see_more_button"-->
+<!--                        android:layout_width="wrap_content"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:text="See More →"-->
+<!--                        android:textColor="@color/fresh_green"-->
+<!--                        android:textStyle="bold"-->
+<!--                        android:layout_marginTop="12dp"-->
+<!--                        android:layout_marginBottom="4dp"-->
+<!--                        android:layout_gravity="end"-->
+<!--                        android:clickable="true"-->
+<!--                        android:focusable="true" />-->
+
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
 
     <!-- Add Grocery Button -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton

@@ -384,4 +384,51 @@ public class GroceryDatabase extends SQLiteOpenHelper {
         Log.d("DB_DUMP", "-----------------------------------");
     }
 
+    public List<Grocery> getRecentPurchases(int limit) {
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = db.query(
+                TABLE_NAME,
+                null,
+                null,
+                null,
+                null,
+                null,
+                ID + " DESC", // Assuming ID is auto-increment
+                String.valueOf(limit)
+        );
+
+        List<Grocery> recent = new ArrayList<>();
+        while (cursor.moveToNext()) {
+            recent.add(createGroceryFromDbRow(cursor));
+        }
+        cursor.close();
+        return recent;
+    }
+
+    public List<GroceryUsageEntry> getRecentUpdates(boolean isUse, int limit) {
+        List<GroceryUsageEntry> all = new ArrayList<>();
+        for (Grocery g : getAllGroceries()) {
+            if (g.getUpdates() == null) continue;
+            for (GroceryUsageUpdate u : g.getUpdates()) {
+                if (u.getType() == isUse) {
+                    all.add(new GroceryUsageEntry(g.getName(), u));
+                }
+            }
+        }
+        // Sort by update date DESC
+        all.sort((a, b) -> b.update.getUpdateDate().compareTo(a.update.getUpdateDate()));
+        return all.subList(0, Math.min(limit, all.size()));
+    }
+
+    // Helper inner class
+    public static class GroceryUsageEntry {
+        public final String name;
+        public final GroceryUsageUpdate update;
+
+        public GroceryUsageEntry(String name, GroceryUsageUpdate update) {
+            this.name = name;
+            this.update = update;
+        }
+    }
+
 }
