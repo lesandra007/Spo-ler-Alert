@@ -41,6 +41,8 @@ import java.util.Collections;
 import java.util.List;
 
 import edu.sjsu.sase.android.spoleralert.profile.ProfilePickerActivity;
+import com.github.mikephil.charting.formatter.ValueFormatter;
+
 
 public class StatisticsFragment extends Fragment {
 
@@ -318,7 +320,7 @@ public class StatisticsFragment extends Fragment {
         for (int i = 0; i < data.size(); i++) {
             MonthlyStat stat = data.get(i);
 
-            // 🚨 Avoid corrupt/huge values
+            // Avoid corrupt/huge values
             if (Float.isNaN(stat.value) || stat.value < 0 || stat.value > 1_000_000f) {
                 Log.e("ChartSkip", "Skipping invalid stat: " + stat.month + " -> " + stat.value);
                 continue;
@@ -340,6 +342,15 @@ public class StatisticsFragment extends Fragment {
         dataSet.setValueTextColor(Color.BLACK);
         dataSet.setValueTextSize(16f);
 
+        // Show whole dollars inside the bars
+        if (label.toLowerCase().contains("money")) {
+            dataSet.setValueFormatter(new DollarValueFormatter(true));
+            chart.getAxisLeft().setValueFormatter(new DollarValueFormatter(false));
+        } else {
+            dataSet.setValueFormatter(new WeightValueFormatter());
+            chart.getAxisLeft().setValueFormatter(new WeightValueFormatter());
+        }
+
         BarData barData = new BarData(dataSet);
         chart.setData(barData);
 
@@ -351,6 +362,7 @@ public class StatisticsFragment extends Fragment {
         yAxis.setAxisMinimum(0f);
         yAxis.setAxisMaximum(Math.max(maxY, 10f));  // avoid maxY == 0
 
+        chart.getXAxis().setCenterAxisLabels(true);
         chart.getAxisRight().setEnabled(false);
         chart.invalidate();
     }
@@ -374,6 +386,14 @@ public class StatisticsFragment extends Fragment {
             labels.add(spentData.get(i).month.getMonth().name().substring(0, 3));
         }
 
+        float maxY = getMaxValue(List.of(spentData, wasteData, usedData)) * 1.1f;
+
+        YAxis yAxis = chart.getAxisLeft();
+        yAxis.setAxisMinimum(0f);
+        yAxis.setAxisMaximum(Math.max(maxY, 10f));  // ensure it's not flat
+
+        chart.getAxisRight().setEnabled(false);
+
         BarDataSet spentSet = new BarDataSet(spentEntries, "Spent");
         BarDataSet wasteSet = new BarDataSet(wasteEntries, "Wasted");
         BarDataSet usedSet = new BarDataSet(usedEntries, "Used");
@@ -386,6 +406,12 @@ public class StatisticsFragment extends Fragment {
         wasteSet.setValueTextSize(12f);
         usedSet.setValueTextSize(12f);
 
+        spentSet.setDrawValues(false);
+        wasteSet.setDrawValues(false);
+        usedSet.setDrawValues(false);
+
+        chart.getAxisLeft().setValueFormatter(new DollarValueFormatter(false));
+
         BarData data = new BarData(spentSet, wasteSet, usedSet);
         float groupSpace = 0.2f;
         float barSpace = 0.05f;
@@ -394,22 +420,45 @@ public class StatisticsFragment extends Fragment {
         data.setBarWidth(barWidth);
         chart.setData(data);
 
-        chart.getXAxis().setValueFormatter(new IndexAxisValueFormatter(labels));
-        chart.getXAxis().setGranularity(1f);
-        chart.getXAxis().setGranularityEnabled(true);
-        chart.getXAxis().setCenterAxisLabels(true);
-        chart.getXAxis().setPosition(XAxis.XAxisPosition.BOTTOM);
+        XAxis xAxis = chart.getXAxis();
+        xAxis.setValueFormatter(new IndexAxisValueFormatter(labels));
+        xAxis.setGranularity(1f);
+        xAxis.setGranularityEnabled(true);
+        xAxis.setCenterAxisLabels(true);
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
 
-        chart.getAxisLeft().setAxisMinimum(0f);
-        chart.getAxisRight().setEnabled(false);
+        float groupWidth = data.getGroupWidth(groupSpace, barSpace);
+        xAxis.setAxisMinimum(0f);
+        xAxis.setAxisMaximum(groupWidth * labels.size());
 
-        chart.getXAxis().setAxisMinimum(0f);
-        chart.getXAxis().setAxisMaximum(spentData.size());
         chart.groupBars(0f, groupSpace, barSpace);
-
-        chart.setFitBars(true);
-        chart.getDescription().setEnabled(false);
         chart.invalidate();
+    }
+
+    public class DollarValueFormatter extends ValueFormatter {
+        private final boolean roundToWhole;
+
+        public DollarValueFormatter() {
+            this.roundToWhole = false;
+        }
+
+        public DollarValueFormatter(boolean roundToWhole) {
+            this.roundToWhole = roundToWhole;
+        }
+
+        @Override
+        public String getFormattedValue(float value) {
+            if (Math.abs(value) < 0.01f) return "0";
+            return roundToWhole ? "$" + Math.round(value) : "$" + String.format("%.2f", value);
+        }
+    }
+
+    public class WeightValueFormatter extends ValueFormatter {
+        @Override
+        public String getFormattedValue(float value) {
+            if (Math.abs(value) < 0.1f) return "0";
+            return String.format("%.1f lbs", value);
+        }
     }
 
 }

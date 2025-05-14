@@ -279,8 +279,8 @@ public class GroceryDatabase extends SQLiteOpenHelper {
         Map<YearMonth, Float> monthTotals = new HashMap<>();
         for (Grocery g : getAllGroceries()) {
             YearMonth ym = YearMonth.from(g.getExpirationDate());
-            float weightOunces = (g.getPounds() * 16 + g.getOunces());
-            monthTotals.put(ym, monthTotals.getOrDefault(ym, 0f) + weightOunces);
+            float weightLbs = (g.getPounds() * 16 + g.getOunces()) / 16f;
+            monthTotals.put(ym, monthTotals.getOrDefault(ym, 0f) + weightLbs);
         }
         return toLast6MonthsList(monthTotals);
     }
@@ -304,28 +304,25 @@ public class GroceryDatabase extends SQLiteOpenHelper {
 
     private List<MonthlyStat> getMonthlyUpdateTotals(boolean isUse, boolean isMoney) {
         Map<YearMonth, Float> monthTotals = new HashMap<>();
-//        for (Grocery g : getAllGroceries()) {
-//            for (GroceryUsageUpdate update : g.getUpdates()) {
-//                if (update.getType() == isUse) {
-//                    try {
-//                        LocalDate date = update.getDate();
-//                        if (date == null || date.getYear() < 1900 || date.getMonthValue() < 1 || date.getMonthValue() > 12) {
-//                            Log.w("GroceryDB", "Skipping invalid update date: " + date);
-//                            continue;
-//                        }
-//
-//                        YearMonth ym = YearMonth.from(date);
-//                        float value = (float) (isMoney ? update.getPrice() : update.getWeight());
-//                        monthTotals.put(ym, monthTotals.getOrDefault(ym, 0f) + value);
-//                    } catch (Exception e) {
-//                        Log.e("GroceryDB", "Invalid date in GroceryUsageUpdate: " + e.getMessage());
-//                    }
-//                }
-//            }
-//        }
+        for (Grocery g : getAllGroceries()) {
+            ArrayList<GroceryUsageUpdate> updates = g.getUpdates();
+            if (updates == null) continue;
+
+            for (GroceryUsageUpdate update : updates) {
+                if (update.getType() == isUse) {
+                    try {
+                        LocalDate date = LocalDate.parse(update.getUpdateDate());
+                        YearMonth ym = YearMonth.from(date);
+                        float value = (float) (isMoney ? update.getPrice() : update.getWeight());
+                        monthTotals.put(ym, monthTotals.getOrDefault(ym, 0f) + value);
+                    } catch (Exception e) {
+                        Log.e("GroceryDB", "Error parsing update date: " + update.getUpdateDate(), e);
+                    }
+                }
+            }
+        }
         return toLast6MonthsList(monthTotals);
     }
-
     private Map<YearMonth, Float> mapFromList(List<MonthlyStat> stats) {
         Map<YearMonth, Float> result = new HashMap<>();
         for (MonthlyStat stat : stats) {
