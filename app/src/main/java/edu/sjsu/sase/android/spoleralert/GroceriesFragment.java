@@ -1,5 +1,7 @@
 package edu.sjsu.sase.android.spoleralert;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -17,7 +19,9 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CalendarView;
+import android.widget.ImageView;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import java.lang.reflect.Array;
 import java.time.LocalDate;
@@ -66,6 +70,36 @@ public class GroceriesFragment extends Fragment {
 
         // ********** Inflate the layout for this fragment ************
         View groceries_view = inflater.inflate(R.layout.fragment_groceries, container, false);
+
+        ImageView profilePic = groceries_view.findViewById(R.id.profilePicture);
+        TextView birdSpeech = groceries_view.findViewById(R.id.birdSpeech);
+        TextView birdNameText = groceries_view.findViewById(R.id.birdNameText);
+
+        SharedPreferences prefs = requireContext().getSharedPreferences("AvatarPrefs", Context.MODE_PRIVATE);
+        int savedAvatar = prefs.getInt("avatarImage", R.drawable.bird1_green);
+        String savedName = prefs.getString("avatarName", "Your Bird");
+
+        profilePic.setImageResource(savedAvatar);
+        birdNameText.setText(savedName);
+
+
+        profilePic.setOnClickListener(v -> {
+            List<String> phrases = new ArrayList<>();
+            for (int i = 0; i < 7; i++) {
+                String phrase = prefs.getString("phrase_" + i, null);
+                if (phrase != null) phrases.add(phrase);
+            }
+
+            if (!phrases.isEmpty()) {
+                String selectedPhrase = phrases.get((int) (Math.random() * phrases.size()));
+                birdSpeech.setText(selectedPhrase);
+                birdSpeech.setAlpha(0f);
+                birdSpeech.setVisibility(View.VISIBLE);
+                birdSpeech.animate().alpha(1f).setDuration(300).start();
+                birdSpeech.postDelayed(() -> birdSpeech.setVisibility(View.GONE), 4000);
+            }
+        });
+
         NavController controller = NavHostFragment.findNavController(this);
 
         //create RecyclerView (rv) for displaying list

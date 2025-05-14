@@ -85,7 +85,7 @@
     <!-- Sorting Dropdown -->
     <Spinner
         android:id="@+id/grocery_list_sorting_dropdown"
-        android:layout_width="200dp"
+        android:layout_width="150dp"
         android:layout_height="50dp"
         android:layout_marginTop="20dp"
         android:layout_marginStart="20dp"
@@ -93,6 +93,57 @@
         android:background="@drawable/rounded_square"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/grocery_list_title_1" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/profile_section"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="@id/grocery_list_sorting_dropdown"
+        android:layout_marginEnd="20dp">
+
+        <TextView
+            android:id="@+id/birdNameText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Chirplin"
+            android:textSize="20sp"
+            android:textStyle="bold|italic"
+            android:textColor="#000000"
+            android:layout_marginEnd="8dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+        <ImageView
+            android:id="@+id/profilePicture"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:src="@drawable/bird1_green"
+            android:contentDescription="Profile Picture"
+            android:clickable="true"
+            android:focusable="true"
+            android:layout_marginStart="10dp"
+            app:layout_constraintStart_toEndOf="@id/birdNameText"
+            app:layout_constraintTop_toTopOf="@id/birdNameText"
+            app:layout_constraintBottom_toBottomOf="@id/birdNameText" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <TextView
+        android:id="@+id/birdSpeech"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/speech_bubble_background"
+        android:textColor="@android:color/black"
+        android:textSize="16sp"
+        android:textStyle="italic"
+        android:padding="8dp"
+        android:maxWidth="250dp"
+        android:visibility="gone"
+        android:elevation="6dp"
+        app:layout_constraintTop_toBottomOf="@id/profile_section"
+        app:layout_constraintEnd_toEndOf="@id/profile_section"
+        android:layout_marginTop="4dp"/>
 
     <androidx.core.widget.NestedScrollView
         android:id="@+id/grocery_scroll_container"
@@ -199,20 +250,6 @@
                         android:layout_marginEnd="10dp"
                         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                         android:nestedScrollingEnabled="false" />
-
-<!--                    &lt;!&ndash; See more button &ndash;&gt;-->
-<!--                    <TextView-->
-<!--                        android:id="@+id/see_more_button"-->
-<!--                        android:layout_width="wrap_content"-->
-<!--                        android:layout_height="wrap_content"-->
-<!--                        android:text="See More →"-->
-<!--                        android:textColor="@color/fresh_green"-->
-<!--                        android:textStyle="bold"-->
-<!--                        android:layout_marginTop="12dp"-->
-<!--                        android:layout_marginBottom="4dp"-->
-<!--                        android:layout_gravity="end"-->
-<!--                        android:clickable="true"-->
-<!--                        android:focusable="true" />-->
 
                 </LinearLayout>
             </androidx.cardview.widget.CardView>

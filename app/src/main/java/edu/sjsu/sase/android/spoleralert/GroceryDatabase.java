@@ -302,7 +302,7 @@ public class GroceryDatabase extends SQLiteOpenHelper {
         return toLast6MonthsList(used);
     }
 
-    private List<MonthlyStat> getMonthlyUpdateTotals(boolean isUse, boolean isMoney) {
+    public List<MonthlyStat> getMonthlyUpdateTotals(boolean isUse, boolean isMoney) {
         Map<YearMonth, Float> monthTotals = new HashMap<>();
         for (Grocery g : getAllGroceries()) {
             ArrayList<GroceryUsageUpdate> updates = g.getUpdates();
@@ -313,7 +313,7 @@ public class GroceryDatabase extends SQLiteOpenHelper {
                     try {
                         LocalDate date = LocalDate.parse(update.getUpdateDate());
                         YearMonth ym = YearMonth.from(date);
-                        float value = (float) (isMoney ? update.getPrice() : update.getWeight());
+                        float value = isMoney ? (float) update.getPrice() : (float) (update.getWeight() / 16f); // Convert oz to lbs
                         monthTotals.put(ym, monthTotals.getOrDefault(ym, 0f) + value);
                     } catch (Exception e) {
                         Log.e("GroceryDB", "Error parsing update date: " + update.getUpdateDate(), e);
@@ -323,6 +323,7 @@ public class GroceryDatabase extends SQLiteOpenHelper {
         }
         return toLast6MonthsList(monthTotals);
     }
+
     private Map<YearMonth, Float> mapFromList(List<MonthlyStat> stats) {
         Map<YearMonth, Float> result = new HashMap<>();
         for (MonthlyStat stat : stats) {
@@ -331,7 +332,7 @@ public class GroceryDatabase extends SQLiteOpenHelper {
         return result;
     }
 
-    private List<MonthlyStat> toLast6MonthsList(Map<YearMonth, Float> dataMap) {
+    public List<MonthlyStat> toLast6MonthsList(Map<YearMonth, Float> dataMap) {
         YearMonth now = YearMonth.now();
         List<MonthlyStat> stats = new ArrayList<>();
         for (int i = 5; i >= 0; i--) {
@@ -341,7 +342,7 @@ public class GroceryDatabase extends SQLiteOpenHelper {
         return stats;
     }
 
-    private List<Grocery> getAllGroceries() {
+    public List<Grocery> getAllGroceries() {
         SQLiteDatabase db = getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME, null);
         List<Grocery> groceries = new ArrayList<>();

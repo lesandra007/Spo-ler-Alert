@@ -38,7 +38,9 @@ import com.github.mikephil.charting.utils.ColorTemplate;
 import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import edu.sjsu.sase.android.spoleralert.profile.ProfilePickerActivity;
 import com.github.mikephil.charting.formatter.ValueFormatter;
@@ -51,7 +53,8 @@ public class StatisticsFragment extends Fragment {
     private GroceryDatabase groceryDb;
     ImageView profilePic;
     private ActivityResultLauncher<Intent> profilePickerLauncher;
-
+    private float maxMoneyY = -1;
+    private float maxFoodY = -1;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -181,6 +184,16 @@ public class StatisticsFragment extends Fragment {
         gs_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         gs_dropdown.setAdapter(gs_adapter);
 
+        List<MonthlyStat> moneySpent = getMoneySpentData();
+        List<MonthlyStat> moneyWaste = getMoneyWasteData();
+        List<MonthlyStat> moneyUsed = getMoneyUsedData();
+        List<MonthlyStat> foodBought = getFoodBoughtData();
+        List<MonthlyStat> foodWaste = getFoodWasteData();
+        List<MonthlyStat> foodUsed = getFoodUsedData();
+
+        maxMoneyY = getMaxValue(List.of(moneySpent, moneyWaste, moneyUsed)) * 1.1f;
+        maxFoodY = getMaxValue(List.of(foodBought, foodWaste, foodUsed)) * 1.1f;
+
         gs_dropdown.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -236,7 +249,7 @@ public class StatisticsFragment extends Fragment {
                     Toast.makeText(requireContext(), "No data found. Showing default chart.", Toast.LENGTH_SHORT).show();
                 }
 
-                float maxY = getMaxValue(List.of(selectedData)) * 1.1f;
+                float maxY = sorting_type.contains("Money") ? maxMoneyY : maxFoodY;
                 updateChart(selectedData, barChart, label, colorRes, maxY > 0 ? maxY : defaultMaxY);
             }
 
@@ -294,16 +307,22 @@ public class StatisticsFragment extends Fragment {
         return groceryDb.getMoneyUsedData();
     }
 
-    private List<MonthlyStat> getFoodBoughtData() {
-        return groceryDb.getFoodBoughtData();
+    public List<MonthlyStat> getFoodBoughtData() {
+        Map<YearMonth, Float> monthTotals = new HashMap<>();
+        for (Grocery g : groceryDb.getAllGroceries()) {
+            YearMonth ym = YearMonth.from(g.getExpirationDate());
+            float weightLbs = (g.getPounds() * 16 + g.getOunces()) / 16f;
+            monthTotals.put(ym, monthTotals.getOrDefault(ym, 0f) + weightLbs);
+        }
+        return groceryDb.toLast6MonthsList(monthTotals);
     }
 
-    private List<MonthlyStat> getFoodWasteData() {
-        return groceryDb.getFoodWasteData();
+    public List<MonthlyStat> getFoodWasteData() {
+        return groceryDb.getMonthlyUpdateTotals(false, false); // false for waste, false for pounds
     }
 
-    private List<MonthlyStat> getFoodUsedData() {
-        return groceryDb.getFoodUsedData();
+    public List<MonthlyStat> getFoodUsedData() {
+        return groceryDb.getMonthlyUpdateTotals(true, false); // true for used, false for pounds
     }
 
     private void updateChart(List<MonthlyStat> data, BarChart chart, String label, int colorResId, float maxY) {
