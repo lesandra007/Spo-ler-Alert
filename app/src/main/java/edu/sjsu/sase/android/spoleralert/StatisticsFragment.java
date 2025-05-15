@@ -13,6 +13,7 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -43,6 +44,8 @@ import java.util.List;
 import java.util.Map;
 
 import edu.sjsu.sase.android.spoleralert.profile.ProfilePickerActivity;
+import edu.sjsu.sase.android.spoleralert.recentadapters.RecentUpdateAdapter;
+
 import com.github.mikephil.charting.formatter.ValueFormatter;
 
 
@@ -269,6 +272,16 @@ public class StatisticsFragment extends Fragment {
             controller.navigate(R.id.statisticsFragment);
         });
 
+        RecyclerView eatsList = statistics_view.findViewById(R.id.recent_eats_list);
+        RecyclerView wastesList = statistics_view.findViewById(R.id.recent_wastes_list);
+
+        List<GroceryDatabase.GroceryUsageEntry> eats = groceryDb.getRecentUpdates(true, 10);
+        List<GroceryDatabase.GroceryUsageEntry> wastes = groceryDb.getRecentUpdates(false, 10);
+
+        // Assuming you have adapters ready
+        eatsList.setAdapter(new RecentUpdateAdapter(eats));
+        wastesList.setAdapter(new RecentUpdateAdapter(wastes));
+
         return statistics_view;
     }
 
@@ -322,7 +335,7 @@ public class StatisticsFragment extends Fragment {
     }
 
     public List<MonthlyStat> getFoodUsedData() {
-        return groceryDb.getMonthlyUpdateTotals(true, false); // true for used, false for pounds
+        return groceryDb.getFoodUsedData(); // true for used, false for pounds
     }
 
     private void updateChart(List<MonthlyStat> data, BarChart chart, String label, int colorResId, float maxY) {

@@ -303,14 +303,20 @@ public class GroceryDatabase extends SQLiteOpenHelper {
     }
 
     public List<MonthlyStat> getMonthlyUpdateTotals(boolean isUse, boolean isMoney) {
+        Log.d("DEBUG_STAT_CALL", "getMonthlyUpdateTotals() called with isUse=" + isUse + ", isMoney=" + isMoney);
+
         Map<YearMonth, Float> monthTotals = new HashMap<>();
         for (Grocery g : getAllGroceries()) {
             ArrayList<GroceryUsageUpdate> updates = g.getUpdates();
             if (updates == null) continue;
+            Log.d("DEBUG_STAT_CALL", "Checking grocery: " + g.getName());
 
             for (GroceryUsageUpdate update : updates) {
+                Log.d("DEBUG_STAT_CALL", "  Update found - type: " + update.getType() + ", date: " + update.getUpdateDate());
                 if (update.getType() == isUse) {
                     try {
+                        Log.d("DEBUG_STAT_CALL", "  ✅ Matched isUse=" + isUse + " for update on " + update.getUpdateDate());
+
                         LocalDate date = LocalDate.parse(update.getUpdateDate());
                         YearMonth ym = YearMonth.from(date);
                         float value = isMoney ? (float) update.getPrice() : (float) (update.getWeight() / 16f); // Convert oz to lbs
@@ -320,6 +326,7 @@ public class GroceryDatabase extends SQLiteOpenHelper {
                     }
                 }
             }
+
         }
         return toLast6MonthsList(monthTotals);
     }

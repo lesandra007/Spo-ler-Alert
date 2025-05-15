@@ -7,7 +7,6 @@ import android.os.Bundle;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
-import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -18,22 +17,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.CalendarView;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import java.lang.reflect.Array;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-
-import edu.sjsu.sase.android.spoleralert.recentadapters.RecentPurchaseAdapter;
-import edu.sjsu.sase.android.spoleralert.recentadapters.RecentUpdateAdapter;
 
 ///**
 // * A simple {@link Fragment} subclass.
@@ -174,26 +166,6 @@ public class GroceriesFragment extends Fragment {
                 controller.navigate(R.id.statisticsFragment);
             }
         });
-
-        //*************** RECENTS FOODS ***************
-        //clicking on the buttons in the bottom bar to go to the different main parts of the app
-        GroceryDatabase db = new GroceryDatabase(requireContext());
-
-        List<Grocery> recentPurchases = db.getRecentPurchases(5);
-        List<GroceryDatabase.GroceryUsageEntry> recentEats = db.getRecentUpdates(true, 5);
-        List<GroceryDatabase.GroceryUsageEntry> recentWastes = db.getRecentUpdates(false, 5);
-
-        RecyclerView purchasesList = groceries_view.findViewById(R.id.recent_purchases_list);
-        RecyclerView eatsList = groceries_view.findViewById(R.id.recent_eats_list);
-        RecyclerView wastesList = groceries_view.findViewById(R.id.recent_wastes_list);
-
-        purchasesList.setLayoutManager(new LinearLayoutManager(getContext()));
-        eatsList.setLayoutManager(new LinearLayoutManager(getContext()));
-        wastesList.setLayoutManager(new LinearLayoutManager(getContext()));
-
-        purchasesList.setAdapter(new RecentPurchaseAdapter(recentPurchases));
-        eatsList.setAdapter(new RecentUpdateAdapter(recentEats));
-        wastesList.setAdapter(new RecentUpdateAdapter(recentWastes));
 
         return groceries_view;
     }
